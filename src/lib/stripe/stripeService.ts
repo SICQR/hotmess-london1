@@ -8,7 +8,7 @@
  * - Refunds and disputes
  */
 
-import { projectId, publicAnonKey } from '../supabase/info';
+import { projectId, publicAnonKey } from '../../utils/supabase/info';
 
 const STRIPE_FEE_PERCENT = 0.029; // 2.9%
 const STRIPE_FEE_FIXED = 30; // 30 cents
