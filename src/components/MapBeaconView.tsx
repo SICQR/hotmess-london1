@@ -1,10 +1,12 @@
 "use client";
 
 import * as React from "react";
-import Map, { Marker, NavigationControl, type ViewStateChangeEvent } from "react-map-gl/maplibre";
-import type { MapRef } from "react-map-gl/maplibre";
+import Map, { Marker, NavigationControl, type ViewStateChangeEvent } from "react-map-gl";
+import type { MapRef } from "react-map-gl";
 import Supercluster from "supercluster";
-import "maplibre-gl/dist/maplibre-gl.css";
+import "mapbox-gl/dist/mapbox-gl.css";
+
+const MAPBOX_TOKEN = 'pk.eyJ1IjoiaG90bWVzcyIsImEiOiJjbWlyeXJhYWMwZm1rM2NxdDZjY2NhdXM5In0.B9T0ACXWOSa1EuShj6dObw';
 
 import type { BeaconType, GateContext, RequirementChip } from "../lib/beaconTypes";
 import {
@@ -44,7 +46,7 @@ export type BeaconPoint = {
 
 type Props = {
   beacons: BeaconPoint[];
-  mapStyleUrl: string; // e.g. a MapLibre style JSON URL
+  mapStyleUrl: string; // e.g. a Mapbox style URL or JSON
   initialView?: { longitude: number; latitude: number; zoom: number };
 
   // user context for live now sorting and gating chips (not enforcement here)
@@ -189,7 +191,7 @@ function useSuperclusterPoints(args: {
   return { clusters, clusterer };
 }
 
-function boundsFromMap(map: maplibregl.Map | null): [number, number, number, number] | null {
+function boundsFromMap(map: mapboxgl.Map | null): [number, number, number, number] | null {
   if (!map) return null;
   const b = map.getBounds();
   return [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()];
@@ -315,8 +317,8 @@ export function MapBeaconView(props: Props) {
     setLayers(newLayers);
     props.onChangeLayers?.(newLayers);
 
-    // Update MapLibre layers
-    const map = mapRef.current?.getMap() as maplibregl.Map | undefined;
+    // Update Mapbox layers
+    const map = mapRef.current?.getMap() as mapboxgl.Map | undefined;
     if (!map) return;
 
     // Pins visibility handled by React markers
@@ -405,6 +407,7 @@ export function MapBeaconView(props: Props) {
       {/* Map */}
       <Map
         ref={mapRef as any}
+        mapboxAccessToken={MAPBOX_TOKEN}
         mapStyle={props.mapStyleUrl}
         initialViewState={viewState}
         onMove={onMove}
