@@ -177,11 +177,14 @@ export function MapboxGlobe({ timeWindow, onCityClick, onBeaconClick, useLiveDat
 
     const loadMapbox = async () => {
       try {
-        const mapboxgl = await import('mapbox-gl');
+        // Use maplibre-gl (open-source alternative to mapbox-gl)
+        const maplibregl = await import('maplibre-gl');
         
-        (mapboxgl as any).default.accessToken = MAPBOX_TOKEN;
+        // Note: MapLibre doesn't need an access token for self-hosted styles
+        // But we can still use Mapbox styles if we provide the token
+        (maplibregl as any).default.accessToken = MAPBOX_TOKEN;
 
-        const map = new (mapboxgl as any).default.Map({
+        const map = new (maplibregl as any).default.Map({
           container: mapContainer.current!,
           style: 'mapbox://styles/mapbox/dark-v11',
           center: [0, 20],

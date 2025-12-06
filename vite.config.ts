@@ -70,9 +70,6 @@
     build: {
       target: 'esnext',
       outDir: 'build',
-      rollupOptions: {
-        external: ['mapbox-gl'],
-      },
     },
     server: {
       port: 3000,
