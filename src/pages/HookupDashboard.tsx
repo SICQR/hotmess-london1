@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useHookupBeacons } from '../hooks/useHookupBeacons';
 import type { HookupBeacon } from '../types/hookup';
+import type { RouteId } from '../lib/routes';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Card } from '../components/ui/card';
@@ -30,12 +31,12 @@ import {
 } from 'lucide-react';
 
 interface HookupDashboardProps {
-  onNavigate?: (route: string, params?: Record<string, string>) => void;
+  onNavigate: (route: RouteId, params?: Record<string, string>) => void;
 }
 
 export default function HookupDashboard({ onNavigate }: HookupDashboardProps) {
   const { user } = useAuth();
-  const navigate = (route: string, params?: Record<string, string>) => onNavigate?.(route, params);
+  const navigate = onNavigate;
   const { getMyBeacons, deleteBeacon, getBeaconStats, loading, error } = useHookupBeacons();
   
   const [beacons, setBeacons] = useState<HookupBeacon[]>([]);

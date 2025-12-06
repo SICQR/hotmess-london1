@@ -100,7 +100,7 @@ app.post('/beacon/create', async (c) => {
       success: true,
       beacon,
       xp_earned: xpReward,
-      qr_url: `https://hotmess.london/?route=hookupScan&code=${beaconId}`,
+      qr_url: `https://hotmessldn.com/?route=hookupScan&code=${beaconId}`,
     });
   } catch (error) {
     console.error('Error creating hookup beacon:', error);

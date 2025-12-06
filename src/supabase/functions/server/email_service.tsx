@@ -12,7 +12,7 @@ interface SendEmailParams {
 
 export async function sendEmail({ to, subject, html, from }: SendEmailParams): Promise<{ success: boolean; id?: string; error?: string }> {
   const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-  const FROM_EMAIL = from || Deno.env.get('HOTMESS_FROM_EMAIL') || 'HOTMESS <notifications@hotmess.london>';
+  const FROM_EMAIL = from || Deno.env.get('HOTMESS_FROM_EMAIL') || 'HOTMESS <notifications@hotmessldn.com>';
   
   if (!RESEND_API_KEY) {
     console.warn('⚠️ RESEND_API_KEY not set - email not sent to:', to);
@@ -76,7 +76,7 @@ export const EMAIL_TEMPLATES = {
           <p style="font-size: 24px; font-weight: 700;">Welcome, ${name}.</p>
           <p>You're in. Your nightlife OS is ready.</p>
           <p>HOTMESS LONDON is a men-only queer nightlife platform combining care-first principles with kink aesthetics. Scan beacons, discover events, connect with the scene.</p>
-          <a href="https://hotmess.london" class="button">Open Platform</a>
+          <a href="https://hotmessldn.com" class="button">Open Platform</a>
         </div>
         <div class="footer">
           <p>HOTMESS LONDON - Built for the bold.</p>
@@ -113,7 +113,7 @@ export const EMAIL_TEMPLATES = {
             <p style="margin: 10px 0 0 0;">Total: £${orderDetails.total}</p>
             <p style="margin: 10px 0 0 0; color: #999;">${orderDetails.items}</p>
           </div>
-          <a href="https://hotmess.london/orders" class="button">View Order</a>
+          <a href="https://hotmessldn.com/orders" class="button">View Order</a>
         </div>
       </div>
     </body>
@@ -145,7 +145,7 @@ export const EMAIL_TEMPLATES = {
             <p style="margin: 0; font-size: 16px; color: #999;">📍 ${beaconLocation}</p>
             <p style="margin: 10px 0 0 0;">You both scanned the beacon. Start a chat.</p>
           </div>
-          <a href="https://hotmess.london/beacon-matches" class="button">View Matches</a>
+          <a href="https://hotmessldn.com/beacon-matches" class="button">View Matches</a>
         </div>
       </div>
     </body>
@@ -238,7 +238,7 @@ export const EMAIL_TEMPLATES = {
             <p style="margin: 0;"><strong>Carrier:</strong> ${carrier}</p>
             <p style="margin: 10px 0 0 0;"><strong>Tracking:</strong> ${trackingNumber}</p>
           </div>
-          <a href="https://hotmess.london/orders" class="button">Track Order</a>
+          <a href="https://hotmessldn.com/orders" class="button">Track Order</a>
         </div>
       </div>
     </body>

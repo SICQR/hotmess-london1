@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Zap, Radio, Globe, Target, MapPin, Clock, Copy, Share2, X, Search, Filter, TrendingUp, Users, Calendar } from 'lucide-react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { WorldMap2D } from '../components/WorldMap2D';
-import LiveGlobe3D from '../components/LiveGlobe3D';
+import { MapboxGlobe } from '../components/globe/MapboxGlobe';
+import { GlobeControls } from '../components/globe/GlobeControls';
 
 type BeaconType = 'checkin' | 'ticket' | 'product' | 'drop' | 'event' | 'chat' | 'vendor' | 'reward' | 'sponsor';
 
@@ -110,7 +111,17 @@ export function MapPage({ onNavigate }: MapPageProps) {
   
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterType, setFilterType] = useState<BeaconType | null>(null);
+  const [beaconFilters, setBeaconFilters] = useState({
+    checkin: true,
+    ticket: true,
+    product: true,
+    drop: true,
+    event: true,
+    chat: true,
+    vendor: true,
+    reward: true,
+    sponsor: true,
+  });
 
   // Data state
   const [loading, setLoading] = useState(true);
@@ -235,10 +246,10 @@ export function MapPage({ onNavigate }: MapPageProps) {
   const filteredBeacons = useMemo(() => {
     let result = beacons;
     
-    if (filterType) {
-      result = result.filter(b => b.type === filterType);
-    }
+    // Filter by beacon type
+    result = result.filter(b => beaconFilters[b.type as keyof typeof beaconFilters]);
     
+    // Filter by search query
     if (searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase();
       result = result.filter(b => 
@@ -249,7 +260,7 @@ export function MapPage({ onNavigate }: MapPageProps) {
     }
     
     return result;
-  }, [beacons, filterType, searchQuery]);
+  }, [beacons, beaconFilters, searchQuery]);
 
   // Selection
   const selectedBeacon = useMemo(
@@ -366,12 +377,21 @@ export function MapPage({ onNavigate }: MapPageProps) {
       {/* Map Visualization Background */}
       <div className="absolute inset-0">
         {mode3d ? (
-          <LiveGlobe3D
-            beacons={filteredBeacons}
+          <MapboxGlobe
+            timeWindow={timeMode === 'live' ? 'tonight' : timeMode === '24h' ? 'month' : 'weekend'}
+            onCityClick={(city) => {
+              // Find beacon in that city
+              const beacon = filteredBeacons.find(b => 
+                b.city?.toLowerCase() === city.city?.toLowerCase()
+              );
+              if (beacon) setSelectedId(beacon.id);
+            }}
             onBeaconClick={setSelectedId}
-            selectedId={selectedId}
-            showPins={layerPins}
-            showCities={layerCities}
+            beacons={filteredBeacons}
+            selectedBeaconId={selectedId}
+            showHeat={layerHeat}
+            showBeacons={layerPins}
+            useLiveData={layerHeat}
           />
         ) : (
           <WorldMap2D
@@ -384,219 +404,45 @@ export function MapPage({ onNavigate }: MapPageProps) {
         )}
       </div>
 
-      {/* Top Bar */}
-      <div className="absolute top-0 left-0 right-0 z-20 px-4 pt-4">
-        <div className={`${panel} p-3`}>
-          <div className="flex items-center gap-4 flex-wrap">
-            {/* 2D/3D Toggle */}
-            <div className="flex items-center gap-2">
-              <button
-                className={`px-4 py-2 rounded-full text-xs tracking-widest uppercase border transition ${
-                  !mode3d ? chipOn : chipOff
-                }`}
-                onClick={() => setMode3d(false)}
-                type="button"
-              >
-                2D
-              </button>
-              <button
-                className={`px-4 py-2 rounded-full text-xs tracking-widest uppercase border transition ${
-                  mode3d ? chipOn : chipOff
-                }`}
-                onClick={() => setMode3d(true)}
-                type="button"
-              >
-                3D
-              </button>
-            </div>
-
-            {/* Badge */}
-            <div className="flex items-center gap-3">
-              <span className="text-[11px] tracking-[0.32em] uppercase opacity-80">HOTMESS MAP</span>
-              <span className="px-3 py-1 rounded-full border border-white/30 text-[11px] tracking-[0.32em] uppercase">
-                {liveBadge}
-              </span>
-            </div>
-
-            {/* Search */}
-            <div className="flex-1 max-w-md relative">
-              <Search size={16} className="text-white/40 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                className="w-full bg-black/50 border border-white/15 focus:border-white/60 outline-none rounded-full pl-10 pr-3 py-2 text-sm tracking-wide placeholder:text-white/30"
-                placeholder="CITY / CODE / VENUE"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleSearch(searchQuery);
-                  }
-                }}
-              />
-            </div>
-
-            {/* Stats Toggle */}
-            {!isMobile && (
-              <button
-                className={`px-4 py-2 rounded-full text-xs tracking-widest uppercase border transition ${
-                  showStats ? chipOn : chipOff
-                }`}
-                type="button"
-                onClick={() => setShowStats(v => !v)}
-              >
-                <TrendingUp size={14} className="inline mr-1" />
-                STATS
-              </button>
-            )}
-
-            {/* Filter Toggle */}
-            <button
-              className={`px-4 py-2 rounded-full text-xs tracking-widest uppercase border transition ${
-                showFilters ? chipOn : chipOff
-              }`}
-              type="button"
-              onClick={() => setShowFilters(v => !v)}
-            >
-              <Filter size={14} className="inline mr-1" />
-              FILTER
-            </button>
-          </div>
-
-          {/* Layer Controls Row */}
-          <div className="flex items-center gap-2 mt-3 flex-wrap">
-            <button
-              className={`px-3 py-1.5 rounded-full text-xs tracking-widest uppercase border transition ${
-                layerPins ? chipOn : chipOff
-              }`}
-              type="button"
-              onClick={() => setLayerPins(v => !v)}
-            >
-              PINS
-            </button>
-            <button
-              className={`px-3 py-1.5 rounded-full text-xs tracking-widest uppercase border transition ${
-                layerHeat ? chipOn : chipOff
-              }`}
-              type="button"
-              onClick={() => setLayerHeat(v => !v)}
-            >
-              HEAT
-            </button>
-            <button
-              className={`px-3 py-1.5 rounded-full text-xs tracking-widest uppercase border transition ${
-                layerTrails ? chipOn : chipOff
-              }`}
-              type="button"
-              onClick={() => {
-                setLayerTrails(v => !v);
-                if (!layerTrails) setTimeMode('24h');
-              }}
-            >
-              TRAILS
-            </button>
-            <button
-              className={`px-3 py-1.5 rounded-full text-xs tracking-widest uppercase border transition ${
-                layerCities ? chipOn : chipOff
-              }`}
-              type="button"
-              onClick={() => setLayerCities(v => !v)}
-            >
-              CITIES
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats Panel */}
-      <AnimatePresence>
-        {showStats && (
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="absolute top-32 left-4 z-20 w-[280px]"
-          >
-            <div className={`${panel} p-4`}>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] tracking-[0.38em] uppercase opacity-75">GLOBAL STATS</span>
-                <button onClick={() => setShowStats(false)} type="button">
-                  <X size={16} className="text-white/60 hover:text-white" />
-                </button>
-              </div>
-
-              <div className="space-y-3">
-                <div className="p-3 rounded-xl border border-white/15 bg-black/40">
-                  <div className="text-[11px] tracking-[0.32em] uppercase opacity-75">ACTIVE BEACONS</div>
-                  <div className="mt-1 text-2xl tracking-wide">{activeCount}</div>
-                </div>
-                <div className="p-3 rounded-xl border border-white/15 bg-black/40">
-                  <div className="text-[11px] tracking-[0.32em] uppercase opacity-75">SCANS TODAY</div>
-                  <div className="mt-1 text-2xl tracking-wide">{totalScans.toLocaleString()}</div>
-                </div>
-                <div className="p-3 rounded-xl border border-white/15 bg-black/40">
-                  <div className="text-[11px] tracking-[0.32em] uppercase opacity-75">XP AWARDED</div>
-                  <div className="mt-1 text-2xl tracking-wide">{totalXP.toLocaleString()}</div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Filters Panel */}
-      <AnimatePresence>
-        {showFilters && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className={`absolute ${isMobile ? 'top-32' : 'top-32'} ${isMobile ? 'left-4 right-4' : 'right-4'} z-20 w-[min(380px,calc(100%-32px))]`}
-          >
-            <div className={`${panel} p-4`}>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] tracking-[0.38em] uppercase opacity-75">FILTER BEACONS</span>
-                <button onClick={() => setShowFilters(false)} type="button">
-                  <X size={16} className="text-white/60 hover:text-white" />
-                </button>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                <button
-                  className={`px-3 py-1.5 rounded-full text-xs tracking-widest uppercase border transition ${
-                    filterType === null ? chipOn : chipOff
-                  }`}
-                  type="button"
-                  onClick={() => setFilterType(null)}
-                >
-                  ALL
-                </button>
-                {Object.keys(BEACON_TYPE_LABELS).map((t) => (
-                  <button
-                    key={t}
-                    className={`px-3 py-1.5 rounded-full text-xs tracking-widest uppercase border transition ${
-                      filterType === t ? chipOn : chipOff
-                    }`}
-                    type="button"
-                    onClick={() => setFilterType(t as BeaconType)}
-                    style={{
-                      borderColor: filterType === t ? BEACON_TYPE_COLORS[t] : undefined,
-                      backgroundColor: filterType === t ? BEACON_TYPE_COLORS[t] : undefined,
-                      color: filterType === t ? '#000' : undefined,
-                    }}
-                  >
-                    {BEACON_TYPE_LABELS[t]}
-                  </button>
-                ))}
-              </div>
-
-              {filterType && (
-                <div className="mt-3 text-xs tracking-wide opacity-75">
-                  Showing {filteredBeacons.length} of {beacons.length} beacons
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Unified Globe Controls */}
+      <GlobeControls
+        mode="map"
+        timeWindow={timeMode}
+        onTimeWindowChange={setTimeMode}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onSearch={handleSearch}
+        layers={{
+          pins: layerPins,
+          heat: layerHeat,
+          trails: layerTrails,
+          cities: layerCities,
+        }}
+        onLayerToggle={(layer) => {
+          if (layer === 'pins') setLayerPins(v => !v);
+          else if (layer === 'heat') setLayerHeat(v => !v);
+          else if (layer === 'trails') {
+            setLayerTrails(v => !v);
+            if (!layerTrails) setTimeMode('24h');
+          }
+          else if (layer === 'cities') setLayerCities(v => !v);
+        }}
+        beaconFilters={beaconFilters}
+        onBeaconFilterToggle={(type) => {
+          setBeaconFilters(prev => ({ ...prev, [type]: !prev[type] }));
+        }}
+        showFilters={showFilters}
+        onToggleFilters={() => setShowFilters(v => !v)}
+        showStats={showStats}
+        onToggleStats={() => setShowStats(v => !v)}
+        viewMode={mode3d ? '3d' : '2d'}
+        onViewModeChange={(mode) => setMode3d(mode === '3d')}
+        stats={{
+          activeBeacons: activeCount,
+          scansToday: totalScans,
+          totalXPAwarded: totalXP,
+        }}
+      />
 
       {/* Bottom Timeline */}
       <div className="absolute left-4 right-4 bottom-4 z-20">

@@ -6,12 +6,7 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Bookmark, BookmarkCheck } from "lucide-react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { supabase } from "@/lib/supabase";
 
 type Props = {
   beaconId: string;
@@ -29,18 +24,24 @@ export default function SaveBeaconButton({
   const [saved, setSaved] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
 
   // Check if already saved
   React.useEffect(() => {
     (async () => {
       try {
-        const { data: user } = await supabase.auth.getUser();
-        if (!user.user) return;
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          setIsAuthenticated(false);
+          return;
+        }
+
+        setIsAuthenticated(true);
 
         const { data, error } = await supabase
           .from("saved_beacons")
           .select("beacon_id")
-          .eq("user_id", user.user.id)
+          .eq("user_id", user.id)
           .eq("beacon_id", beaconId)
           .single();
 
@@ -48,12 +49,18 @@ export default function SaveBeaconButton({
           setSaved(true);
         }
       } catch (e) {
-        // Not saved
+        // Not saved or not authenticated
+        setIsAuthenticated(false);
       }
     })();
   }, [beaconId]);
 
   async function toggle() {
+    if (!isAuthenticated) {
+      setError("Please log in to save beacons");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 

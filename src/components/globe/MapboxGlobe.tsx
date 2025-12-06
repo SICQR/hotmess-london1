@@ -11,11 +11,40 @@ interface VenueData {
   coordinates: [number, number];
 }
 
-interface MapboxGlobeProps {
-  timeWindow: 'tonight' | 'weekend' | 'month';
-  onCityClick?: (city: any) => void;
-  useLiveData?: boolean; // Enable fetching from Heat API
+interface Beacon {
+  id: string;
+  code: string;
+  type: string;
+  title?: string;
+  city?: string;
+  lng: number;
+  lat: number;
+  xp?: number;
+  sponsored?: boolean;
 }
+
+interface MapboxGlobeProps {
+  timeWindow?: 'tonight' | 'weekend' | 'month';
+  onCityClick?: (city: any) => void;
+  onBeaconClick?: (beaconId: string) => void;
+  useLiveData?: boolean; // Enable fetching from Heat API
+  beacons?: Beacon[]; // Show beacon pins
+  selectedBeaconId?: string | null;
+  showHeat?: boolean; // Show city heat map
+  showBeacons?: boolean; // Show beacon pins
+}
+
+const BEACON_TYPE_COLORS: Record<string, string> = {
+  checkin: '#FF1744',
+  drop: '#FF10F0',
+  event: '#00E5FF',
+  product: '#FFD600',
+  vendor: '#7C4DFF',
+  chat: '#00C853',
+  reward: '#FF6E40',
+  sponsor: '#FFC107',
+  ticket: '#00BCD4',
+};
 
 // Static demo data - 31 gay nightlife venues worldwide
 const DEMO_VENUES: VenueData[] = [
@@ -52,7 +81,7 @@ const DEMO_VENUES: VenueData[] = [
   { name: "Metro Disco", city: "Barcelona", country: "Spain", scans: 109, coordinates: [2.1734, 41.3851] },
 ];
 
-export function MapboxGlobe({ timeWindow, onCityClick, useLiveData = false }: MapboxGlobeProps) {
+export function MapboxGlobe({ timeWindow, onCityClick, onBeaconClick, useLiveData = false, beacons, selectedBeaconId, showHeat = true, showBeacons = true }: MapboxGlobeProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -76,7 +105,10 @@ export function MapboxGlobe({ timeWindow, onCityClick, useLiveData = false }: Ma
         );
 
         if (!response.ok) {
-          throw new Error('Failed to fetch heat data');
+          console.warn('⚠️ Heat API returned non-200 status, using demo data');
+          setVenues(DEMO_VENUES);
+          setIsLoadingData(false);
+          return;
         }
 
         const data = await response.json();
@@ -95,11 +127,11 @@ export function MapboxGlobe({ timeWindow, onCityClick, useLiveData = false }: Ma
           console.log(`✅ Loaded ${liveVenues.length} live venues from Heat API`);
         } else {
           // Fallback to demo data if no live data
-          console.log('ℹ️ No live data, using demo venues');
+          console.log('ℹ️ No live heat data, using demo venues');
           setVenues(DEMO_VENUES);
         }
       } catch (error) {
-        console.error('❌ Error fetching heat data:', error);
+        console.warn('⚠️ Error fetching heat data, using demo venues:', error);
         // Fallback to demo data on error
         setVenues(DEMO_VENUES);
       } finally {
@@ -291,6 +323,57 @@ export function MapboxGlobe({ timeWindow, onCityClick, useLiveData = false }: Ma
             },
           });
 
+          // Add beacon source (will be updated via useEffect)
+          map.addSource('beacons', {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: [],
+            },
+          });
+
+          // Add beacon pins
+          map.addLayer({
+            id: 'beacon-pins',
+            type: 'circle',
+            source: 'beacons',
+            paint: {
+              'circle-radius': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                1, 4,
+                5, 10,
+                10, 20,
+              ],
+              'circle-color': [
+                'case',
+                ['==', ['get', 'id'], selectedBeaconId || ''],
+                '#ffffff',
+                ['match', ['get', 'type'],
+                  'checkin', '#FF1744',
+                  'drop', '#FF10F0',
+                  'event', '#00E5FF',
+                  'product', '#FFD600',
+                  'vendor', '#7C4DFF',
+                  'chat', '#00C853',
+                  'reward', '#FF6E40',
+                  'sponsor', '#FFC107',
+                  'ticket', '#00BCD4',
+                  '#ff0080'
+                ]
+              ],
+              'circle-stroke-width': [
+                'case',
+                ['==', ['get', 'id'], selectedBeaconId || ''],
+                3,
+                1
+              ],
+              'circle-stroke-color': '#ffffff',
+              'circle-opacity': 0.95,
+            },
+          });
+
           console.log('✅ All layers added');
 
           // Click handler
@@ -378,6 +461,139 @@ export function MapboxGlobe({ timeWindow, onCityClick, useLiveData = false }: Ma
       }
     };
   }, [isLoaded]);
+
+  // Update beacon data
+  useEffect(() => {
+    if (!mapRef.current || !isLoaded || !beacons) return;
+
+    try {
+      const source = mapRef.current.getSource('beacons');
+      if (source) {
+        source.setData({
+          type: 'FeatureCollection',
+          features: beacons.map(beacon => ({
+            type: 'Feature',
+            properties: {
+              id: beacon.id,
+              code: beacon.code,
+              type: beacon.type,
+              title: beacon.title,
+              city: beacon.city,
+              xp: beacon.xp,
+            },
+            geometry: {
+              type: 'Point',
+              coordinates: [beacon.lng, beacon.lat],
+            },
+          })),
+        });
+        console.log(`✅ Updated ${beacons.length} beacon pins`);
+      }
+    } catch (error) {
+      console.error('❌ Error updating beacons:', error);
+    }
+  }, [beacons, isLoaded]);
+
+  // Control layer visibility based on props
+  useEffect(() => {
+    if (!mapRef.current || !isLoaded) return;
+
+    try {
+      const map = mapRef.current;
+      
+      // Toggle heat layers (venue markers, glow, labels)
+      const heatVisibility = showHeat ? 'visible' : 'none';
+      if (map.getLayer('venue-glow')) {
+        map.setLayoutProperty('venue-glow', 'visibility', heatVisibility);
+      }
+      if (map.getLayer('venue-markers')) {
+        map.setLayoutProperty('venue-markers', 'visibility', heatVisibility);
+      }
+      if (map.getLayer('venue-labels')) {
+        map.setLayoutProperty('venue-labels', 'visibility', heatVisibility);
+      }
+      
+      // Toggle beacon pins
+      const beaconVisibility = showBeacons ? 'visible' : 'none';
+      if (map.getLayer('beacon-pins')) {
+        map.setLayoutProperty('beacon-pins', 'visibility', beaconVisibility);
+      }
+      if (map.getLayer('beacon-labels')) {
+        map.setLayoutProperty('beacon-labels', 'visibility', beaconVisibility);
+      }
+      
+      console.log(`✅ Layer visibility: heat=${heatVisibility}, beacons=${beaconVisibility}`);
+    } catch (error) {
+      console.error('❌ Error toggling layer visibility:', error);
+    }
+  }, [showHeat, showBeacons, isLoaded]);
+
+  // Handle beacon click events
+  useEffect(() => {
+    if (!mapRef.current || !isLoaded || !onBeaconClick) return;
+
+    const map = mapRef.current;
+
+    const handleClick = (e: any) => {
+      if (!e.features || !e.features[0]) return;
+      const props = e.features[0].properties;
+      if (props && props.id) {
+        onBeaconClick(props.id);
+      }
+    };
+
+    const handleMouseEnter = () => {
+      map.getCanvas().style.cursor = 'pointer';
+    };
+
+    const handleMouseLeave = () => {
+      map.getCanvas().style.cursor = '';
+    };
+
+    map.on('click', 'beacon-pins', handleClick);
+    map.on('mouseenter', 'beacon-pins', handleMouseEnter);
+    map.on('mouseleave', 'beacon-pins', handleMouseLeave);
+
+    return () => {
+      map.off('click', 'beacon-pins', handleClick);
+      map.off('mouseenter', 'beacon-pins', handleMouseEnter);
+      map.off('mouseleave', 'beacon-pins', handleMouseLeave);
+    };
+  }, [isLoaded, onBeaconClick]);
+
+  // Update selected beacon styling
+  useEffect(() => {
+    if (!mapRef.current || !isLoaded) return;
+
+    try {
+      mapRef.current.setPaintProperty('beacon-pins', 'circle-color', [
+        'case',
+        ['==', ['get', 'id'], selectedBeaconId || ''],
+        '#ffffff',
+        ['match', ['get', 'type'],
+          'checkin', '#FF1744',
+          'drop', '#FF10F0',
+          'event', '#00E5FF',
+          'product', '#FFD600',
+          'vendor', '#7C4DFF',
+          'chat', '#00C853',
+          'reward', '#FF6E40',
+          'sponsor', '#FFC107',
+          'ticket', '#00BCD4',
+          '#ff0080'
+        ]
+      ]);
+
+      mapRef.current.setPaintProperty('beacon-pins', 'circle-stroke-width', [
+        'case',
+        ['==', ['get', 'id'], selectedBeaconId || ''],
+        3,
+        1
+      ]);
+    } catch (e) {
+      // Style might not be ready yet
+    }
+  }, [selectedBeaconId, isLoaded]);
 
   return (
     <>

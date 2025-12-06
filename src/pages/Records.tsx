@@ -132,7 +132,7 @@ export function Records({ onNavigate }: RecordsProps) {
   useEffect(() => {
     const fetchRecords = async () => {
       try {
-        const response = await fetch(`${API_BASE}/records`, {
+        const response = await fetch(API_BASE, {
           headers: {
             'Authorization': `Bearer ${publicAnonKey}`,
           },
@@ -143,10 +143,14 @@ export function Records({ onNavigate }: RecordsProps) {
           console.log('✅ Loaded records:', data.records);
           setRecords(data.records || []);
         } else {
-          console.error('Failed to fetch records');
+          console.warn('⚠️ Failed to fetch records, using demo data');
+          // Fallback to demo data
+          setRecords([]);
         }
       } catch (error) {
-        console.error('Error fetching records:', error);
+        console.warn('⚠️ Error fetching records, using demo data:', error);
+        // Fallback to demo data
+        setRecords([]);
       } finally {
         setLoading(false);
       }

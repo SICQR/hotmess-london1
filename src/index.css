@@ -1832,10 +1832,6 @@
     width: calc(33.33% - 12px);
   }
 
-  .w-\[min\(380px\,calc\(100\%-32px\)\)\] {
-    width: min(380px, 100% - 32px);
-  }
-
   .w-\[min\(520px\,100\%\)\] {
     width: min(520px, 100%);
   }

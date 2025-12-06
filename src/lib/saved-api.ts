@@ -1,8 +1,8 @@
 // lib/saved-api.ts
 // Frontend API for saved content system
 
-import { projectId, publicAnonKey } from '../utils/supabase/info';
-import { createClient } from '@supabase/supabase-js';
+import { projectId } from '../utils/supabase/info';
+import { supabase } from './supabase';
 
 const baseUrl = `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/api/saved`;
 
@@ -26,16 +26,11 @@ export interface SavedCounts {
 }
 
 // Get access token for authenticated requests
-async function getAccessToken(): Promise<string> {
-  const supabase = createClient(
-    `https://${projectId}.supabase.co`,
-    publicAnonKey
-  );
-  
+async function getAccessToken(): Promise<string | null> {
   const { data: { session }, error } = await supabase.auth.getSession();
   
   if (error || !session) {
-    throw new Error('User not authenticated');
+    return null;
   }
   
   return session.access_token;
@@ -51,6 +46,10 @@ export async function saveContent(
 ): Promise<{ success: boolean; item?: SavedItem; error?: string }> {
   try {
     const token = await getAccessToken();
+    
+    if (!token) {
+      return { success: false, error: 'User not authenticated' };
+    }
     
     const response = await fetch(`${baseUrl}/save`, {
       method: 'POST',
@@ -84,6 +83,10 @@ export async function unsaveContent(
   try {
     const token = await getAccessToken();
     
+    if (!token) {
+      return { success: false, error: 'User not authenticated' };
+    }
+    
     const response = await fetch(`${baseUrl}/unsave`, {
       method: 'DELETE',
       headers: {
@@ -116,6 +119,10 @@ export async function checkSaved(
   try {
     const token = await getAccessToken();
     
+    if (!token) {
+      return { saved: false, error: 'User not authenticated' };
+    }
+    
     const response = await fetch(
       `${baseUrl}/check?contentType=${contentType}&contentId=${contentId}`,
       {
@@ -147,6 +154,10 @@ export async function getAllSaved(
   try {
     const token = await getAccessToken();
     
+    if (!token) {
+      return { items: [], count: 0, error: 'User not authenticated' };
+    }
+    
     const url = contentType 
       ? `${baseUrl}/all?contentType=${contentType}`
       : `${baseUrl}/all`;
@@ -176,6 +187,14 @@ export async function getAllSaved(
 export async function getSavedCounts(): Promise<{ counts: SavedCounts; total: number; error?: string }> {
   try {
     const token = await getAccessToken();
+    
+    if (!token) {
+      return { 
+        counts: { beacon: 0, record: 0, release: 0, product: 0, post: 0, show: 0 },
+        total: 0, 
+        error: 'User not authenticated' 
+      };
+    }
     
     const response = await fetch(`${baseUrl}/counts`, {
       headers: {

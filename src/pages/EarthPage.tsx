@@ -17,7 +17,7 @@ import {
   Radio,
   Flame
 } from 'lucide-react';
-import LiveGlobe3D, { type Beacon as GlobeBeacon, type GlobeLayers } from '../components/LiveGlobe3D';
+import { MapboxGlobe } from '../components/globe/MapboxGlobe';
 import { LocationSearchInput } from '../components/LocationSearchInput';
 import { LocationPickerOverlay } from '../components/LocationPickerOverlay';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
@@ -545,42 +545,41 @@ export function EarthPage({ onNavigate }: EarthPageProps) {
 
         {/* MAIN - 3D Globe View */}
         <div className="relative h-screen bg-black overflow-hidden">
-          <LiveGlobe3D
-            className="w-full h-full absolute inset-0"
-            layers={{
-              pins: showBeacons || showLocations,
-              heat: showHeatmap,
-              trails: false,
-              cities: true,
-            }}
+          <MapboxGlobe
+            timeWindow="tonight"
+            showHeat={showHeatmap}
+            showBeacons={showBeacons || showLocations}
             beacons={[
               // Map beacons from backend
               ...beacons.map((b) => ({
                 id: b.id,
+                code: b.code,
+                type: b.kind,
                 title: b.title,
-                kind: b.kind as 'drop' | 'event' | 'product' | 'sponsor' | 'checkin' | 'other',
                 lat: b.lat,
                 lng: b.lng,
                 city: b.city,
-                intensity: b.intensity || (b.scans ? Math.min(b.scans / 100, 1) : 0.5),
               })),
               // Add custom locations as beacons if layer is on
               ...(showLocations ? locations.map((loc) => ({
                 id: loc.id,
+                code: loc.id,
+                type: 'checkin',
                 title: loc.name,
-                kind: 'other' as const,
                 lat: loc.lat,
                 lng: loc.lng,
                 city: loc.address.split(',')[0],
-                intensity: 0.3,
               })) : []),
             ]}
-            onBeaconClick={(beacon) => {
-              if ('code' in beacon) {
-                // @ts-ignore
-                toast.info(`Beacon: ${beacon.title} (/l/${beacon.code})`);
-              } else {
-                toast.info(`Location: ${beacon.title || beacon.id}`);
+            onBeaconClick={(beaconId) => {
+              const beacon = beacons.find(b => b.id === beaconId);
+              const location = locations.find(l => l.id === beaconId);
+              
+              if (beacon) {
+                toast.info(`Beacon: ${beacon.title}`);
+              } else if (location) {
+                toast.info(`Location: ${location.name}`);
+                setSelectedLocationId(location.id);
               }
             }}
           />

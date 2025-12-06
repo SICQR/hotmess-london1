@@ -207,7 +207,7 @@ If anything feels off or you need support:
 🆘 *Immediate Support:*
 • Type /care anytime
 • DM @hotmess_care_bot
-• Visit hotmess.london/care
+• Visit hotmessldn.com/care
 
 📞 *Crisis Lines:*
 • Switchboard LGBT+ Helpline: 0300 330 0630
@@ -256,7 +256,7 @@ export async function handleHookupCommand(
 
 ━━━━━━━━━━━━━━━━━━━━━━━━
 
-For more: hotmess.london/hookup
+For more: hotmessldn.com/hookup
       `.trim();
 
     default:

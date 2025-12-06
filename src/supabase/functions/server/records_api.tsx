@@ -53,7 +53,7 @@ initializeStorage().catch(console.error);
 // ============================================================================
 
 // Get all records
-app.get('/records', async (c) => {
+app.get('/', async (c) => {
   try {
     const records = await kv.getByPrefix('record:');
     return c.json({ 
@@ -69,7 +69,7 @@ app.get('/records', async (c) => {
 });
 
 // Get single record by slug
-app.get('/records/:slug', async (c) => {
+app.get('/:slug', async (c) => {
   try {
     const slug = c.req.param('slug');
     const record = await kv.get(`record:${slug}`);

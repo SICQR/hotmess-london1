@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { RouteId } from '../lib/routes';
 import { MapboxGlobe } from '../components/globe/MapboxGlobe';
+import { GlobeControls } from '../components/globe/GlobeControls';
 import { ArrowLeft, Clock, TrendingUp, MapPin, Users, Zap } from 'lucide-react';
 
 interface NightPulseProps {
@@ -23,70 +24,28 @@ interface CityStats {
 export function NightPulse({ onNavigate }: NightPulseProps) {
   const [timeWindow, setTimeWindow] = useState<'tonight' | 'weekend' | 'month'>('tonight');
   const [selectedCity, setSelectedCity] = useState<CityStats | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [layers, setLayers] = useState({
+    pins: false,
+    heat: true,
+    trails: false,
+    cities: true,
+  });
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
-      {/* Header */}
-      <div className="border-b border-white/10 bg-black/80 backdrop-blur-md z-30 shrink-0">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => onNavigate('home')}
-                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <div>
-                <h1 style={{ fontWeight: 900, fontSize: '32px', lineHeight: '1' }}>NIGHT PULSE</h1>
-                <p className="text-white/40" style={{ fontWeight: 400, fontSize: '12px' }}>
-                  Global beacon activity in real-time
-                </p>
-              </div>
-            </div>
-
-            {/* Time Window Selector */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setTimeWindow('tonight')}
-                className={`px-4 py-2 transition-all ${
-                  timeWindow === 'tonight'
-                    ? 'bg-[#ff1694] text-white'
-                    : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
-                }`}
-                style={{ fontWeight: 700, fontSize: '12px' }}
-              >
-                <Clock className="w-3 h-3 inline mr-2" />
-                TONIGHT
-              </button>
-              <button
-                onClick={() => setTimeWindow('weekend')}
-                className={`px-4 py-2 transition-all ${
-                  timeWindow === 'weekend'
-                    ? 'bg-[#ff1694] text-white'
-                    : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
-                }`}
-                style={{ fontWeight: 700, fontSize: '12px' }}
-              >
-                <TrendingUp className="w-3 h-3 inline mr-2" />
-                WEEKEND
-              </button>
-              <button
-                onClick={() => setTimeWindow('month')}
-                className={`px-4 py-2 transition-all ${
-                  timeWindow === 'month'
-                    ? 'bg-[#ff1694] text-white'
-                    : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
-                }`}
-                style={{ fontWeight: 700, fontSize: '12px' }}
-              >
-                <MapPin className="w-3 h-3 inline mr-2" />
-                30 DAYS
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-black text-white flex flex-col relative">
+      {/* Unified Globe Controls */}
+      <GlobeControls
+        mode="nightpulse"
+        timeWindow={timeWindow}
+        onTimeWindowChange={setTimeWindow}
+        layers={layers}
+        onLayerToggle={(layer) => {
+          setLayers(prev => ({ ...prev, [layer]: !prev[layer] }));
+        }}
+        showFilters={showFilters}
+        onToggleFilters={() => setShowFilters(v => !v)}
+      />
 
       {/* Globe Container - FIXED HEIGHT */}
       <div className="flex-1 relative min-h-0">
@@ -94,6 +53,9 @@ export function NightPulse({ onNavigate }: NightPulseProps) {
           <MapboxGlobe 
             timeWindow={timeWindow}
             onCityClick={setSelectedCity}
+            showHeat={layers.heat}
+            showBeacons={layers.pins}
+            useLiveData={true}
           />
         </div>
       </div>

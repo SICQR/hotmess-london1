@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import type { CityData } from '../types/intel';
 import type { RouteId } from '../lib/routes';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
-import LiveGlobe3D, { type City as GlobeCity } from '../components/LiveGlobe3D';
+import { MapboxGlobe } from '../components/globe/MapboxGlobe';
 
 const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/api`;
 
@@ -137,7 +137,7 @@ export default function GlobalOS({ onNavigate }: GlobalOSProps) {
 
       {/* Globe */}
       <div className="h-screen w-full">
-        <LiveGlobe3D
+        <MapboxGlobe
           className="w-full h-full"
           cities={globeCities}
           onCityClick={handleGlobeCityClick}

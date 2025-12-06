@@ -40,9 +40,11 @@ import mapApiApp from "./map_api.tsx"; // NEW: Map heat/trail data API
 import * as makeIntegrations from "./make-integrations.ts"; // NEW: Make.com webhooks
 import adminApiApp from "./admin_api.tsx"; // NEW: Admin Console API
 import heatApiApp from "./heat_api.tsx"; // NEW: Night Pulse Heat Map API
-import qrRoutesApp from "./routes/qr.ts"; // NEW: QR Code Generation
-import lRoutesApp from "./routes/l.ts"; // NEW: Beacon Resolve (/l/:code)
-import xRoutesApp from "./routes/x.ts"; // NEW: Signed Beacon Resolve (/x/:payload.:sig)
+import radioApiApp from "./radio_api.tsx"; // NEW: Radio streaming API
+import lastfmApiApp from "./lastfm_api.tsx"; // NEW: Last.fm integration API
+import qrRoutesApp from "./qr_routes.tsx"; // NEW: QR Code Generation
+import lRoutesApp from "./l_routes.tsx"; // NEW: Beacon Resolve (/l/:code)
+import xRoutesApp from "./x_routes.tsx"; // NEW: Signed Beacon Resolve (/x/:payload.:sig)
 
 const app = new Hono();
 
@@ -393,6 +395,12 @@ app.route("/make-server-a670c824/api/admin", adminApiApp);
 
 // Mount Night Pulse Heat Map API routes
 app.route("/make-server-a670c824/api/heat", heatApiApp);
+
+// Mount Radio streaming API routes (at /radio for backward compatibility)
+app.route("/make-server-a670c824/radio", radioApiApp);
+
+// Mount Last.fm integration API routes
+app.route("/make-server-a670c824/api/lastfm", lastfmApiApp);
 
 // ============================================================================
 // QR CODE & BEACON RESOLVE ROUTES (public shortlinks)

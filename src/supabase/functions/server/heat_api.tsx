@@ -1,14 +1,14 @@
 /**
- * NIGHT PULSE HEAT API
- * Aggregate beacon scan data for heat map visualization
+ * NIGHT PULSE HEAT MAP API
+ * GET /heat?window=tonight|weekend|month - Returns GeoJSON FeatureCollection of beacon scan heat data
+ * GET /city/:slug - Returns detailed stats for a specific city
+ * POST /ping - Record a beacon scan (updates heat data)
  */
 
-import { Hono } from 'npm:hono';
-import { cors } from 'npm:hono/cors';
+import { Hono } from 'npm:hono@4.10.6';
 import * as kv from './kv_store.tsx';
 
 const app = new Hono();
-app.use('*', cors());
 
 /**
  * GET /heat?window=tonight|weekend|month
@@ -18,13 +18,24 @@ app.get('/heat', async (c) => {
   try {
     const window = c.req.query('window') || 'tonight';
     
+    console.log(`🌡️ Heat API request: window=${window}`);
+    
     // Get all beacons
     const beacons = await kv.getByPrefix('beacon:');
     
+    console.log(`📍 Found ${beacons?.length || 0} beacons in KV`);
+    
     if (!beacons || beacons.length === 0) {
+      console.log('ℹ️ No beacons found, returning empty FeatureCollection');
       return c.json({
         type: 'FeatureCollection',
         features: [],
+        metadata: {
+          window,
+          totalCities: 0,
+          totalScans: 0,
+          generatedAt: new Date().toISOString(),
+        },
       });
     }
 

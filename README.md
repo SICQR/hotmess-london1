@@ -1,7 +1,7 @@
 
-  # Project Structure Overview
+  # HM1
 
-  This is a code bundle for Project Structure Overview. The original project is available at https://www.figma.com/design/ZDnegUk6LijlDPt7vu7TWG/Project-Structure-Overview.
+  This is a code bundle for HM1. The original project is available at https://www.figma.com/design/ZDnegUk6LijlDPt7vu7TWG/HM1.
 
   ## Running the code
 

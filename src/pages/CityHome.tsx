@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import type { RouteId } from '../lib/routes';
 import { Button } from '../components/design-system/Button';
 import { Card } from '../components/design-system/Card';
 import { ArrowLeft, Settings, Map, Radio, Calendar, MessageCircle, MapPin, TrendingUp } from 'lucide-react';
@@ -32,11 +33,10 @@ interface TelegramRoom {
 }
 
 interface CityHomeProps {
-  onNavigate?: (route: string, params?: Record<string, string>) => void;
+  onNavigate: (route: RouteId, params?: Record<string, string>) => void;
 }
 
 export default function CityHome({ onNavigate }: CityHomeProps) {
-  const navigate = (route: string, params?: Record<string, string>) => onNavigate?.(route, params);
   const [stats, setStats] = useState<CityStats>({ beaconCount: 125, scansPerDay: 1200 });
   const [activities, setActivities] = useState<Activity[]>([
     { id: '1', type: 'event', title: 'Event at Fabric', subtitle: 'Techno night • 23:00', icon: '🎉', timestamp: 'Now' },
@@ -67,14 +67,14 @@ export default function CityHome({ onNavigate }: CityHomeProps) {
       <div className="sticky top-0 z-40 bg-black/95 backdrop-blur border-b border-white/10">
         <div className="flex items-center justify-between p-4">
           <button
-            onClick={() => navigate('home')}
+            onClick={() => onNavigate('home')}
             className="p-2 hover:bg-white/10 rounded transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="text-xl uppercase tracking-wider">London</h1>
           <button
-            onClick={() => navigate('settings')}
+            onClick={() => onNavigate('cityOS', { city: 'london' })}
             className="p-2 hover:bg-white/10 rounded transition-colors"
           >
             <Settings className="w-5 h-5" />
@@ -107,7 +107,7 @@ export default function CityHome({ onNavigate }: CityHomeProps) {
       {/* Quick Actions */}
       <div className="px-4 py-4 grid grid-cols-3 gap-3">
         <Button
-          onClick={() => navigate('map')}
+          onClick={() => onNavigate('map')}
           variant="outline"
           className="flex-col gap-2 h-auto py-4"
         >
@@ -115,7 +115,7 @@ export default function CityHome({ onNavigate }: CityHomeProps) {
           <span className="text-xs uppercase">Map</span>
         </Button>
         <Button
-          onClick={() => navigate('beacons')}
+          onClick={() => onNavigate('beacons')}
           variant="outline"
           className="flex-col gap-2 h-auto py-4"
         >
@@ -123,7 +123,7 @@ export default function CityHome({ onNavigate }: CityHomeProps) {
           <span className="text-xs uppercase">Beacons</span>
         </Button>
         <Button
-          onClick={() => navigate('events')}
+          onClick={() => onNavigate('events')}
           variant="outline"
           className="flex-col gap-2 h-auto py-4"
         >
@@ -168,7 +168,7 @@ export default function CityHome({ onNavigate }: CityHomeProps) {
           {venues.map((venue) => (
             <div
               key={venue.id}
-              onClick={() => navigate('map', { venueId: venue.id })}
+              onClick={() => onNavigate('map')}
               className="cursor-pointer group"
             >
               <div className="aspect-square bg-white/5 border border-white/10 rounded overflow-hidden mb-2 group-hover:border-hot transition-colors">

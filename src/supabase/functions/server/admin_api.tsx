@@ -20,7 +20,7 @@ async function requireAdmin(c: any, next: any) {
     
     if (DEV_MODE) {
       console.log('⚠️ DEV_MODE: Auth bypass enabled for admin API');
-      c.set('user', { id: 'dev-user', email: 'dev@hotmess.london' });
+      c.set('user', { id: 'dev-user', email: 'dev@hotmessldn.com' });
       c.set('userData', { role: 'admin' });
       await next();
       return;
