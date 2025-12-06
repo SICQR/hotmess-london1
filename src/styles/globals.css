@@ -1,9 +1,9 @@
+/* Mapbox GL CSS */
+@import url('https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Mapbox GL CSS */
-@import url('https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css');
 
 /* HOTMESS LONDON — Brutalist-Luxury Editorial Design System */
 @theme {
