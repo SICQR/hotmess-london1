@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from './Router';
+import type { RouteId } from '../lib/routes';
 import { Button } from '../components/design-system/Button';
 import { Badge } from '../components/design-system/Badge';
 import { Card } from '../components/design-system/Card';
@@ -29,8 +29,11 @@ interface TicketOrder {
   transferStatus?: 'pending' | 'transferred' | 'confirmed';
 }
 
-export default function TicketOrderConfirmation() {
-  const router = useRouter();
+interface TicketOrderConfirmationProps {
+  onNavigate: (route: RouteId, params?: Record<string, string>) => void;
+}
+
+export default function TicketOrderConfirmation({ onNavigate }: TicketOrderConfirmationProps) {
   const [order, setOrder] = useState<TicketOrder>({
     id: '1',
     orderNumber: 'TIX-2024-001234',
@@ -95,7 +98,7 @@ export default function TicketOrderConfirmation() {
       <div className="sticky top-0 z-40 bg-black/95 backdrop-blur border-b border-white/10">
         <div className="flex items-center justify-between p-4">
           <button
-            onClick={() => router.push('/my-tickets')}
+            onClick={() => onNavigate('myTickets')}
             className="p-2 hover:bg-white/10 rounded transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -201,7 +204,7 @@ export default function TicketOrderConfirmation() {
             )}
             {order.sellerUsername && (
               <Button
-                onClick={() => router.push(`/tickets/thread/${order.id}`)}
+                onClick={() => onNavigate('connectThread', { threadId: order.id })}
                 variant="outline"
                 size="sm"
                 className="mt-3 gap-2"
@@ -283,7 +286,7 @@ export default function TicketOrderConfirmation() {
             Need help with your ticket?
           </p>
           <Button
-            onClick={() => router.push('/care')}
+            onClick={() => onNavigate('care')}
             variant="outline"
             size="sm"
           >
@@ -295,7 +298,7 @@ export default function TicketOrderConfirmation() {
       {/* CTA */}
       <section className="px-4 py-4">
         <Button
-          onClick={() => router.push('/my-tickets')}
+          onClick={() => onNavigate('myTickets')}
           variant="primary"
           className="w-full"
         >

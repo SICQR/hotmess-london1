@@ -263,7 +263,7 @@ export function Router({ currentRoute, routeParams, onNavigate }: RouterProps) {
     ticketsBeacon: <TicketsBeacon beaconId={routeParams?.beaconId || ''} onNavigate={navigate} />,
     ticketsListing: <TicketListingDetail listingId={routeParams?.listingId || ''} onNavigate={navigate} />,
     ticketsPurchase: <PurchaseTicket />,
-    ticketOrderConfirmation: <TicketOrderConfirmation />,
+    ticketOrderConfirmation: <TicketOrderConfirmation onNavigate={navigate} />,
     myTickets: <MyTickets onNavigate={navigate} />,
 
     // Radio
@@ -271,7 +271,7 @@ export function Router({ currentRoute, routeParams, onNavigate }: RouterProps) {
     radioSchedule: <RadioScheduleNew onNavigate={navigate} />,
     radioShow: <RadioShowDetail slug={routeParams?.slug || ''} onNavigate={navigate} />,
     radioEpisode: <RadioEpisodePlayer slug={routeParams?.slug || ''} onNavigate={navigate} />,
-    radioNowPlaying: <RadioNowPlaying />,
+    radioNowPlaying: <RadioNowPlaying onNavigate={navigate} />,
 
     // Records
     records: <Records onNavigate={navigate} />,
@@ -371,7 +371,7 @@ export function Router({ currentRoute, routeParams, onNavigate }: RouterProps) {
     beaconCreate: <BeaconCreate onNavigate={navigate} />,
     navHub: <NavigationHub onNavigate={navigate} />,
     city: <CityPage cityId={routeParams?.cityId} onNavigate={navigate} />,
-    cityHome: <CityHome />,
+    cityHome: <CityHome onNavigate={navigate} />,
     search: <GlobalSearch onNavigate={navigate} />,
     editorial: <EditorialShowcase onNavigate={navigate} />,
     components: <ComponentLibrary onNavigate={navigate} />,
@@ -385,7 +385,7 @@ export function Router({ currentRoute, routeParams, onNavigate }: RouterProps) {
     beaconsManage: <BeaconManagement onNavigate={navigate} />,
     hookupScan: <HookupScan code={routeParams?.code || ''} onNavigate={navigate} />,
     hookupCreate: <HookupBeaconCreate onNavigate={navigate} />,
-    hookupDashboard: <HookupDashboard />,
+    hookupDashboard: <HookupDashboard onNavigate={navigate} />,
     globalOS: <GlobalOS onNavigate={navigate} />,
     cityOS: <CityOS city={routeParams?.city} onNavigate={navigate} />,
     applyHost: <CreatorOnboarding onNavigate={navigate} />,

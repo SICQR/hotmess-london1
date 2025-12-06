@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from './Router';
+import type { RouteId } from '../lib/routes';
 import { Button } from '../components/design-system/Button';
 import { Badge } from '../components/design-system/Badge';
 import { Card } from '../components/design-system/Card';
@@ -41,8 +41,11 @@ interface NowPlayingData {
   isLive: boolean;
 }
 
-export default function RadioNowPlaying() {
-  const router = useRouter();
+interface RadioNowPlayingProps {
+  onNavigate: (route: RouteId, params?: Record<string, string>) => void;
+}
+
+export default function RadioNowPlaying({ onNavigate }: RadioNowPlayingProps) {
   
   // Legacy state for this component
   const [nowPlaying, setNowPlaying] = useState<NowPlayingData>({
@@ -116,7 +119,7 @@ export default function RadioNowPlaying() {
       <div className="sticky top-0 z-40 bg-black/95 backdrop-blur border-b border-white/10">
         <div className="flex items-center justify-between p-4">
           <button
-            onClick={() => router.push('/radio')}
+            onClick={() => onNavigate('radio')}
             className="p-2 hover:bg-white/10 rounded transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -255,13 +258,13 @@ export default function RadioNowPlaying() {
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3 mb-6">
           <Button
-            onClick={() => router.push(`/radio/show/${nowPlaying.showName.toLowerCase().replace(/ /g, '-')}`)}
+            onClick={() => onNavigate('radioShowDetail', { show: nowPlaying.showName.toLowerCase().replace(/ /g, '-') })}
             variant="outline"
           >
             View Show
           </Button>
           <Button
-            onClick={() => router.push('/radio/schedule')}
+            onClick={() => onNavigate('radioSchedule')}
             variant="outline"
           >
             Full Schedule
