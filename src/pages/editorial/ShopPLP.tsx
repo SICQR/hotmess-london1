@@ -100,7 +100,7 @@ export function ShopPLP({ onNavigate, onProductClick }: ShopPLPProps) {
   return (
     <div className="min-h-screen bg-black">
       {/* Full Hero Banner with Model Photography */}
-      <section className="relative w-full h-[70vh] lg:h-[80vh] overflow-hidden">
+      <section className="relative w-full h-[60vh] sm:h-[65vh] md:h-[70vh] lg:h-[80vh] overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1621788455015-e48161cb187b?q=80&w=2000"
           alt="Shop HOTMESS"
@@ -109,9 +109,9 @@ export function ShopPLP({ onNavigate, onProductClick }: ShopPLPProps) {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black" />
         
         {/* Hero Content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 text-center">
           <h1 
-            className="text-[80px] md:text-[140px] lg:text-[200px] leading-none tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-hot via-heat to-hot drop-shadow-[0_0_60px_rgba(231,15,60,0.8)] mb-6"
+            className="text-[60px] sm:text-[80px] md:text-[120px] lg:text-[180px] xl:text-[200px] leading-none tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-hot via-heat to-hot drop-shadow-[0_0_60px_rgba(231,15,60,0.8)] mb-4 sm:mb-6"
             style={{
               fontWeight: 900,
               WebkitBackgroundClip: 'text',
@@ -120,17 +120,17 @@ export function ShopPLP({ onNavigate, onProductClick }: ShopPLPProps) {
           >
             SHOP
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 tracking-wide mb-8">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 tracking-wide mb-6 sm:mb-8">
             RAW / HUNG / HIGH / SUPER
           </p>
-          <div className="h-1 w-24 bg-gradient-to-r from-hot to-heat" />
+          <div className="h-0.5 sm:h-1 w-16 sm:w-24 bg-gradient-to-r from-hot to-heat" />
         </div>
       </section>
 
       {/* Category Filters */}
-      <section className="sticky top-16 lg:top-0 z-20 bg-black/95 backdrop-blur-lg border-b border-hot/30 px-6 py-6">
+      <section className="sticky top-16 lg:top-0 z-20 bg-black/95 backdrop-blur-lg border-b border-hot/30 px-4 sm:px-6 py-4 sm:py-6">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-wrap gap-3 justify-center">
+          <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
             <HMChip
               label="All"
               active={selectedCollection === 'all'}
@@ -166,9 +166,9 @@ export function ShopPLP({ onNavigate, onProductClick }: ShopPLPProps) {
       </section>
 
       {/* Product Grid */}
-      <section className="px-6 py-16">
+      <section className="px-4 sm:px-6 py-12 sm:py-14 md:py-16">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 lg:gap-8">
             {filteredProducts.map((product) => (
               <div
                 key={product.id}
@@ -178,7 +178,7 @@ export function ShopPLP({ onNavigate, onProductClick }: ShopPLPProps) {
                 onMouseLeave={() => setHoveredProduct(null)}
               >
                 {/* Product Image with Hover State */}
-                <div className="relative aspect-[3/4] overflow-hidden bg-gray-900 mb-4 border-2 border-transparent group-hover:border-hot transition-all duration-300">
+                <div className="relative aspect-[3/4] overflow-hidden bg-gray-900 mb-3 sm:mb-4 border-2 border-transparent group-hover:border-hot transition-all duration-300">
                   <img
                     src={hoveredProduct === product.id ? product.hoverImage : product.primaryImage}
                     alt={product.name}
@@ -186,17 +186,17 @@ export function ShopPLP({ onNavigate, onProductClick }: ShopPLPProps) {
                   />
                   
                   {/* XP Reward Badge */}
-                  <div className="absolute top-4 right-4 px-3 py-1 bg-hot text-white text-xs uppercase tracking-wider">
+                  <div className="absolute top-2 right-2 sm:top-4 sm:right-4 px-2 py-0.5 sm:px-3 sm:py-1 bg-hot text-white text-[10px] sm:text-xs uppercase tracking-wider">
                     +{product.xpReward} XP
                   </div>
 
                   {/* Collection Badge */}
-                  <div className="absolute bottom-4 left-4 px-3 py-1 bg-black/80 border border-hot text-hot text-xs uppercase tracking-wider">
+                  <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 px-2 py-0.5 sm:px-3 sm:py-1 bg-black/80 border border-hot text-hot text-[10px] sm:text-xs uppercase tracking-wider">
                     {product.collection}
                   </div>
 
-                  {/* Quick Add Overlay */}
-                  <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  {/* Quick Add Overlay - Hidden on touch devices */}
+                  <div className="hidden md:flex absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-center justify-center">
                     <HMButton variant="primary" size="sm" icon={<ShoppingBag size={16} />}>
                       Quick Add
                     </HMButton>
@@ -205,17 +205,17 @@ export function ShopPLP({ onNavigate, onProductClick }: ShopPLPProps) {
 
                 {/* Product Info */}
                 <div>
-                  <h4 className="text-white mb-1 uppercase tracking-wider group-hover:text-hot transition-colors">
+                  <h4 className="text-white text-sm sm:text-base mb-1 uppercase tracking-wider group-hover:text-hot transition-colors">
                     {product.name}
                   </h4>
-                  <p className="text-2xl text-hot">£{product.price}</p>
+                  <p className="text-lg sm:text-xl md:text-2xl text-hot">£{product.price}</p>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Load More */}
-          <div className="mt-16 text-center">
+          <div className="mt-12 sm:mt-14 md:mt-16 text-center">
             <HMButton variant="secondary" size="lg">
               Load More Products
             </HMButton>
@@ -224,9 +224,9 @@ export function ShopPLP({ onNavigate, onProductClick }: ShopPLPProps) {
       </section>
 
       {/* Editorial Feature Block */}
-      <section className="px-6 py-24 bg-gradient-to-b from-black via-hot/5 to-black">
+      <section className="px-4 sm:px-6 py-16 sm:py-20 md:py-24 bg-gradient-to-b from-black via-hot/5 to-black">
         <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-4xl md:text-6xl mb-6 text-hot uppercase tracking-wider">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-6 text-hot uppercase tracking-wider">
             Earn XP with Every Purchase
           </h2>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
