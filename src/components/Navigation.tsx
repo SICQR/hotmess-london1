@@ -205,25 +205,25 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
     <>
       {/* Mobile Header - Fixed Top - Editorial */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-black border-b border-brutal">
-        <div className="flex items-center justify-between px-6 h-20">
+        <div className="flex items-center justify-between px-4 sm:px-6 h-16 sm:h-20">
           {/* Logo */}
           <motion.button
             onClick={() => onNavigate('home')}
-            className="flex-shrink-0"
+            className="flex-shrink-0 touch-target"
             whileTap={{ scale: 0.98 }}
           >
-            <span className="text-white uppercase tracking-[-0.04em] leading-none" style={{ fontWeight: 700, fontSize: '26px' }}>
+            <span className="text-white uppercase tracking-[-0.04em] leading-none" style={{ fontWeight: 700, fontSize: 'clamp(20px, 5vw, 26px)' }}>
               HOTMESS
             </span>
           </motion.button>
 
           {/* Utility Icons */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Live Radio Button */}
             <button
               onClick={togglePlay}
               disabled={isLoading}
-              className={`p-2 transition-all ${
+              className={`p-2 sm:p-2.5 transition-all touch-target ${
                 isPlaying 
                   ? 'bg-hotmess-red text-white' 
                   : 'hover:bg-white/5 text-white'
@@ -241,7 +241,7 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
             
             <button
               onClick={() => onNavigate('search')}
-              className="p-2 hover:bg-white/5 transition-colors"
+              className="p-2 sm:p-2.5 hover:bg-white/5 transition-colors touch-target"
               aria-label="Search"
             >
               <Search className="w-5 h-5" />
@@ -252,7 +252,7 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
             {/* Menu Toggle */}
             <motion.button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="relative w-11 h-11 border border-brutal hover:border-brutal-strong transition-all flex items-center justify-center ml-2"
+              className="relative w-10 h-10 sm:w-11 sm:h-11 border border-brutal hover:border-brutal-strong transition-all flex items-center justify-center ml-1 sm:ml-2 touch-target"
               whileTap={{ scale: 0.95 }}
             >
               {mobileMenuOpen ? (
@@ -268,13 +268,13 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div 
-              className="fixed inset-0 top-20 bg-black z-40 overflow-y-auto"
+              className="fixed inset-0 top-16 sm:top-20 bg-black z-40 overflow-y-auto"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 {navSections.map((section, sectionIndex) => (
                   <motion.div 
                     key={section.title}

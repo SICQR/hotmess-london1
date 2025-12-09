@@ -164,7 +164,6 @@ import { Community } from '../pages/Community';
 import { CommunityPostCreate } from '../pages/CommunityPostCreate';
 import { Care } from '../pages/Care';
 import { VendorPortal } from '../pages/VendorPortal';
-import XPProfile from '../pages/XPProfile';
 import { 
   DataPrivacyHub, 
   DSAR as DataPrivacyDSAR, 
