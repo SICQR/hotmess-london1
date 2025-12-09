@@ -132,3 +132,6 @@ docs/.vitepress/cache
 *.backup
 *.bak
 *.old
+
+# Generated CSS files (use source files in src/styles/)
+src/index.css
