@@ -57,7 +57,7 @@ export default function TestMessMarketAPI() {
         )}
 
         <div className="mt-8 p-4 bg-zinc-900 rounded">
-          <h2 className="text-xl mb-2">Instructions:</h2>
+          <h2 style={{ marginBottom: '8px' }}>Instructions:</h2>
           <ol className="list-decimal list-inside space-y-2 text-zinc-400">
             <li>Click "Test API Connection"</li>
             <li>If you see ✅ = API is working, image upload should work</li>

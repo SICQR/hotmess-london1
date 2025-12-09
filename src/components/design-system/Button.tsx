@@ -39,15 +39,15 @@ const getVariantStyles = (variant: ButtonProps['variant']) => {
   switch (variant) {
     case 'primary':
       return {
-        backgroundColor: colors.red,
-        color: colors.white,
+        backgroundColor: colors.hot,
+        color: colors.black,
         border: 'none',
         hover: {
-          backgroundColor: '#CC0031', // darker red
-          boxShadow: `0 0 20px ${colors.red}40`,
+          backgroundColor: colors.hotBright,
+          boxShadow: `0 0 20px ${colors.hot}40`,
         },
         active: {
-          backgroundColor: '#990024',
+          backgroundColor: colors.hotDark,
         },
       };
 
@@ -108,14 +108,14 @@ const getVariantStyles = (variant: ButtonProps['variant']) => {
     case 'link':
       return {
         backgroundColor: 'transparent',
-        color: colors.red,
+        color: colors.hot,
         border: 'none',
         hover: {
-          color: colors.pink,
+          color: colors.hotBright,
           textDecoration: 'underline',
         },
         active: {
-          color: '#CC0031',
+          color: colors.hotDark,
         },
       };
 

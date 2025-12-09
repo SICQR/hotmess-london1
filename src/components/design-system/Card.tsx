@@ -58,8 +58,8 @@ const getVariantStyles = (variant: CardProps['variant']) => {
     case 'neonBorder':
       return {
         backgroundColor: colors.grey[200],
-        border: `2px solid ${colors.red}`,
-        boxShadow: `0 0 20px ${colors.red}40, inset 0 0 20px ${colors.red}10`,
+        border: `2px solid ${colors.hot}`,
+        boxShadow: `0 0 20px ${colors.hot}40, inset 0 0 20px ${colors.hot}10`,
       };
 
     case 'product':
@@ -73,21 +73,21 @@ const getVariantStyles = (variant: CardProps['variant']) => {
     case 'ticket':
       return {
         backgroundColor: colors.grey[200],
-        border: `2px solid ${colors.orange}40`,
+        border: `2px solid ${colors.warning}40`,
         boxShadow: shadows.none,
       };
 
     case 'beacon':
       return {
         backgroundColor: colors.grey[200],
-        border: `2px solid ${colors.red}40`,
-        boxShadow: `0 0 16px ${colors.red}20`,
+        border: `2px solid ${colors.hot}40`,
+        boxShadow: `0 0 16px ${colors.hot}20`,
       };
 
     case 'seller':
       return {
         backgroundColor: colors.grey[200],
-        border: `1px solid ${colors.blue}40`,
+        border: `1px solid ${colors.info}40`,
         boxShadow: shadows.none,
       };
 
