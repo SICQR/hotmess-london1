@@ -12,6 +12,7 @@ export default {
         hot: '#FF0080',              // Primary hot pink (--color-hot)
         'hot-bright': '#FF1694',     // Bright hot pink (--color-hot-bright)
         'hot-dark': '#E70F3C',       // Deep hot pink/red (--color-hot-dark)
+        'hotmess-red': '#E70F3C',    // Legacy alias for hot-dark (--hotmess-red)
         heat: '#FF622D',
         'neon-lime': '#B2FF52',
         'cyan-static': '#29E2FF',
