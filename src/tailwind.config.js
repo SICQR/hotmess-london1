@@ -8,11 +8,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        // HOTMESS Brand Colors - Aligned with CSS custom properties
-        hot: '#FF0080',              // Primary hot pink (--color-hot)
-        'hot-bright': '#FF1694',     // Bright hot pink (--color-hot-bright)
-        'hot-dark': '#E70F3C',       // Deep hot pink/red (--color-hot-dark)
-        'hotmess-red': '#E70F3C',    // Legacy alias for hot-dark (--hotmess-red)
+        // HOTMESS Brand Colors
+        hot: '#E70F3C',
         heat: '#FF622D',
         'neon-lime': '#B2FF52',
         'cyan-static': '#29E2FF',
@@ -21,8 +18,8 @@ export default {
         steel: '#9BA1A6',
       },
       boxShadow: {
-        'glow': '0 0 20px rgba(255, 0, 128, 0.5)',              // Hot pink glow
-        'glow-intense': '0 0 40px rgba(255, 0, 128, 0.8), 0 0 80px rgba(255, 0, 128, 0.4)',
+        'glow': '0 0 20px rgba(231, 15, 60, 0.6)',
+        'glow-intense': '0 0 40px rgba(231, 15, 60, 0.8), 0 0 80px rgba(231, 15, 60, 0.4)',
         'hard': '0 4px 12px rgba(0, 0, 0, 0.8)',
       },
       animation: {
@@ -33,11 +30,11 @@ export default {
       keyframes: {
         'pulse-glow': {
           '0%, 100%': { 
-            textShadow: '0 0 20px rgba(255, 0, 128, 0.6)',    // Hot pink glow
+            textShadow: '0 0 20px rgba(231, 15, 60, 0.6)',
             opacity: '1'
           },
           '50%': { 
-            textShadow: '0 0 40px rgba(255, 0, 128, 0.8), 0 0 80px rgba(255, 0, 128, 0.4)',
+            textShadow: '0 0 40px rgba(231, 15, 60, 0.8), 0 0 80px rgba(231, 15, 60, 0.4)',
             opacity: '0.9'
           },
         },
