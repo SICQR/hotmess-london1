@@ -54,7 +54,7 @@ export function WelcomePage({ onNavigate, userName = 'mate' }: WelcomePageProps)
             <div className="h-1 w-24 mx-auto mb-8" style={{ backgroundColor: '#FF1744' }} />
 
             {/* Description */}
-            <p className="text-gray-300 mb-12 text-lg max-w-lg mx-auto">
+            <p className="text-gray-300 mb-12 max-w-lg mx-auto" style={{ fontSize: '18px' }}>
               You've joined London's complete masculine nightlife OS for queer men 18+. Let's get you set up.
             </p>
 
@@ -76,7 +76,7 @@ export function WelcomePage({ onNavigate, userName = 'mate' }: WelcomePageProps)
                     <feature.icon className="w-6 h-6" style={{ color: '#FF1744' }} />
                   </div>
                   <div>
-                    <div className="text-white font-bold mb-1">{feature.label}</div>
+                    <div className="text-white mb-1" style={{ fontWeight: 700 }}>{feature.label}</div>
                     <div className="text-gray-400 text-sm">{feature.desc}</div>
                   </div>
                 </motion.div>
@@ -86,9 +86,10 @@ export function WelcomePage({ onNavigate, userName = 'mate' }: WelcomePageProps)
             {/* CTA */}
             <button
               onClick={handleContinue}
-              className="px-8 py-4 uppercase tracking-wider flex items-center gap-3 mx-auto text-lg"
+              className="px-8 py-4 uppercase tracking-wider flex items-center gap-3 mx-auto"
               style={{ 
                 fontWeight: 900,
+                fontSize: '18px',
                 backgroundColor: '#FF1744',
                 color: '#000000'
               }}
@@ -108,7 +109,7 @@ export function WelcomePage({ onNavigate, userName = 'mate' }: WelcomePageProps)
           >
             {/* Icon */}
             <div className="w-24 h-24 mx-auto mb-8 rounded-full bg-zinc-900 border-2 flex items-center justify-center" style={{ borderColor: '#FF1744' }}>
-              <div className="text-4xl">📧</div>
+              <div style={{ fontSize: '72px' }}>📧</div>
             </div>
 
             {/* Title */}
@@ -120,17 +121,17 @@ export function WelcomePage({ onNavigate, userName = 'mate' }: WelcomePageProps)
             {/* Info Box */}
             <div className="bg-zinc-900 border-2 p-8 mb-8 text-left" style={{ borderColor: '#FF1744' }}>
               <div className="mb-4">
-                <div className="text-white font-bold mb-2 text-lg">Account Created Successfully! 🎉</div>
+                <div className="text-white mb-2" style={{ fontWeight: 700, fontSize: '18px' }}>Account Created Successfully! 🎉</div>
                 <div className="text-gray-300">
                   Your account has been created and is ready to use.
                 </div>
               </div>
 
               <div className="border-t border-zinc-800 pt-4 mt-4">
-                <div className="text-yellow-500 font-bold mb-2">⚠️ Email Server Not Configured</div>
+                <div className="text-yellow-500 mb-2" style={{ fontWeight: 700 }}>⚠️ Email Server Not Configured</div>
                 <div className="text-gray-400 text-sm">
                   Since this is a demo environment, we haven't set up email confirmation yet. 
-                  Your account has been <span className="text-white font-bold">automatically verified</span> so you can start using HOTMESS immediately.
+                  Your account has been <span className="text-white" style={{ fontWeight: 700 }}>automatically verified</span> so you can start using HOTMESS immediately.
                 </div>
               </div>
 
@@ -144,9 +145,10 @@ export function WelcomePage({ onNavigate, userName = 'mate' }: WelcomePageProps)
             {/* CTA */}
             <button
               onClick={handleContinue}
-              className="px-8 py-4 uppercase tracking-wider flex items-center gap-3 mx-auto text-lg"
+              className="px-8 py-4 uppercase tracking-wider flex items-center gap-3 mx-auto"
               style={{ 
                 fontWeight: 900,
+                fontSize: '18px',
                 backgroundColor: '#FF1744',
                 color: '#000000'
               }}
@@ -180,7 +182,7 @@ export function WelcomePage({ onNavigate, userName = 'mate' }: WelcomePageProps)
             </h1>
             <div className="h-1 w-24 mx-auto mb-8" style={{ backgroundColor: '#FF1744' }} />
 
-            <p className="text-gray-300 mb-12 text-lg max-w-lg mx-auto">
+            <p className="text-gray-300 mb-12 max-w-lg mx-auto" style={{ fontSize: '18px' }}>
               Your profile is ready. Start exploring London's nightlife scene.
             </p>
 
@@ -191,7 +193,7 @@ export function WelcomePage({ onNavigate, userName = 'mate' }: WelcomePageProps)
                 className="p-6 bg-zinc-900 border-2 hover:border-white transition-colors text-left"
                 style={{ borderColor: '#FF1744' }}
               >
-                <div className="text-white font-bold text-xl mb-2">Scan Your First Beacon</div>
+                <div className="text-white mb-2" style={{ fontWeight: 700, fontSize: '20px' }}>Scan Your First Beacon</div>
                 <div className="text-gray-400">Visit a HOTMESS venue and unlock rewards</div>
               </button>
 
@@ -199,7 +201,7 @@ export function WelcomePage({ onNavigate, userName = 'mate' }: WelcomePageProps)
                 onClick={() => onNavigate('events')}
                 className="p-6 bg-zinc-900 border border-zinc-800 hover:border-white transition-colors text-left"
               >
-                <div className="text-white font-bold text-xl mb-2">Browse Events</div>
+                <div className="text-white mb-2" style={{ fontWeight: 700, fontSize: '20px' }}>Browse Events</div>
                 <div className="text-gray-400">Find tonight's parties & meetups</div>
               </button>
 
@@ -207,7 +209,7 @@ export function WelcomePage({ onNavigate, userName = 'mate' }: WelcomePageProps)
                 onClick={() => onNavigate('marketplace')}
                 className="p-6 bg-zinc-900 border border-zinc-800 hover:border-white transition-colors text-left"
               >
-                <div className="text-white font-bold text-xl mb-2">Shop Marketplace</div>
+                <div className="text-white mb-2" style={{ fontWeight: 700, fontSize: '20px' }}>Shop Marketplace</div>
                 <div className="text-gray-400">Browse gear, merch & community goods</div>
               </button>
             </div>
@@ -215,9 +217,10 @@ export function WelcomePage({ onNavigate, userName = 'mate' }: WelcomePageProps)
             {/* CTA */}
             <button
               onClick={() => onNavigate('home')}
-              className="px-8 py-4 uppercase tracking-wider flex items-center gap-3 mx-auto text-lg"
+              className="px-8 py-4 uppercase tracking-wider flex items-center gap-3 mx-auto"
               style={{ 
                 fontWeight: 900,
+                fontSize: '18px',
                 backgroundColor: '#FF1744',
                 color: '#000000'
               }}

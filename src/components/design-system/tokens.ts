@@ -9,31 +9,42 @@
 // COLORS — "HOTMESS Core Palette"
 // ============================================================================
 
+// COMPLIANCE: Aligned with DESIGN_SYSTEM.md color palette
+// All colors now match globals.css CSS variables
 export const colors = {
-  // Primary
-  black: '#000000',        // bg-primary
+  // Primary - matches DESIGN_SYSTEM.md
+  black: '#000000',        // --color-black
   night: '#0A0A0A',        // secondary black
-  red: '#FF003D',          // brand-hot
-  pink: '#FF4F76',         // accent-heat
-  white: '#FFFFFF',        // text-primary
+  hot: '#FF0080',          // --color-hot (HOTMESS Hot Pink)
+  hotBright: '#FF1694',    // --color-hot-bright
+  hotDark: '#E70F3C',      // --color-hot-dark
+  white: '#FFFFFF',        // --color-white
 
-  // Greys
+  // Greys - monochrome scale
   grey: {
-    100: '#121212',
-    200: '#1A1A1A',
-    300: '#2A2A2A',
-    400: '#4A4A4A',
-    500: '#6A6A6A',
-    600: '#8A8A8A',
+    100: '#0a0a0a',        // --color-mono-950
+    200: '#171717',        // --color-mono-900
+    300: '#262626',        // --color-mono-800
+    400: '#404040',        // --color-mono-700
+    500: '#525252',        // --color-mono-600
+    600: '#737373',        // --color-mono-500
   },
 
-  // Functional
-  green: '#23FF87',        // success
-  yellow: '#FFC847',       // warning
-  orange: '#FF6A00',       // ticket
-  blue: '#006CFF',         // vendor
-  purple: '#8800FF',       // drops
-  gold: '#E4C373',         // rewards
+  // Semantic Colors - matches DESIGN_SYSTEM.md
+  success: '#00C853',      // --color-success (Green)
+  warning: '#FFD600',      // --color-warning (Yellow)
+  danger: '#FF1744',       // --color-danger (Red)
+  info: '#00E5FF',         // --color-info (Cyan)
+  purple: '#7C4DFF',       // --color-purple
+
+  // Legacy aliases for backwards compatibility
+  red: '#FF0080',          // Use 'hot' instead
+  pink: '#FF1694',         // Use 'hotBright' instead
+  green: '#00C853',        // Use 'success' instead
+  yellow: '#FFD600',       // Use 'warning' instead
+  orange: '#FF6E40',       // beacon reward color
+  blue: '#00E5FF',         // Use 'info' instead
+  gold: '#FFC107',         // beacon sponsor color
 } as const;
 
 // ============================================================================

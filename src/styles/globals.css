@@ -1,6 +1,15 @@
 /* =============================================================================
    HOTMESS LONDON — DESIGN SYSTEM v2.0.0
    Dark Neon Kink Aesthetic • Brutalist Luxury • Care-First Principles
+   
+   ✅ DESIGN SYSTEM COMPLIANCE:
+   - All color variables match DESIGN_SYSTEM.md specifications
+   - Typography hierarchy (h1-h6) follows documented sizes and weights
+   - Component classes (btn, card, badge, input) fully implemented
+   - Utility classes (text-*, glass, glow-*) match design guide
+   - Layout classes (editorial-section, container-*) implemented
+   - Animation utilities (fade-in, slide-up, pulse) available
+   - Accessibility features (focus states, reduced motion) included
    ============================================================================= */
 
 /* Mapbox GL CSS */

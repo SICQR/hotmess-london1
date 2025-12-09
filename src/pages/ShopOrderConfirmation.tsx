@@ -28,7 +28,7 @@ export function ShopOrderConfirmation({ orderId, onNavigate }: ShopOrderConfirma
           <div className="flex items-center gap-4">
             <CheckCircle size={48} className="text-hot flex-shrink-0" />
             <div>
-              <h1 className="text-2xl font-bold">Order Confirmed!</h1>
+              <h1>Order Confirmed!</h1>
               <p className="text-white/60">Order #{orderId}</p>
             </div>
           </div>
@@ -45,7 +45,7 @@ export function ShopOrderConfirmation({ orderId, onNavigate }: ShopOrderConfirma
             transition={{ delay: 0.1 }}
           >
             <Card className="p-8">
-              <h2 className="text-xl mb-6">What happens next?</h2>
+              <h2>What happens next?</h2>
               
               <div className="space-y-6">
                 {/* Step 1 */}
@@ -54,7 +54,7 @@ export function ShopOrderConfirmation({ orderId, onNavigate }: ShopOrderConfirma
                     <Mail size={20} className="text-hot" />
                   </div>
                   <div>
-                    <h3 className="font-bold mb-1">Confirmation Email</h3>
+                    <h3 style={{ marginBottom: '4px' }}>Confirmation Email</h3>
                     <p className="text-white/60 text-sm">
                       We've sent your order confirmation to your email. Check your inbox (and spam folder just in case).
                     </p>
@@ -67,7 +67,7 @@ export function ShopOrderConfirmation({ orderId, onNavigate }: ShopOrderConfirma
                     <Package size={20} className="text-hot" />
                   </div>
                   <div>
-                    <h3 className="font-bold mb-1">Order Processing</h3>
+                    <h3 style={{ marginBottom: '4px' }}>Order Processing</h3>
                     <p className="text-white/60 text-sm">
                       We'll prepare your items for shipment. This usually takes 1-2 business days.
                     </p>
@@ -80,7 +80,7 @@ export function ShopOrderConfirmation({ orderId, onNavigate }: ShopOrderConfirma
                     <ArrowRight size={20} className="text-hot" />
                   </div>
                   <div>
-                    <h3 className="font-bold mb-1">Shipping Updates</h3>
+                    <h3 style={{ marginBottom: '4px' }}>Shipping Updates</h3>
                     <p className="text-white/60 text-sm">
                       You'll receive tracking information once your order ships. Delivery typically takes 3-5 business days.
                     </p>
@@ -97,7 +97,7 @@ export function ShopOrderConfirmation({ orderId, onNavigate }: ShopOrderConfirma
             transition={{ delay: 0.2 }}
           >
             <Card className="p-8">
-              <h2 className="text-xl mb-4">Order Details</h2>
+              <h2 style={{ marginBottom: '16px' }}>Order Details</h2>
               
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
@@ -137,9 +137,9 @@ export function ShopOrderConfirmation({ orderId, onNavigate }: ShopOrderConfirma
             transition={{ delay: 0.3 }}
           >
             <div className="flex items-center gap-4">
-              <div className="text-4xl">✨</div>
+              <div style={{ fontSize: '72px' }}>✨</div>
               <div>
-                <p className="font-bold text-hot mb-1">XP Earned!</p>
+                <p style={{ fontWeight: 700, color: 'var(--color-hot)', marginBottom: '4px' }}>XP Earned!</p>
                 <p className="text-sm text-white/60">
                   You've earned XP for this purchase. Check your rewards dashboard to see your progress.
                 </p>
@@ -177,7 +177,7 @@ export function ShopOrderConfirmation({ orderId, onNavigate }: ShopOrderConfirma
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <h3 className="font-bold text-hot mb-2">HOTMESS Aftercare</h3>
+            <h3 style={{ fontWeight: 700, color: 'var(--color-hot)', marginBottom: '8px' }}>HOTMESS Aftercare</h3>
             <p className="text-sm text-white/60 mb-4">
               Looking good is one thing, feeling safe is everything. Before your first night out in your new gear, 
               check our Care hub for health, safety, and wellbeing resources.
