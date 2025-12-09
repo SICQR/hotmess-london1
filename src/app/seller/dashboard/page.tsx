@@ -240,9 +240,14 @@ export default function SellerDashboardPage() {
 
           <div className="flex justify-center">
             <button
-              onClick={() => alert('Seller application coming soon!')}
-              className="bg-hotmess-red hover:bg-red-600 text-white px-8 py-4 rounded-xl uppercase tracking-wide transition-all flex items-center gap-3"
+              onClick={() => {
+                // TODO: Implement seller application modal
+                console.log('Seller application coming soon!');
+              }}
+              className="bg-hotmess-red hover:bg-red-600 text-white px-8 py-4 rounded-xl uppercase tracking-wide transition-all flex items-center gap-3 cursor-not-allowed opacity-50"
               style={{ fontWeight: 900 }}
+              disabled
+              title="Seller applications coming soon"
             >
               <Plus className="w-5 h-5" />
               Apply to Become a Seller

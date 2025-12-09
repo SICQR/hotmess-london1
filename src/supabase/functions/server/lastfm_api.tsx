@@ -361,6 +361,8 @@ async function generateSignature(params: Record<string, string>): Promise<string
   const sigString = sorted + LASTFM_SHARED_SECRET;
 
   // Generate MD5 hash
+  // NOTE: MD5 is required by Last.fm API specification (external requirement)
+  // This is not used for security purposes, only for API authentication
   const encoder = new TextEncoder();
   const data = encoder.encode(sigString);
   const hashBuffer = await crypto.subtle.digest('MD5', data);
