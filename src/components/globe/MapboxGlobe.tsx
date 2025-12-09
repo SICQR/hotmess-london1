@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || 'pk.eyJ1IjoiaG90bWVzcyIsImEiOiJjbWlyeXJhYWMwZm1rM2NxdDZjY2NhdXM5In0.B9T0ACXWOSa1EuShj6dObw';
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
 interface VenueData {
   name: string;

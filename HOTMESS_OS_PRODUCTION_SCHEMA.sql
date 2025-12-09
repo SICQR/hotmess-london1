@@ -83,6 +83,7 @@ CREATE TABLE IF NOT EXISTS user_memberships (
 
 CREATE INDEX idx_user_memberships_user_id ON user_memberships(user_id);
 CREATE INDEX idx_user_memberships_active ON user_memberships(active);
+CREATE INDEX idx_user_memberships_user_active ON user_memberships(user_id, active);
 
 -- ============================================================================
 -- 3️⃣ XP ECONOMY

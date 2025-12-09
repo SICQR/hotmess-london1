@@ -4,7 +4,7 @@ import type { MapRef } from "react-map-gl";
 import Supercluster from "supercluster";
 import "mapbox-gl/dist/mapbox-gl.css";
 
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || 'pk.eyJ1IjoiaG90bWVzcyIsImEiOiJjbWlyeXJhYWMwZm1rM2NxdDZjY2NhdXM5In0.B9T0ACXWOSa1EuShj6dObw';
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
 import type { BeaconType, GateContext, RequirementChip } from "../lib/beaconTypes";
 import {
