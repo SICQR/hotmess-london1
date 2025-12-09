@@ -14,7 +14,7 @@
    COLOR PALETTE
    ============================================================================= */
 
-@theme {
+:root {
   /* Primary Colors */
   --color-hot: #FF0080;              /* HOTMESS Hot Pink */
   --color-hot-bright: #FF1694;       /* Bright Hot Pink */
@@ -60,6 +60,14 @@
   /* Legacy Support */
   --color-hotmess-red: #E70F3C;
   --hotmess-red: #E70F3C;
+
+  /* Google Maps Extended Component Library */
+  --gmpx-color-surface: rgba(0,0,0,.92);
+  --gmpx-color-on-surface: rgba(255,255,255,.95);
+  --gmpx-color-on-surface-variant: rgba(255,255,255,.60);
+  --gmpx-color-primary: var(--color-hot);
+  --gmpx-font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+  --gmpx-border-radius: 0px;
 }
 
 /* =============================================================================
@@ -681,17 +689,4 @@
 .touch-target {
   min-height: 44px;
   min-width: 44px;
-}
-
-/* =============================================================================
-   EXTENDED COMPONENT LIBRARY (Google Maps)
-   ============================================================================= */
-
-:root {
-  --gmpx-color-surface: rgba(0,0,0,.92);
-  --gmpx-color-on-surface: rgba(255,255,255,.95);
-  --gmpx-color-on-surface-variant: rgba(255,255,255,.60);
-  --gmpx-color-primary: var(--color-hot);
-  --gmpx-font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
-  --gmpx-border-radius: 0px;
 }
