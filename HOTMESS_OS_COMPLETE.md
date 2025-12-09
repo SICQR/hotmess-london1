@@ -62,7 +62,7 @@ VITE_STRIPE_PUBLIC_KEY=your_stripe_key
 HOTMESS_NEW_BOT_TOKEN=your_bot_token
 
 # Mapbox
-VITE_MAPBOX_TOKEN=pk.eyJ1IjoiaG90bWVzcyIsImEiOiJjbWlyeXJhYWMwZm1rM2NxdDZjY2NhdXM5In0.B9T0ACXWOSa1EuShj6dObw
+VITE_MAPBOX_TOKEN=pk.your_mapbox_token_here
 ```
 
 ---
