@@ -24,9 +24,9 @@ export async function createClient() {
             );
           } catch (error) {
             // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions. Error: ${error instanceof Error ? error.message : 'Unknown error'}
+            // This can be ignored if you have middleware refreshing user sessions.
             // Server Components cannot modify cookies; this is expected behavior.
+            // If debugging is needed, the error is available in the catch block.
           }
         },
       },
