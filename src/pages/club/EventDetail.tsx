@@ -32,7 +32,7 @@ import {
 } from '../../lib/clubMode/clubModeService';
 import { useAuth } from '../../contexts/AuthContext';
 import { RouteId } from '../../lib/routes';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface Props {
   eventId: string;

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ArrowLeft, AlertTriangle, Send, Shield, Eye, MessageSquare, User } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { RouteId } from '../lib/routes';
 
 interface AbuseReportingProps {

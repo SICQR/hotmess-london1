@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { LogIn, UserPlus, Mail, Lock, User, ArrowLeft, QrCode } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { RouteId } from '../lib/routes';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 
 interface AuthPageProps {

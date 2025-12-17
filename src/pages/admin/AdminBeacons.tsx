@@ -3,7 +3,7 @@ import { RouteId } from '../../lib/routes';
 import { motion } from 'motion/react';
 import { Plus, Zap, MapPin, Calendar, TrendingUp, Edit, Pause, Play, Trash2, Copy, ExternalLink, Download, QrCode } from 'lucide-react';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { downloadBrandedBeaconQR } from '../../lib/qr/downloadBrandedBeaconQR';
 
 interface AdminBeaconsProps {

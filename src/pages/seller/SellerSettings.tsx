@@ -5,7 +5,7 @@ import { supabase } from '../../lib/supabase';
 import { Store, Loader2, ExternalLink, Save } from 'lucide-react';
 import { StripeConnectOnboarding } from '../../components/seller/StripeConnectOnboarding';
 import { StripeConnectDashboard } from '../../components/seller/StripeConnectDashboard';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface SellerSettingsProps {
   onNavigate: (route: RouteId, params?: Record<string, string>) => void;

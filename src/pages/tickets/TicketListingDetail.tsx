@@ -21,7 +21,7 @@ import { HMButton } from '../../components/library/HMButton';
 import { Card } from '../../components/design-system/Card';
 import { Badge } from '../../components/design-system/Badge';
 import { SaveButton } from '../../components/SaveButton';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface TicketListingDetailProps {
   listingId: string;

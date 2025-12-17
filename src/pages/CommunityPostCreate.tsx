@@ -3,7 +3,7 @@ import { ArrowLeft, Send, AlertTriangle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { RouteId } from '../lib/routes';
 import { ConsentGate } from '../components/ConsentGate';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface CommunityPostCreateProps {
   onNavigate: (route: RouteId, params?: Record<string, string>) => void;

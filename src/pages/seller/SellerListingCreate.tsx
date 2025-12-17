@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { SellerLayout } from '../../components/layouts/SellerLayout';
 import { RouteId } from '../../lib/routes';
 import { Upload, X } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { Button } from '../../components/ui/button';
 import { createListing, uploadImage } from '../../lib/api/messmarket';
 

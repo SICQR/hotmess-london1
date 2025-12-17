@@ -8,7 +8,7 @@ import { RouteId } from '../lib/routes';
 import { useAuth } from '../contexts/AuthContext';
 import { getAccessTokenAsync } from '../lib/auth';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import {
   ArrowLeft,
   User,

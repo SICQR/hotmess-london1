@@ -4,7 +4,7 @@
 
 import { useState, useCallback } from 'react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/api/beacons`;
 

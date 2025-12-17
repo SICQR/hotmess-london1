@@ -8,7 +8,7 @@ import { motion } from 'motion/react';
 import { Music, TrendingUp, QrCode, Radio, Play, ExternalLink, RefreshCw } from 'lucide-react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface Release {
   id: string;
