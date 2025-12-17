@@ -136,3 +136,4 @@ docs/.vitepress/cache
 # Generated CSS files (use source files in src/styles/)
 src/index.css
 src/styles/globals-old.css
+test-cart.js

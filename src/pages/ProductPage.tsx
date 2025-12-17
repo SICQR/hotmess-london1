@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { ArrowLeft, ShoppingCart, Plus, Minus } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner@2.0.3';
 import { getProductBySlug, formatPrice } from '../lib/mockData';
 import { RouteId } from '../lib/routes';
 import { useCart } from '../contexts/CartContext';
@@ -33,20 +34,24 @@ export function ProductPage({ slug, onNavigate }: ProductPageProps) {
   }
 
   const handleAddToCart = () => {
-    // For ProductPage, we need to get the variant ID from mock data
-    // Since this uses mock data, we'll need to fetch from Shopify instead
-    // For now, let's add a placeholder variantId
-    addItem({
-      productId: product.id,
-      variantId: product.id, // Placeholder - this page uses mock data
-      slug: product.slug,
-      title: product.title,
-      category: product.category,
-      price: product.pricePence,
-      qty: qty,
-      size: selectedSize,
-      image: product.images[0],
-    });
+    // NOTE: ProductPage uses mock data which doesn't have Shopify variant IDs
+    // In production, this page should fetch from Shopify API like ShopProductDetail does
+    // For now, we'll skip adding to cart to prevent API errors
+    toast.error('Please use the Shop page to add items to cart');
+    console.warn('ProductPage uses mock data without Shopify variant IDs. Use ShopProductDetail for actual cart operations.');
+    
+    // Uncomment when this page is updated to use Shopify API:
+    // addItem({
+    //   productId: product.id,
+    //   variantId: 'gid://shopify/ProductVariant/...', // Get from Shopify API
+    //   slug: product.slug,
+    //   title: product.title,
+    //   category: product.category,
+    //   price: product.pricePence,
+    //   qty: qty,
+    //   size: selectedSize,
+    //   image: product.images[0],
+    // });
   };
 
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];

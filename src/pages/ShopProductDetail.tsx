@@ -158,7 +158,7 @@ export function ShopProductDetail({ slug, onNavigate }: ShopProductDetailProps) 
     setShowAftercareModal(false);
     addItem({
       productId: product.id,
-      variantId: variantId,
+      variantId,
       slug: product.slug,
       title: product.name,
       category: product.collection,
