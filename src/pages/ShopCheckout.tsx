@@ -42,36 +42,29 @@ export function ShopCheckout({ onNavigate }: ShopCheckoutProps) {
     setError(null);
 
     try {
-      // Map cart items to Shopify variant IDs
-      // NOTE: Since we're using mock products without real Shopify variant IDs,
-      // we'll create a mock checkout URL for now
-      // In production, you need to:
-      // 1. Store Shopify variant IDs in your product data
-      // 2. Pass real variant IDs to createCheckout()
-      // 3. Use the returned webUrl to redirect
+      // Validate that all items have variant IDs
+      const itemsWithoutVariantId = items.filter(item => !item.variantId);
+      if (itemsWithoutVariantId.length > 0) {
+        setError('Some items in your cart are missing product information. Please remove them and try again.');
+        setLoading(false);
+        return;
+      }
 
-      // For demo purposes, create a mock order and redirect to success page
-      console.log('Creating checkout with items:', items);
+      // Map cart items to Shopify line items
+      const lineItems = items.map(item => ({
+        variantId: item.variantId!,
+        quantity: item.qty,
+      }));
 
-      // TODO: Replace this with real Shopify checkout when variant IDs are available
-      // const lineItems = items.map(item => ({
-      //   variantId: item.shopifyVariantId, // Need to add this to CartItem interface
-      //   quantity: item.qty,
-      // }));
-      // const checkout = await createCheckout(lineItems);
-      // window.location.href = checkout.webUrl;
+      console.log('Creating Shopify checkout with items:', lineItems);
 
-      // TEMPORARY: Simulate checkout delay and redirect to success
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Create real Shopify checkout session
+      const checkout = await createCheckout(lineItems);
 
-      // Generate mock order ID
-      const orderId = `HM-${Date.now().toString(36).toUpperCase()}`;
+      console.log('Checkout created successfully:', checkout);
 
-      // Clear cart
-      await clearCart();
-
-      // Redirect to order confirmation
-      onNavigate('shopOrder', { id: orderId });
+      // Redirect to Shopify hosted checkout page
+      window.location.href = checkout.webUrl;
 
     } catch (err: any) {
       console.error('Checkout error:', err);
