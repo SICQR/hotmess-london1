@@ -2,6 +2,11 @@
 -- ROLLBACK: 001_create_core_tables.sql
 -- ============================================================================
 -- Drops all tables created in migration 001 in reverse dependency order
+-- Note: CASCADE will automatically drop dependent objects including:
+--   - Foreign key constraints (including products.drop_id -> drops.id)
+--   - Views that reference these tables
+--   - Indexes
+--   - RLS policies
 -- ============================================================================
 
 -- Drop tables in reverse order to handle foreign key dependencies

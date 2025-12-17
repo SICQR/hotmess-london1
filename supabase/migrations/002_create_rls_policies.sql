@@ -8,6 +8,12 @@
 -- ============================================================================
 -- HELPER FUNCTIONS
 -- ============================================================================
+-- Note: These functions use SECURITY DEFINER to allow RLS policies to check
+-- user roles. They are safe because:
+-- 1. They only read from profiles table (no mutations)
+-- 2. They check against auth.uid() (current authenticated user)
+-- 3. The profiles table itself has RLS policies preventing unauthorized updates
+-- 4. Functions are STABLE (read-only, deterministic for same inputs)
 
 -- Check if user is admin
 CREATE OR REPLACE FUNCTION is_admin()
@@ -20,6 +26,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
 
+COMMENT ON FUNCTION is_admin IS 'Check if current user has admin role. SECURITY DEFINER allows use in RLS policies.';
+
 -- Check if user is moderator or admin
 CREATE OR REPLACE FUNCTION is_moderator()
 RETURNS BOOLEAN AS $$
@@ -30,6 +38,8 @@ BEGIN
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+
+COMMENT ON FUNCTION is_moderator IS 'Check if current user has moderator or admin role. SECURITY DEFINER allows use in RLS policies.';
 
 -- ============================================================================
 -- PROFILES POLICIES

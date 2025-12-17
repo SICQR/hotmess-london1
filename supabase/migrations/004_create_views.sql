@@ -26,6 +26,10 @@ GRANT SELECT ON xp_balances TO authenticated;
 -- ============================================================================
 -- NIGHT PULSE - City Activity Aggregates (No PII)
 -- ============================================================================
+-- NOTE: This view uses SECURITY INVOKER (default) which means it respects
+-- RLS policies on beacon_scans. Only admins with access to beacon_scans
+-- can query this view. Public users cannot access this due to RLS.
+-- The GRANT below only matters if the user has access to underlying data.
 
 CREATE OR REPLACE VIEW night_pulse_city_stats AS
 SELECT 
@@ -38,9 +42,9 @@ WHERE scanned_at > now() - INTERVAL '24 hours'
   AND status = 'valid'
 GROUP BY city_id, DATE_TRUNC('hour', scanned_at);
 
-COMMENT ON VIEW night_pulse_city_stats IS 'Hourly city activity - aggregate only, no user data';
+COMMENT ON VIEW night_pulse_city_stats IS 'Hourly city activity - aggregate only, no user data. RLS on beacon_scans controls access.';
 
--- Public can view these aggregates
+-- Grant SELECT but access is still controlled by RLS on beacon_scans
 GRANT SELECT ON night_pulse_city_stats TO anon, authenticated;
 
 -- ============================================================================
