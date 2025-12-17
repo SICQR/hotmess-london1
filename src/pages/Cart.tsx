@@ -10,10 +10,19 @@ interface CartProps {
 }
 
 export function Cart({ onNavigate }: CartProps) {
-  const { items, subtotal, removeItem, updateQuantity } = useCart();
+  const { items, subtotal, removeItem, updateQuantity, checkoutUrl, loading } = useCart();
 
   const shipping = subtotal >= 5000 ? 0 : 495; // Free shipping over £50
   const total = subtotal + shipping;
+
+  const handleCheckout = () => {
+    if (checkoutUrl) {
+      // Redirect to Shopify checkout
+      window.location.href = checkoutUrl;
+    } else {
+      console.error('No checkout URL available');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black">
@@ -39,7 +48,14 @@ export function Cart({ onNavigate }: CartProps) {
           Your Cart
         </h1>
 
-        {items.length === 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center py-24">
+            <div className="text-center">
+              <div className="w-16 h-16 border-4 border-hot border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-white/60">Loading cart...</p>
+            </div>
+          </div>
+        ) : items.length === 0 ? (
           <EmptyState
             icon={ShoppingBag}
             title="Your cart's empty"
@@ -172,15 +188,16 @@ export function Cart({ onNavigate }: CartProps) {
                 </div>
 
                 <button
-                  onClick={() => onNavigate('shopPurchase')}
-                  className="w-full bg-hot hover:bg-white text-white hover:text-black h-14 uppercase tracking-wider transition-all mb-3"
+                  onClick={handleCheckout}
+                  disabled={!checkoutUrl || items.length === 0}
+                  className="w-full bg-hot hover:bg-white text-white hover:text-black h-14 uppercase tracking-wider transition-all mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ fontWeight: 900 }}
                 >
-                  Checkout
+                  Checkout with Shopify
                 </button>
 
                 <p className="text-xs text-white/40 text-center">
-                  Secure checkout powered by Stripe
+                  Secure checkout powered by Shopify
                 </p>
               </div>
 
