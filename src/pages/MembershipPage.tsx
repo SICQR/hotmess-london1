@@ -46,29 +46,29 @@ export function MembershipPage({ onNavigate }: MembershipPageProps) {
     <div className="min-h-screen bg-black">
       {/* Hero */}
       <div className="relative overflow-hidden bg-gradient-to-b from-hot/20 to-transparent border-b border-white/10">
-        <div className="container mx-auto px-4 sm:px-6 py-10 sm:py-12 md:py-16">
+        <div className="container mx-auto px-4 py-12">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl text-white mb-3 sm:mb-4">Upgrade Your Nightlife</h1>
-            <p className="text-base sm:text-lg text-white/80 mb-6">
+            <h1 className="text-4xl md:text-5xl text-white mb-4">Upgrade Your Nightlife</h1>
+            <p className="text-lg text-white/80 mb-6">
               Choose the membership that fits your lifestyle. More access, more XP, more power.
             </p>
             
             {/* Current Status */}
             {membership && (
-              <div className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2.5 sm:py-3 bg-neutral-900 border border-white/10 rounded-full flex-wrap justify-center">
-                <span className="text-xl sm:text-2xl">
+              <div className="inline-flex items-center gap-3 px-6 py-3 bg-neutral-900 border border-white/10 rounded-full">
+                <span className="text-2xl">
                   {membership.tier === 'free' && '🆓'}
                   {membership.tier === 'pro' && '⭐'}
                   {membership.tier === 'elite' && '👑'}
                 </span>
                 <div className="text-left">
-                  <div className="text-xs sm:text-sm text-white/60">Current Plan</div>
-                  <div className="text-sm sm:text-base text-white capitalize">{membership.tier}</div>
+                  <div className="text-sm text-white/60">Current Plan</div>
+                  <div className="text-white capitalize">{membership.tier}</div>
                 </div>
                 <div className="h-8 w-px bg-white/10" />
                 <div className="text-left">
-                  <div className="text-xs sm:text-sm text-white/60">Level</div>
-                  <div className="text-sm sm:text-base text-white">{currentLevel}</div>
+                  <div className="text-sm text-white/60">Level</div>
+                  <div className="text-white">{currentLevel}</div>
                 </div>
               </div>
             )}
@@ -77,12 +77,12 @@ export function MembershipPage({ onNavigate }: MembershipPageProps) {
       </div>
 
       {/* Billing Toggle */}
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        <div className="flex justify-center mb-6 sm:mb-8">
-          <div className="inline-flex items-center gap-2 sm:gap-4 p-1.5 sm:p-2 bg-neutral-900 border border-white/10 rounded-full">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center mb-8">
+          <div className="inline-flex items-center gap-4 p-2 bg-neutral-900 border border-white/10 rounded-full">
             <button
               onClick={() => setBillingCycle('monthly')}
-              className={`px-4 sm:px-6 py-2 text-sm sm:text-base rounded-full transition-all ${
+              className={`px-6 py-2 rounded-full transition-all ${
                 billingCycle === 'monthly'
                   ? 'bg-hot text-white'
                   : 'text-white/60 hover:text-white'
@@ -92,7 +92,7 @@ export function MembershipPage({ onNavigate }: MembershipPageProps) {
             </button>
             <button
               onClick={() => setBillingCycle('yearly')}
-              className={`px-4 sm:px-6 py-2 text-sm sm:text-base rounded-full transition-all ${
+              className={`px-6 py-2 rounded-full transition-all ${
                 billingCycle === 'yearly'
                   ? 'bg-hot text-white'
                   : 'text-white/60 hover:text-white'
@@ -105,7 +105,7 @@ export function MembershipPage({ onNavigate }: MembershipPageProps) {
         </div>
 
         {/* Tier Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 max-w-6xl mx-auto mb-10 sm:mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
           <TierCard
             tier="free"
             currentTier={membership?.tier || 'free'}
@@ -132,16 +132,16 @@ export function MembershipPage({ onNavigate }: MembershipPageProps) {
 
         {/* Features Comparison */}
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-xl sm:text-2xl text-white mb-4 sm:mb-6 text-center">Full Feature Comparison</h2>
+          <h2 className="text-2xl text-white mb-6 text-center">Full Feature Comparison</h2>
           
-          <div className="bg-neutral-900 border border-white/10 rounded-lg sm:rounded-2xl overflow-hidden overflow-x-auto">
-            <table className="w-full min-w-[600px]">
+          <div className="bg-neutral-900 border border-white/10 rounded-2xl overflow-hidden">
+            <table className="w-full">
               <thead>
                 <tr className="border-b border-white/10">
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-white text-sm sm:text-base">Feature</th>
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-center text-white text-sm sm:text-base">Free</th>
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-center text-white text-sm sm:text-base bg-blue-950/20">Pro</th>
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-center text-white text-sm sm:text-base bg-yellow-950/20">Elite</th>
+                  <th className="px-6 py-4 text-left text-white">Feature</th>
+                  <th className="px-6 py-4 text-center text-white">Free</th>
+                  <th className="px-6 py-4 text-center text-white bg-blue-950/20">Pro</th>
+                  <th className="px-6 py-4 text-center text-white bg-yellow-950/20">Elite</th>
                 </tr>
               </thead>
               <tbody>

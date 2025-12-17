@@ -1,8 +1,3 @@
-/* =============================================================================
-   HOTMESS LONDON — DESIGN SYSTEM v2.0.0
-   Dark Neon Kink Aesthetic • Brutalist Luxury • Care-First Principles
-   ============================================================================= */
-
 /* Mapbox GL CSS */
 @import url('https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css');
 
@@ -10,70 +5,31 @@
 @tailwind components;
 @tailwind utilities;
 
-/* =============================================================================
-   COLOR PALETTE
-   ============================================================================= */
-
-:root {
-  /* Primary Colors */
-  --color-hot: #FF0080;              /* HOTMESS Hot Pink */
-  --color-hot-bright: #FF1694;       /* Bright Hot Pink */
-  --color-hot-dark: #E70F3C;         /* Deep Hot Pink/Red */
-  --color-black: #000000;            /* Pure Black */
-  --color-white: #ffffff;            /* Pure White */
-
-  /* Semantic Colors */
-  --color-success: #00C853;          /* Green */
-  --color-warning: #FFD600;          /* Yellow */
-  --color-danger: #FF1744;           /* Red */
-  --color-info: #00E5FF;             /* Cyan */
-  --color-purple: #7C4DFF;           /* Purple */
-
-  /* Monochrome Scale */
-  --color-mono-950: #0a0a0a;         /* Near black */
-  --color-mono-900: #171717;         /* Very dark gray */
-  --color-mono-800: #262626;         /* Dark gray */
-  --color-mono-700: #404040;         /* Medium-dark gray */
-  --color-mono-600: #525252;         /* Medium gray */
-  --color-mono-500: #737373;         /* Mid gray */
-  --color-mono-400: #a3a3a3;         /* Light-medium gray */
-  --color-mono-300: #d4d4d4;         /* Light gray */
-  --color-mono-200: #e5e5e5;         /* Very light gray */
-  --color-mono-100: #f5f5f5;         /* Near white */
-
-  /* Beacon Type Colors */
-  --color-beacon-checkin: #FF1744;   /* Red */
-  --color-beacon-drop: #FF10F0;      /* Magenta */
-  --color-beacon-event: #00E5FF;     /* Cyan */
-  --color-beacon-product: #FFD600;   /* Yellow */
-  --color-beacon-vendor: #7C4DFF;    /* Purple */
-  --color-beacon-chat: #00C853;      /* Green */
-  --color-beacon-reward: #FF6E40;    /* Orange */
-  --color-beacon-sponsor: #FFC107;   /* Amber */
-  --color-beacon-ticket: #00BCD4;    /* Teal */
-  --color-beacon-panic: #FF1744;     /* Red */
-
+/* HOTMESS LONDON — Brutalist-Luxury Editorial Design System */
+@theme {
+  /* Monochrome Palette */
+  --color-mono-black: #000000;
+  --color-mono-950: #0a0a0a;
+  --color-mono-900: #171717;
+  --color-mono-800: #262626;
+  --color-mono-700: #404040;
+  --color-mono-600: #525252;
+  --color-mono-500: #737373;
+  --color-mono-400: #a3a3a3;
+  --color-mono-300: #d4d4d4;
+  --color-mono-200: #e5e5e5;
+  --color-mono-100: #f5f5f5;
+  --color-mono-white: #ffffff;
+  
+  /* Single Accent */
+  --color-hotmess-red: #E70F3C;
+  
   /* Semantic Aliases */
   --color-brutal: #ffffff;
   --color-brutal-border: rgba(255, 255, 255, 0.1);
-
-  /* Legacy Support */
-  --color-hotmess-red: #E70F3C;
-  --hotmess-red: #E70F3C;
-
-  /* Google Maps Extended Component Library */
-  --gmpx-color-surface: rgba(0,0,0,.92);
-  --gmpx-color-on-surface: rgba(255,255,255,.95);
-  --gmpx-color-on-surface-variant: rgba(255,255,255,.60);
-  --gmpx-color-primary: var(--color-hot);
-  --gmpx-font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
-  --gmpx-border-radius: 0px;
 }
 
-/* =============================================================================
-   BASE STYLES
-   ============================================================================= */
-
+/* Global Resets */
 @layer base {
   * {
     margin: 0;
@@ -82,301 +38,72 @@
   }
 
   body {
-    background-color: var(--color-black);
-    color: var(--color-white);
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+    background-color: #000000;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
   }
 
-  /* Typography Hierarchy */
+  /* Editorial Typography Hierarchy */
   h1 {
-    font-size: 72px;
-    font-weight: 900;
+    font-size: 4.5rem;
+    font-weight: 700;
     letter-spacing: -0.04em;
-    text-transform: uppercase;
     line-height: 0.9;
+    text-transform: uppercase;
   }
 
   h2 {
-    font-size: 48px;
-    font-weight: 700;
+    font-size: 3rem;
+    font-weight: 600;
     letter-spacing: -0.03em;
-    text-transform: uppercase;
     line-height: 1;
+    text-transform: uppercase;
   }
 
   h3 {
-    font-size: 32px;
-    font-weight: 700;
+    font-size: 2rem;
+    font-weight: 600;
     letter-spacing: -0.02em;
     line-height: 1.1;
   }
 
   h4 {
-    font-size: 24px;
-    font-weight: 600;
+    font-size: 1.5rem;
+    font-weight: 500;
     letter-spacing: -0.01em;
     line-height: 1.2;
   }
 
   h5 {
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: 0;
+    font-size: 1.125rem;
+    font-weight: 500;
     line-height: 1.3;
   }
 
   h6 {
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 0;
+    font-size: 1rem;
+    font-weight: 500;
     line-height: 1.4;
   }
 
   p {
-    font-size: 16px;
-    font-weight: 400;
-    letter-spacing: -0.01em;
+    font-size: 1rem;
     line-height: 1.6;
+    letter-spacing: -0.01em;
   }
 
-  /* Responsive Typography */
-  @media (max-width: 768px) {
-    h1 { font-size: 48px; }
-    h2 { font-size: 36px; }
-    h3 { font-size: 24px; }
-    h4 { font-size: 20px; }
-    h5 { font-size: 16px; }
-    h6 { font-size: 14px; }
-    p { font-size: 14px; }
-  }
-
-  /* Focus States */
   *:focus-visible {
-    outline: 2px solid var(--color-hot);
+    outline: 1px solid #E70F3C;
     outline-offset: 2px;
   }
 }
 
-/* =============================================================================
-   COMPONENTS
-   ============================================================================= */
-
-@layer components {
-  /* Buttons */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 24px;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-decoration: none;
-  }
-
-  .btn-primary {
-    background-color: var(--color-hot);
-    color: var(--color-black);
-  }
-
-  .btn-primary:hover {
-    background-color: var(--color-hot-bright);
-    transform: translateY(-1px);
-  }
-
-  .btn-secondary {
-    background-color: transparent;
-    color: var(--color-white);
-    border: 1px solid var(--color-white);
-  }
-
-  .btn-secondary:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .btn-danger {
-    background-color: var(--color-danger);
-    color: var(--color-white);
-  }
-
-  .btn-danger:hover {
-    background-color: var(--color-hot-dark);
-  }
-
-  .btn-ghost {
-    background-color: transparent;
-    color: rgba(255, 255, 255, 0.6);
-  }
-
-  .btn-ghost:hover {
-    color: var(--color-white);
-  }
-
-  .btn-sm {
-    padding: 8px 16px;
-    font-size: 12px;
-  }
-
-  .btn-lg {
-    padding: 16px 32px;
-    font-size: 16px;
-  }
-
-  .btn-disabled,
-  .btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-
-  /* Cards */
-  .card {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 24px;
-  }
-
-  .card-hover {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .card-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(255, 0, 128, 0.2);
-  }
-
-  .card-glow:hover {
-    box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
-  }
-
-  /* Inputs */
-  .input {
-    width: 100%;
-    padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--color-white);
-    font-size: 14px;
-    transition: all 0.2s ease;
-  }
-
-  .input:focus {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: var(--color-hot);
-    outline: none;
-  }
-
-  .input:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
-  }
-
-  /* Badges */
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 8px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    border-radius: 2px;
-  }
-
-  .badge-hot {
-    background-color: var(--color-hot);
-    color: var(--color-black);
-  }
-
-  .badge-new {
-    background-color: var(--color-info);
-    color: var(--color-black);
-  }
-
-  .badge-live {
-    background-color: var(--color-danger);
-    color: var(--color-white);
-    animation: pulse 2s infinite;
-  }
-
-  .badge-pro {
-    background-color: var(--color-purple);
-    color: var(--color-white);
-  }
-
-  .badge-elite {
-    background: linear-gradient(135deg, var(--color-hot), var(--color-purple));
-    color: var(--color-white);
-  }
-}
-
-/* =============================================================================
-   UTILITIES
-   ============================================================================= */
-
+/* Editorial Design Utilities */
 @layer utilities {
-  /* Typography Utilities */
-  .text-display {
-    font-weight: 900;
-    letter-spacing: -0.04em;
-    text-transform: uppercase;
-  }
-
-  .text-heading {
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-  }
-
-  .text-label {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  .text-body {
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 1.6;
-  }
-
-  .text-small {
-    font-size: 14px;
-    font-weight: 400;
-  }
-
-  .text-xs {
-    font-size: 12px;
-    font-weight: 400;
-  }
-
-  /* Color Utilities */
-  .bg-hot {
-    background-color: var(--color-hot);
-  }
-
-  .text-hot {
-    color: var(--color-hot);
-  }
-
-  .border-hot {
-    border-color: var(--color-hot);
-  }
-
   /* Glass Morphism */
   .glass {
     background: rgba(255, 255, 255, 0.03);
@@ -392,27 +119,7 @@
     border: 1px solid rgba(255, 255, 255, 0.15);
   }
 
-  .glass-hot {
-    background: rgba(255, 0, 128, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 0, 128, 0.2);
-  }
-
-  /* Neon Glow */
-  .glow-hot {
-    box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
-  }
-
-  .glow-hot-strong {
-    box-shadow: 0 0 40px rgba(255, 0, 128, 0.8);
-  }
-
-  .glow-text {
-    text-shadow: 0 0 20px rgba(255, 0, 128, 0.8);
-  }
-
-  /* Borders */
+  /* Brutal Borders */
   .border-brutal {
     border-color: rgba(255, 255, 255, 0.1);
   }
@@ -421,56 +128,68 @@
     border-color: rgba(255, 255, 255, 0.2);
   }
 
-  .neon-border {
-    border: 1px solid var(--color-hot);
-    box-shadow: 0 0 10px rgba(255, 0, 128, 0.5);
-  }
-
-  /* Layout */
+  /* Editorial Spacing */
   .editorial-section {
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-left: 3rem;
+    padding-right: 3rem;
   }
 
-  @media (min-width: 640px) {
+  @media (min-width: 768px) {
     .editorial-section {
-      padding-left: 48px;
-      padding-right: 48px;
+      padding-left: 6rem;
+      padding-right: 6rem;
     }
   }
 
   @media (min-width: 1024px) {
     .editorial-section {
-      padding-left: 96px;
-      padding-right: 96px;
+      padding-left: 8rem;
+      padding-right: 8rem;
     }
   }
 
-  .container-narrow {
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
+  /* Typography Styles */
+  .text-editorial {
+    letter-spacing: -0.015em;
+    font-weight: 400;
   }
 
-  .container-wide {
-    max-width: 1400px;
-    margin-left: auto;
-    margin-right: auto;
+  .text-label {
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 600;
   }
 
-  .divider {
-    width: 100%;
-    height: 1px;
-    background-color: rgba(255, 255, 255, 0.1);
+  .text-display {
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
   }
 
-  .divider-vertical {
-    width: 1px;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.1);
+  /* Red Accent */
+  .accent-red {
+    color: #E70F3C;
   }
 
-  /* Animations */
+  .bg-accent-red {
+    background-color: #E70F3C;
+  }
+
+  .border-accent-red {
+    border-color: #E70F3C;
+  }
+
+  /* Hover States */
+  .hover-lift {
+    transition: transform 0.2s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Minimal Animations */
   .fade-in {
     animation: fadeIn 0.6s ease-out;
   }
@@ -485,90 +204,9 @@
       transform: translateY(0);
     }
   }
-
-  .slide-up {
-    animation: slideUp 0.4s ease-out;
-  }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(20px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-
-  .pulse {
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.5;
-    }
-  }
-
-  .spin {
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  /* Hover Effects */
-  .hover-lift {
-    transition: transform 0.2s ease;
-  }
-
-  .hover-lift:hover {
-    transform: translateY(-2px);
-  }
-
-  .hover-scale {
-    transition: transform 0.2s ease;
-  }
-
-  .hover-scale:hover {
-    transform: scale(1.02);
-  }
-
-  .hover-glow:hover {
-    box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
-  }
-
-  /* Interactive States */
-  .clickable {
-    cursor: pointer;
-    transition: transform 0.1s ease;
-  }
-
-  .clickable:active {
-    transform: scale(0.98);
-  }
-
-  .disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
 }
 
-/* =============================================================================
-   HOTMESS CITY STAMPS (Globe Labels)
-   ============================================================================= */
-
+/* HOTMESS City Stamps (CSS2D labels) - Minimalist Style */
 @layer base {
   .hm-city-stamp {
     position: relative;
@@ -630,8 +268,8 @@
   }
 
   .hm-badge--active {
-    background: var(--color-hot);
-    border-color: var(--color-hot);
+    background: #E70F3C;
+    border-color: #E70F3C;
     color: #ffffff;
   }
 
@@ -662,17 +300,13 @@
   }
 
   .hm-city-pill--active {
-    border-color: var(--color-hot);
+    border-color: #E70F3C;
   }
 
   .hm-city-dot--active {
-    background: var(--color-hot);
+    background: #E70F3C;
   }
 }
-
-/* =============================================================================
-   ACCESSIBILITY & MOTION
-   ============================================================================= */
 
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
@@ -685,8 +319,14 @@
   }
 }
 
-/* Touch-Friendly Targets */
-.touch-target {
-  min-height: 44px;
-  min-width: 44px;
+/* Extended Component Library theme tokens */
+:root {
+  --hotmess-red: #E70F3C;
+  
+  --gmpx-color-surface: rgba(0,0,0,.92);
+  --gmpx-color-on-surface: rgba(255,255,255,.95);
+  --gmpx-color-on-surface-variant: rgba(255,255,255,.60);
+  --gmpx-color-primary: #E70F3C;
+  --gmpx-font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+  --gmpx-border-radius: 0px;
 }
