@@ -5,8 +5,10 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../utils/supabase/client';
+import { createClient } from '../utils/supabase/client';
 import type { NightPulseCity, NightPulseEvent } from '../types/night-pulse';
+
+const supabase = createClient();
 
 export function useNightPulseRealtime() {
   const [cities, setCities] = useState<NightPulseCity[]>([]);

@@ -14,6 +14,14 @@ import { NotFound } from '../pages/NotFound';
 import { ScanEnterCode } from '../pages/ScanEnterCode';
 import { Accessibility } from '../pages/Accessibility';
 
+// Arrival Flow pages
+import { HomePage as ArrivalHomePage } from '../pages/arrival/HomePage';
+import { EnterPage } from '../pages/arrival/EnterPage';
+import { SystemPage } from '../pages/arrival/SystemPage';
+import { BoundariesPage } from '../pages/arrival/BoundariesPage';
+import { CarePositionPage } from '../pages/arrival/CarePositionPage';
+import { PrivacyPage as ArrivalPrivacyPage } from '../pages/arrival/PrivacyPage';
+
 // Auth pages
 import { LoginPage, RegisterPage } from '../pages/AuthPages';
 import { WelcomePage } from '../pages/WelcomePage';
@@ -228,6 +236,13 @@ export function Router({ currentRoute, routeParams, onNavigate }: RouterProps) {
     scan: <ScanEnterCode onNavigate={navigate} />,
     about: <About onNavigate={navigate} />,
     accessibility: <Accessibility onNavigate={navigate} />,
+
+    // Arrival Flow
+    enter: <EnterPage onNavigate={navigate} />,
+    system: <SystemPage onNavigate={navigate} />,
+    boundaries: <BoundariesPage onNavigate={navigate} />,
+    carePosition: <CarePositionPage onNavigate={navigate} />,
+    arrivalPrivacy: <ArrivalPrivacyPage onNavigate={navigate} />,
 
     // Auth
     login: <LoginPage onNavigate={navigate} />,

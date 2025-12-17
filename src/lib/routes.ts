@@ -13,6 +13,12 @@ export type RouteId =
   // Core Navigation
   | "home"
   | "scan" // NEW: Scan/Enter code page
+  // Arrival Flow
+  | "enter" // NEW: Eligibility gate
+  | "system" // NEW: System definition
+  | "boundaries" // NEW: Boundaries notice
+  | "carePosition" // NEW: Care position
+  | "arrivalPrivacy" // NEW: Privacy position (arrival flow)
   | "beacons"
   | "beaconCreate" // NEW: Create new beacon
   | "navHub" // NEW: Navigation hub for testing
@@ -216,6 +222,44 @@ export const ROUTES: Record<RouteId, RouteDef> = {
     href: "/scan",
     group: "primary",
   },
+  
+  // ---- ARRIVAL FLOW ----
+  enter: {
+    id: "enter",
+    label: "Enter",
+    href: "/enter",
+    group: "hidden",
+    description: "Eligibility gate - age confirmation",
+  },
+  system: {
+    id: "system",
+    label: "System",
+    href: "/system",
+    group: "hidden",
+    description: "System definition page",
+  },
+  boundaries: {
+    id: "boundaries",
+    label: "Boundaries",
+    href: "/boundaries",
+    group: "hidden",
+    description: "Boundaries notice",
+  },
+  carePosition: {
+    id: "carePosition",
+    label: "Care Position",
+    href: "/care-position",
+    group: "hidden",
+    description: "Care position statement",
+  },
+  arrivalPrivacy: {
+    id: "arrivalPrivacy",
+    label: "Privacy",
+    href: "/arrival-privacy",
+    group: "hidden",
+    description: "Privacy position (arrival flow)",
+  },
+  
   beacons: {
     id: "beacons",
     label: "Beacons",
