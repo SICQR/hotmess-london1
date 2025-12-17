@@ -106,16 +106,16 @@ export function ThreadSafetyMenu({ threadType, threadId, otherUserId }: Props) {
     setError(null);
 
     try {
-      const r = await fetch(\"/api/connect/thread/close\", {
-        method: \"POST\",
-        headers: { \"content-type\": \"application/json\" },
-        body: JSON.stringify({ threadId, reason: \"user_closed\" }),
+      const r = await fetch('/api/connect/thread/close', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ threadId, reason: 'user_closed' }),
       });
 
       const j = await r.json();
 
       if (!j.ok) {
-        throw new Error(String(j.error || \"Failed to close thread\"));
+        throw new Error(String(j.error || 'Failed to close thread'));
       }
 
       setCloseSuccess(true);
@@ -126,8 +126,8 @@ export function ThreadSafetyMenu({ threadType, threadId, otherUserId }: Props) {
         window.location.reload();
       }, 2000);
     } catch (e: any) {
-      setError(e?.message ?? \"Failed to close thread.\");
-      console.error(\"Close thread error:\", e);
+      setError(e?.message ?? 'Failed to close thread.');
+      console.error('Close thread error:', e);
     } finally {
       setBusy(false);
     }
