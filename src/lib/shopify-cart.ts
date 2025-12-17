@@ -360,7 +360,7 @@ export function transformShopifyCartToItems(cart: ShopifyCart | null): Array<{
   id: string;
   lineId: string;
   productId: string;
-  variantId: string;
+  variantId?: string;
   slug: string;
   title: string;
   category: string;
