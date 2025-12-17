@@ -126,10 +126,39 @@ export function ShopProductDetail({ slug, onNavigate }: ShopProductDetailProps) 
   };
 
   const addToCart = () => {
+    // Find the matching variant based on selected size and color
+    let variantId = product.variants?.[0]?.id; // Default to first variant
+    
+    if (product.variants && product.variants.length > 0) {
+      const matchingVariant = product.variants.find(variant => {
+        const sizeOption = variant.selectedOptions.find(opt => 
+          opt.name.toLowerCase() === 'size'
+        );
+        const colorOption = variant.selectedOptions.find(opt => 
+          opt.name.toLowerCase() === 'color' || opt.name.toLowerCase() === 'colour'
+        );
+        
+        const sizeMatches = !selectedSize || !sizeOption || sizeOption.value === selectedSize;
+        const colorMatches = !selectedColor || !colorOption || colorOption.value === selectedColor;
+        
+        return sizeMatches && colorMatches;
+      });
+      
+      if (matchingVariant) {
+        variantId = matchingVariant.id;
+      }
+    }
+    
+    if (!variantId) {
+      toast.error('Please select a valid size and color');
+      return;
+    }
+    
     toast.success(`Added ${product.name} to cart`);
     setShowAftercareModal(false);
     addItem({
       productId: product.id,
+      variantId: variantId,
       slug: product.slug,
       title: product.name,
       category: product.collection,

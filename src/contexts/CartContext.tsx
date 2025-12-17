@@ -1,11 +1,20 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { toast } from 'sonner@2.0.3';
-import { fetchCart, addToCart as apiAddToCart, updateCartItemQuantity, removeFromCart as apiRemoveFromCart, clearCart as apiClearCart, syncLocalCartToDatabase } from '../lib/cart-api';
-import { getSession } from '../lib/auth';
+import { 
+  createCart, 
+  getCart, 
+  addToCart as shopifyAddToCart, 
+  updateCartLine, 
+  removeFromCart as shopifyRemoveFromCart,
+  transformShopifyCartToItems,
+  ShopifyCart
+} from '../lib/shopify-cart';
 
 export interface CartItem {
   id: string;
+  lineId?: string; // Shopify line ID for updates/removals
   productId: string;
+  variantId?: string; // Shopify variant ID
   slug: string;
   title: string;
   category: string;
@@ -19,46 +28,59 @@ interface CartContextType {
   items: CartItem[];
   itemCount: number;
   subtotal: number;
-  addItem: (item: Omit<CartItem, 'id'>) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, qty: number) => void;
-  clearCart: () => void;
+  addItem: (item: Omit<CartItem, 'id' | 'lineId'>) => Promise<void>;
+  removeItem: (id: string) => Promise<void>;
+  updateQuantity: (id: string, qty: number) => Promise<void>;
+  clearCart: () => Promise<void>;
   refreshCart: () => Promise<void>;
+  checkoutUrl: string | null;
+  loading: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const CART_ID_KEY = 'hotmess_shopify_cart_id';
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [cartId, setCartId] = useState<string | null>(null);
+  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Check auth status and load cart
+  // Load cart from Shopify
   const refreshCart = async () => {
     try {
-      const session = await getSession();
-      setIsAuthenticated(!!session?.user);
-
-      // Always use localStorage for cart (database sync disabled)
-      const saved = localStorage.getItem('hotmess_cart');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          setItems(parsed);
-        } catch (e) {
-          console.error('Failed to parse cart from localStorage');
+      setLoading(true);
+      const savedCartId = localStorage.getItem(CART_ID_KEY);
+      
+      if (savedCartId) {
+        // Try to fetch existing cart
+        const cart = await getCart(savedCartId);
+        
+        if (cart) {
+          // Cart exists and is valid
+          setCartId(cart.id);
+          setCheckoutUrl(cart.checkoutUrl);
+          const cartItems = transformShopifyCartToItems(cart);
+          setItems(cartItems);
+        } else {
+          // Cart expired or not found, create new one
+          console.log('Cart expired, creating new cart');
+          localStorage.removeItem(CART_ID_KEY);
+          setCartId(null);
+          setCheckoutUrl(null);
+          setItems([]);
         }
+      } else {
+        // No cart exists yet
+        setItems([]);
+        setCheckoutUrl(null);
       }
-
-      // TODO: Enable database cart sync when products table is ready
-      // if (session?.user) {
-      //   // Load cart from Supabase
-      //   const dbCart = await fetchCart();
-      //   if (dbCart.length > 0) {
-      //     setItems(dbCart);
-      //   }
-      // }
     } catch (error) {
       console.error('Error refreshing cart:', error);
+      setItems([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -67,94 +89,101 @@ export function CartProvider({ children }: { children: ReactNode }) {
     refreshCart();
   }, []);
 
-  // Save to localStorage when not authenticated
-  useEffect(() => {
-    if (!isAuthenticated) {
-      localStorage.setItem('hotmess_cart', JSON.stringify(items));
-    }
-  }, [items, isAuthenticated]);
-
-  const addItem = async (newItem: Omit<CartItem, 'id'>) => {
+  const addItem = async (newItem: Omit<CartItem, 'id' | 'lineId'>) => {
     try {
-      if (isAuthenticated) {
-        // Add to Supabase
-        await apiAddToCart(newItem.productId, newItem.size || 'M', newItem.qty);
-        await refreshCart();
-        toast.success('Added to cart');
-      } else {
-        // Add to local state
-        setItems(prev => {
-          const existingIndex = prev.findIndex(
-            item => item.productId === newItem.productId && item.size === newItem.size
-          );
-
-          if (existingIndex >= 0) {
-            const updated = [...prev];
-            updated[existingIndex].qty += newItem.qty;
-            toast.success('Added to cart');
-            return updated;
-          }
-
-          const item: CartItem = {
-            ...newItem,
-            id: `cart-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          };
-          toast.success('Added to cart');
-          return [...prev, item];
-        });
+      if (!newItem.variantId) {
+        toast.error('Product variant not found');
+        return;
       }
+
+      setLoading(true);
+      
+      // Add to Shopify cart
+      const updatedCart = await shopifyAddToCart(cartId, newItem.variantId, newItem.qty);
+      
+      // Update local state
+      setCartId(updatedCart.id);
+      setCheckoutUrl(updatedCart.checkoutUrl);
+      localStorage.setItem(CART_ID_KEY, updatedCart.id);
+      
+      const cartItems = transformShopifyCartToItems(updatedCart);
+      setItems(cartItems);
+      
+      toast.success('Added to cart');
     } catch (error) {
       console.error('Error adding to cart:', error);
       toast.error('Failed to add to cart');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const removeItem = async (id: string) => {
+  const removeItem = async (lineId: string) => {
     try {
-      if (isAuthenticated) {
-        await apiRemoveFromCart(id);
-        await refreshCart();
-        toast.success('Removed from cart');
-      } else {
-        setItems(prev => prev.filter(item => item.id !== id));
-        toast.success('Removed from cart');
+      if (!cartId) {
+        toast.error('Cart not found');
+        return;
       }
+
+      setLoading(true);
+      
+      // Remove from Shopify cart
+      const updatedCart = await shopifyRemoveFromCart(cartId, lineId);
+      
+      // Update local state
+      setCheckoutUrl(updatedCart.checkoutUrl);
+      const cartItems = transformShopifyCartToItems(updatedCart);
+      setItems(cartItems);
+      
+      toast.success('Removed from cart');
     } catch (error) {
       console.error('Error removing from cart:', error);
       toast.error('Failed to remove from cart');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const updateQuantity = async (id: string, qty: number) => {
+  const updateQuantity = async (lineId: string, qty: number) => {
     if (qty <= 0) {
-      await removeItem(id);
+      await removeItem(lineId);
       return;
     }
 
     try {
-      if (isAuthenticated) {
-        await updateCartItemQuantity(id, qty);
-        await refreshCart();
-      } else {
-        setItems(prev =>
-          prev.map(item => (item.id === id ? { ...item, qty } : item))
-        );
+      if (!cartId) {
+        toast.error('Cart not found');
+        return;
       }
+
+      setLoading(true);
+      
+      // Update in Shopify cart
+      const updatedCart = await updateCartLine(cartId, lineId, qty);
+      
+      // Update local state
+      setCheckoutUrl(updatedCart.checkoutUrl);
+      const cartItems = transformShopifyCartToItems(updatedCart);
+      setItems(cartItems);
     } catch (error) {
       console.error('Error updating quantity:', error);
       toast.error('Failed to update quantity');
+    } finally {
+      setLoading(false);
     }
   };
 
   const clearCart = async () => {
     try {
-      if (isAuthenticated) {
-        await apiClearCart();
-        await refreshCart();
-      } else {
-        setItems([]);
-        localStorage.removeItem('hotmess_cart');
-      }
+      // Create a new empty cart
+      const newCart = await createCart();
+      
+      setCartId(newCart.id);
+      setCheckoutUrl(newCart.checkoutUrl);
+      localStorage.setItem(CART_ID_KEY, newCart.id);
+      setItems([]);
+      
+      toast.success('Cart cleared');
     } catch (error) {
       console.error('Error clearing cart:', error);
       toast.error('Failed to clear cart');
@@ -175,6 +204,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         updateQuantity,
         clearCart,
         refreshCart,
+        checkoutUrl,
+        loading,
       }}
     >
       {children}

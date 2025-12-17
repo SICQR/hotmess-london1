@@ -33,8 +33,12 @@ export function ProductPage({ slug, onNavigate }: ProductPageProps) {
   }
 
   const handleAddToCart = () => {
+    // For ProductPage, we need to get the variant ID from mock data
+    // Since this uses mock data, we'll need to fetch from Shopify instead
+    // For now, let's add a placeholder variantId
     addItem({
       productId: product.id,
+      variantId: product.id, // Placeholder - this page uses mock data
       slug: product.slug,
       title: product.title,
       category: product.category,
