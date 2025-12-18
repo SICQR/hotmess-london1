@@ -130,6 +130,7 @@ import { AdminRecordsReleases } from '../pages/admin/AdminRecordsReleases';
 
 // Debug pages
 import { AuthDebug } from '../pages/AuthDebug';
+import { ProjectDashboard } from '../pages/ProjectDashboard';
 
 // User pages
 import { Profile } from '../pages/Profile';
@@ -364,6 +365,7 @@ export function Router({ currentRoute, routeParams, onNavigate }: RouterProps) {
 
     // Debug
     authDebug: <AuthDebug onNavigate={navigate} />,
+    projectDashboard: <ProjectDashboard onNavigate={navigate} />,
 
     // User
     account: <Account onNavigate={navigate} />,
