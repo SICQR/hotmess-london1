@@ -108,7 +108,9 @@ export function Settings({ onNavigate }: SettingsProps) {
       // Get access token (fallback to publicAnonKey for dev bypass)
       let accessToken = await getAccessTokenAsync();
       if (!accessToken) {
-        console.log('⚠️ No access token, using publicAnonKey (dev mode)');
+        if (import.meta.env.DEV) {
+          console.log('⚠️ No access token, using publicAnonKey (dev mode)');
+        }
         accessToken = publicAnonKey;
       }
 
@@ -136,19 +138,25 @@ export function Settings({ onNavigate }: SettingsProps) {
     try {
       setSaving(true);
       
-      console.log('💾 Starting save settings...');
-      console.log('💾 User ID:', user?.id);
-      console.log('💾 Settings to save:', settings);
+      if (import.meta.env.DEV) {
+        console.log('💾 Starting save settings...');
+        console.log('💾 User ID:', user?.id);
+        console.log('💾 Settings to save:', settings);
+      }
 
       // Get access token (fallback to publicAnonKey for dev bypass)
       let accessToken = await getAccessTokenAsync();
       if (!accessToken) {
-        console.log('⚠️ No access token, using publicAnonKey (dev mode)');
+        if (import.meta.env.DEV) {
+          console.log('⚠️ No access token, using publicAnonKey (dev mode)');
+        }
         accessToken = publicAnonKey;
       }
 
       const url = `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/api/users/${user?.id}/settings`;
-      console.log('💾 Request URL:', url);
+      if (import.meta.env.DEV) {
+        console.log('💾 Request URL:', url);
+      }
       
       const response = await fetch(
         url,
@@ -162,8 +170,10 @@ export function Settings({ onNavigate }: SettingsProps) {
         }
       );
 
-      console.log('💾 Response status:', response.status);
-      console.log('💾 Response ok:', response.ok);
+      if (import.meta.env.DEV) {
+        console.log('💾 Response status:', response.status);
+        console.log('💾 Response ok:', response.ok);
+      }
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -172,7 +182,9 @@ export function Settings({ onNavigate }: SettingsProps) {
       }
 
       const result = await response.json();
-      console.log('✅ Save successful, result:', result);
+      if (import.meta.env.DEV) {
+        console.log('✅ Save successful, result:', result);
+      }
 
       toast.success('Settings saved');
     } catch (error) {

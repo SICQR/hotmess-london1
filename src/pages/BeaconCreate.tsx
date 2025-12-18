@@ -89,7 +89,9 @@ export function BeaconCreate({ onNavigate }: BeaconCreateProps) {
       // - payload
     };
 
-    console.log('Creating beacon:', beaconData);
+    if (import.meta.env.DEV) {
+      console.log('Creating beacon:', beaconData);
+    }
 
     // TODO: Call API to create beacon
     // For now, simulate success

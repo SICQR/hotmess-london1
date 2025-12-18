@@ -196,7 +196,9 @@ export function RecordRelease({ slug, onNavigate }: RecordReleaseProps) {
   useEffect(() => {
     const fetchRelease = async () => {
       try {
-        console.log('🔍 Fetching record:', slug);
+        if (import.meta.env.DEV) {
+          console.log('🔍 Fetching record:', slug);
+        }
         const response = await fetch(`${API_BASE}/records/${slug}`, {
           headers: {
             'Authorization': `Bearer ${publicAnonKey}`,
@@ -209,7 +211,9 @@ export function RecordRelease({ slug, onNavigate }: RecordReleaseProps) {
         }
         
         const data = await response.json();
-        console.log('✅ Loaded record:', data);
+        if (import.meta.env.DEV) {
+          console.log('✅ Loaded record:', data);
+        }
         
         // Backend returns { success: true, record: {...} }
         const recordData = data.record || data;

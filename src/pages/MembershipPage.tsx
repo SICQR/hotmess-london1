@@ -38,7 +38,9 @@ export function MembershipPage({ onNavigate }: MembershipPageProps) {
 
   const handleTierSelect = (tier: MembershipTier, cycle: 'monthly' | 'yearly') => {
     // In production, this would open Stripe checkout
-    console.log(`Selected ${tier} - ${cycle}`);
+    if (import.meta.env.DEV) {
+      console.log(`Selected ${tier} - ${cycle}`);
+    }
     alert(`Stripe checkout for ${tier} (${cycle}) would open here`);
   };
 

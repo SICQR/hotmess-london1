@@ -140,7 +140,9 @@ export function Records({ onNavigate }: RecordsProps) {
         
         if (response.ok) {
           const data = await response.json();
-          console.log('✅ Loaded records:', data.records);
+          if (import.meta.env.DEV) {
+            console.log('✅ Loaded records:', data.records);
+          }
           setRecords(data.records || []);
         } else {
           console.error('Failed to fetch records');

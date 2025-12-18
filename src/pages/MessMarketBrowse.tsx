@@ -360,7 +360,9 @@ function ListingCard({
       transition={{ delay: index * 0.03 }}
       onClick={() => {
         const identifier = listing.slug || listing.id;
-        console.log('📍 Navigating to listing:', { title: listing.title, slug: listing.slug, id: listing.id, using: identifier });
+        if (import.meta.env.DEV) {
+          console.log('📍 Navigating to listing:', { title: listing.title, slug: listing.slug, id: listing.id, using: identifier });
+        }
         onNavigate('messmessMarketProduct', { slug: identifier });
       }}
       className="group bg-zinc-900 border border-zinc-800 hover:border-hotmess-red transition-colors cursor-pointer rounded-lg overflow-hidden relative"

@@ -239,7 +239,9 @@ export function BeaconManagement({ onNavigate }: BeaconManagementProps) {
         <CreateBeaconModal
           onClose={() => setShowCreateModal(false)}
           onCreate={(beacon) => {
-            console.log('Created beacon:', beacon);
+            if (import.meta.env.DEV) {
+              console.log('Created beacon:', beacon);
+            }
             setShowCreateModal(false);
           }}
         />

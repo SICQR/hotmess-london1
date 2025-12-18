@@ -70,7 +70,9 @@ export function MessMarketProductPage({ slug, onNavigate }: MessMarketProductPro
       setLoading(true);
       setError(null);
 
-      console.log('🔍 Loading listing with slug:', slug);
+      if (import.meta.env.DEV) {
+        console.log('🔍 Loading listing with slug:', slug);
+      }
 
       // Try to find by slug first, then by id if slug is actually a UUID
       // Query with all related data
@@ -93,7 +95,9 @@ export function MessMarketProductPage({ slug, onNavigate }: MessMarketProductPro
 
       const { data, error: fetchError } = await query.maybeSingle();
 
-      console.log('📦 Query result:', { data, error: fetchError });
+      if (import.meta.env.DEV) {
+        console.log('📦 Query result:', { data, error: fetchError });
+      }
 
       if (fetchError || !data) {
         console.error('❌ Listing not found:', fetchError);

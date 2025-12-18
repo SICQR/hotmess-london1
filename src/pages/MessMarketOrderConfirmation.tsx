@@ -42,7 +42,9 @@ export default function MessMarketOrderConfirmation({ orderId, onNavigate }: Ord
   const fetchOrder = async () => {
     try {
       setLoading(true);
-      console.log('🔍 Loading order:', orderId);
+      if (import.meta.env.DEV) {
+        console.log('🔍 Loading order:', orderId);
+      }
 
       const { data: { session } } = await supabase.auth.getSession();
       
