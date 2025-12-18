@@ -44,6 +44,7 @@ jobs:
       
       - name: Notify Sentry of deployment
         uses: getsentry/action-release@v1
+        continue-on-error: true
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
@@ -74,16 +75,17 @@ jobs:
     steps:
       - name: Send Slack notification
         uses: slackapi/slack-github-action@v1
+        continue-on-error: true
         with:
           payload: |
             {
-              "text": "🚀 Deployment to production: ${{ job.status }}",
+              "text": "🚀 Deployment to production - Vercel: ${{ needs.deploy-vercel.result }}, Supabase: ${{ needs.deploy-supabase-functions.result }}",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Deployment Status:* ${{ job.status }}\n*Branch:* ${{ github.ref }}\n*Commit:* ${{ github.sha }}"
+                    "text": "*Vercel Deployment:* ${{ needs.deploy-vercel.result }}\n*Supabase Deployment:* ${{ needs.deploy-supabase-functions.result }}\n*Branch:* ${{ github.ref }}\n*Commit:* ${{ github.sha }}"
                   }
                 }
               ]
