@@ -4,6 +4,7 @@
  */
 
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
+import { retry } from '../error-handling';
 
 const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/v2`;
 
@@ -11,42 +12,58 @@ const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-a670
  * Scan a beacon by code
  */
 export async function scanBeacon(code: string, accessToken?: string) {
-  const response = await fetch(`${API_BASE}/beacons/${code}/scan`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken || publicAnonKey}`,
+  return retry(
+    async () => {
+      const response = await fetch(`${API_BASE}/beacons/${code}/scan`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken || publicAnonKey}`,
+        },
+        body: JSON.stringify({
+          location: null, // TODO: Get from geolocation API
+          userAgent: navigator.userAgent,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || error.message || 'Scan failed');
+      }
+
+      return response.json();
     },
-    body: JSON.stringify({
-      location: null, // TODO: Get from geolocation API
-      userAgent: navigator.userAgent,
-    }),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || error.message || 'Scan failed');
-  }
-
-  return response.json();
+    {
+      maxAttempts: 3,
+      onRetry: (attempt) => console.log(`Retrying beacon scan (${attempt}/3)`),
+    }
+  );
 }
 
 /**
  * Get beacon by code (without scanning)
  */
 export async function getBeacon(code: string) {
-  const response = await fetch(`${API_BASE}/beacons/${code}`, {
-    headers: {
-      'Authorization': `Bearer ${publicAnonKey}`,
+  return retry(
+    async () => {
+      const response = await fetch(`${API_BASE}/beacons/${code}`, {
+        headers: {
+          'Authorization': `Bearer ${publicAnonKey}`,
+        },
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Beacon not found');
+      }
+
+      return response.json();
     },
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Beacon not found');
-  }
-
-  return response.json();
+    {
+      maxAttempts: 3,
+      onRetry: (attempt) => console.log(`Retrying beacon fetch (${attempt}/3)`),
+    }
+  );
 }
 
 /**

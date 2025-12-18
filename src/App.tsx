@@ -1,8 +1,7 @@
 // MUST be imported FIRST to suppress false positive Three.js warning
 import './lib/suppress-three-warning';
 
-import { useState, useEffect, lazy, Suspense } from 'react';
-import { Toaster } from 'sonner';
+import { useState, useEffect } from 'react';
 import { Splash } from './components/Splash';
 import { AgeGate } from './components/gate';
 import { AppContent } from './components/AppContent';
@@ -11,6 +10,7 @@ import { UserProvider } from './contexts/UserContext';
 import { CartProvider } from './contexts/CartContext';
 import { RadioProvider } from './contexts/RadioContext';
 import { PlayerProvider } from './components/player/PlayerProvider';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { RouteId } from './lib/routes';
 import { analytics } from './lib/analytics';
 import { initMonitoring } from './lib/monitoring';
@@ -129,38 +129,40 @@ export default function App() {
   // SPLASH → AGE GATE POPUP → HOME flow
   // Main app with full routing
   return (
-    <AuthProvider>
-      <UserProvider>
-        <CartProvider>
-          <RadioProvider>
-            <PlayerProvider>
-            {/* BRUTALIST EDITORIAL DESIGN ACTIVE */}
-            {/* Show splash first - BLOCKS EVERYTHING */}
-            {!splashComplete && (
-              <Splash onComplete={() => setSplashComplete(true)} />
+    <ErrorBoundary>
+      <AuthProvider>
+        <UserProvider>
+          <CartProvider>
+            <RadioProvider>
+              <PlayerProvider>
+              {/* BRUTALIST EDITORIAL DESIGN ACTIVE */}
+              {/* Show splash first - BLOCKS EVERYTHING */}
+              {!splashComplete && (
+                <Splash onComplete={() => setSplashComplete(true)} />
+              )}
+
+            {/* Show age gate popup after splash - BLOCKS EVERYTHING */}
+            {splashComplete && !ageVerified && (
+              <AgeGate
+                onEnter={handleAgeGateEnter}
+                onLeave={handleAgeGateLeave}
+              />
             )}
 
-          {/* Show age gate popup after splash - BLOCKS EVERYTHING */}
-          {splashComplete && !ageVerified && (
-            <AgeGate
-              onEnter={handleAgeGateEnter}
-              onLeave={handleAgeGateLeave}
-            />
-          )}
+            {/* Main app content - ONLY SHOW AFTER VERIFICATION */}
+            {splashComplete && ageVerified && (
+              <AppContent
+                currentRoute={currentRoute}
+                routeParams={routeParams}
+                onNavigate={handleNavigate}
+              />
+            )}
 
-          {/* Main app content - ONLY SHOW AFTER VERIFICATION */}
-          {splashComplete && ageVerified && (
-            <AppContent
-              currentRoute={currentRoute}
-              routeParams={routeParams}
-              onNavigate={handleNavigate}
-            />
-          )}
-
-          </PlayerProvider>
-        </RadioProvider>
-      </CartProvider>
-      </UserProvider>
-    </AuthProvider>
+            </PlayerProvider>
+          </RadioProvider>
+        </CartProvider>
+        </UserProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

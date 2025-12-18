@@ -4,6 +4,7 @@
  */
 
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
+import { retry } from '../error-handling';
 
 const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/v2`;
 
@@ -11,35 +12,51 @@ const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-a670
  * Get user's XP profile
  */
 export async function getXPProfile(accessToken: string) {
-  const response = await fetch(`${API_BASE}/xp/profile`, {
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
+  return retry(
+    async () => {
+      const response = await fetch(`${API_BASE}/xp/profile`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to fetch XP profile');
+      }
+
+      return response.json();
     },
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to fetch XP profile');
-  }
-
-  return response.json();
+    {
+      maxAttempts: 3,
+      onRetry: (attempt) => console.log(`Retrying XP profile fetch (${attempt}/3)`),
+    }
+  );
 }
 
 /**
  * Get XP transaction history
  */
 export async function getXPHistory(accessToken: string, limit = 50) {
-  const response = await fetch(`${API_BASE}/xp/history?limit=${limit}`, {
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
+  return retry(
+    async () => {
+      const response = await fetch(`${API_BASE}/xp/history?limit=${limit}`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch XP history');
+      }
+
+      return response.json();
     },
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch XP history');
-  }
-
-  return response.json();
+    {
+      maxAttempts: 3,
+      onRetry: (attempt) => console.log(`Retrying XP history fetch (${attempt}/3)`),
+    }
+  );
 }
 
 /**
