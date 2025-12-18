@@ -6,9 +6,13 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '../utils/supabase/client';
+import { checkNightPulseSchema } from '../utils/db-health-check';
 import type { NightPulseCity, NightPulseEvent } from '../types/night-pulse';
 
 const supabase = createClient();
+
+// Heat intensity calculation constant
+const HEAT_INTENSITY_MULTIPLIER = 10;
 
 export function useNightPulseRealtime() {
   const [cities, setCities] = useState<NightPulseCity[]>([]);
@@ -26,7 +30,76 @@ export function useNightPulseRealtime() {
 
       if (fetchError) {
         console.error('❌ Error loading Night Pulse data:', fetchError);
+        
+        // Check if it's a "relation does not exist" error
+        if (fetchError.message.includes('does not exist') || 
+            fetchError.message.includes('night_pulse_realtime')) {
+          console.warn('⚠️ Materialized view not found, falling back to direct beacon aggregation');
+          
+          // Fallback: Aggregate from beacons table directly
+          const { data: beacons, error: beaconError } = await supabase
+            .from('beacons')
+            .select('city, latitude, longitude, scan_count, active')
+            .eq('active', true)
+            .not('city', 'is', null)
+            .not('latitude', 'is', null)
+            .not('longitude', 'is', null);
+          
+          if (beaconError) {
+            setError('Unable to load Night Pulse data. Please ensure beacons table has city and location data.');
+            setLoading(false);
+            return;
+          }
+          
+          if (beacons && beacons.length > 0) {
+            // Aggregate beacons by city
+            const cityMap = new Map<string, NightPulseCity>();
+            
+            beacons.forEach((beacon) => {
+              const cityId = beacon.city.toUpperCase();
+              
+              if (!cityMap.has(cityId)) {
+                cityMap.set(cityId, {
+                  city_id: cityId,
+                  city_name: beacon.city,
+                  country_code: 'Unknown', // TODO: Could add country lookup
+                  latitude: beacon.latitude,
+                  longitude: beacon.longitude,
+                  active_beacons: 1,
+                  scans_last_hour: beacon.scan_count || 0,
+                  heat_intensity: Math.min(100, (beacon.scan_count || 0) * HEAT_INTENSITY_MULTIPLIER),
+                  last_activity_at: new Date().toISOString(),
+                  refreshed_at: new Date().toISOString(),
+                });
+              } else {
+                const city = cityMap.get(cityId)!;
+                city.active_beacons = (city.active_beacons || 0) + 1;
+                city.scans_last_hour += beacon.scan_count || 0;
+                city.heat_intensity = Math.min(100, city.scans_last_hour * HEAT_INTENSITY_MULTIPLIER);
+              }
+            });
+            
+            const aggregatedCities = Array.from(cityMap.values())
+              .map(city => ({
+                ...city,
+                // Apply privacy filter: hide beacon count if <5
+                active_beacons: (city.active_beacons || 0) < 5 ? null : city.active_beacons,
+              }))
+              .sort((a, b) => b.heat_intensity - a.heat_intensity);
+            
+            console.log('✅ Fallback: Aggregated', aggregatedCities.length, 'cities from beacons');
+            setCities(aggregatedCities);
+            setLastUpdate(new Date());
+            setLoading(false);
+            
+            // Show warning to user
+            setError('Using fallback data. For full real-time features, run database migration.');
+            return;
+          }
+        }
+        
         setError(fetchError.message);
+        setLoading(false);
         return;
       }
 
@@ -45,7 +118,7 @@ export function useNightPulseRealtime() {
 
   // Calculate heat intensity from scan count
   const calculateHeat = useCallback((scans: number): number => {
-    return Math.min(100, scans * 10);
+    return Math.min(100, scans * HEAT_INTENSITY_MULTIPLIER);
   }, []);
 
   // Handle real-time event updates
@@ -81,6 +154,21 @@ export function useNightPulseRealtime() {
 
   // Set up subscriptions and refresh
   useEffect(() => {
+    // 0. Diagnostic health check
+    const diagnose = async () => {
+      const health = await checkNightPulseSchema();
+      console.log('🏥 Night Pulse Schema Health:', health);
+      
+      if (!health.materialized_view) {
+        console.warn('⚠️ Missing: night_pulse_realtime view - will use fallback');
+      }
+      if (!health.beacons_has_city) {
+        console.error('❌ Missing: beacons.city column - globe will not work');
+      }
+    };
+    
+    diagnose();
+
     // 1. Initial load
     loadInitialData();
 

@@ -341,13 +341,22 @@ export function NightPulseGlobeRealtime({ onCityClick }: NightPulseGlobeRealtime
       )}
 
       {error && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-red-900/90 border border-red-500 text-white px-6 py-3 max-w-md">
+        <div className={`absolute top-4 left-1/2 -translate-x-1/2 border text-white px-6 py-3 max-w-md ${
+          error.includes('fallback') ? 'bg-yellow-900/90 border-yellow-500' : 'bg-red-900/90 border-red-500'
+        }`}>
           <p style={{ fontWeight: 700, fontSize: '12px' }}>
-            ⚠️ CONNECTION ERROR
+            ⚠️ {error.includes('fallback') ? 'USING FALLBACK DATA' : 'CONNECTION ERROR'}
           </p>
           <p style={{ fontWeight: 400, fontSize: '11px', marginTop: '4px' }}>
             {error}
           </p>
+          {error.includes('migration') && (
+            <p style={{ fontWeight: 400, fontSize: '10px', marginTop: '8px', opacity: 0.8 }}>
+              Run: <code style={{ background: 'rgba(0,0,0,0.3)', padding: '2px 6px', borderRadius: '3px' }}>
+                supabase db push
+              </code>
+            </p>
+          )}
         </div>
       )}
 
