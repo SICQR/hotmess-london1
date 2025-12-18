@@ -78,6 +78,8 @@ export const SUPABASE_ANON_KEY = (() => {
 // 🔒 SECURITY: Production Stripe key is required and must be set in .env.local
 // Add this to .env.local:
 //   VITE_STRIPE_PUBLISHABLE_KEY=pk_live_your_key (production) or pk_test_your_key (development)
+const STRIPE_KEY_PREFIXES = ['pk_test_', 'pk_live_'] as const;
+
 export const STRIPE_PUBLISHABLE_KEY = (() => {
   const key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
   if (!key) {
@@ -88,9 +90,10 @@ export const STRIPE_PUBLISHABLE_KEY = (() => {
       '⚠️  SECURITY: After fixing this issue, rotate the exposed Stripe key in Stripe Dashboard'
     );
   }
-  if (!key.startsWith('pk_test_') && !key.startsWith('pk_live_')) {
+  const hasValidPrefix = STRIPE_KEY_PREFIXES.some(prefix => key.startsWith(prefix));
+  if (!hasValidPrefix) {
     throw new Error(
-      'VITE_STRIPE_PUBLISHABLE_KEY must start with pk_test_ or pk_live_\n' +
+      `VITE_STRIPE_PUBLISHABLE_KEY must start with ${STRIPE_KEY_PREFIXES.join(' or ')}\n` +
       'Current value does not appear to be a valid Stripe publishable key'
     );
   }

@@ -3,14 +3,26 @@
 
 // Extract project ID from environment variable URL
 // Expected format: https://{projectId}.supabase.co
+// Note: This pattern assumes standard Supabase URLs. Custom domains are not currently supported.
 function getProjectIdFromUrl(url: string): string {
-  const match = url.match(/https:\/\/([^.]+)\.supabase\.co/);
-  if (!match || !match[1]) {
-    throw new Error(
-      'Invalid VITE_SUPABASE_URL format. Expected: https://your-project.supabase.co'
-    );
+  // Try standard Supabase URL pattern first
+  const supabaseMatch = url.match(/https:\/\/([^.]+)\.supabase\.co/);
+  if (supabaseMatch && supabaseMatch[1]) {
+    return supabaseMatch[1];
   }
-  return match[1];
+  
+  // For custom domains, extract the subdomain or use a fallback approach
+  // This is a basic implementation - you may need to adjust based on your setup
+  const customMatch = url.match(/https:\/\/([^.]+)\./);
+  if (customMatch && customMatch[1]) {
+    console.warn('Using custom Supabase domain. Project ID extraction may not be accurate.');
+    return customMatch[1];
+  }
+  
+  throw new Error(
+    'Invalid VITE_SUPABASE_URL format. Expected: https://your-project.supabase.co\n' +
+    'If using a custom domain, please ensure the URL is correctly formatted.'
+  );
 }
 
 // Get credentials from environment variables with validation
