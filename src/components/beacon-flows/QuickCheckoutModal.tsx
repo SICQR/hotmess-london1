@@ -56,7 +56,8 @@ export function QuickCheckoutModal({
           source: 'quick_checkout'
         });
 
-      if (purchaseError && !purchaseError.message.includes('duplicate') && !purchaseError.code?.includes('23505')) {
+      // PostgreSQL unique constraint violation code
+      if (purchaseError && purchaseError.code !== '23505') {
         throw purchaseError;
       }
 
@@ -76,7 +77,7 @@ export function QuickCheckoutModal({
           }
         });
 
-      if (xpError && !xpError.message.includes('duplicate') && !xpError.code?.includes('23505')) {
+      if (xpError && xpError.code !== '23505') {
         console.error('Failed to award XP:', xpError);
       }
 

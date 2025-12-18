@@ -72,7 +72,8 @@ export function MusicPreSaveModal({
           source: 'music_presave'
         });
 
-      if (presaveError && !presaveError.message.includes('duplicate') && !presaveError.code?.includes('23505')) {
+      // PostgreSQL unique constraint violation code
+      if (presaveError && presaveError.code !== '23505') {
         throw presaveError;
       }
 
@@ -92,7 +93,7 @@ export function MusicPreSaveModal({
           }
         });
 
-      if (xpError && !xpError.message.includes('duplicate') && !xpError.code?.includes('23505')) {
+      if (xpError && xpError.code !== '23505') {
         console.error('Failed to award XP:', xpError);
       }
 

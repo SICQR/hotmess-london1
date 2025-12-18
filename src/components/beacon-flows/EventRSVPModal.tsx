@@ -58,8 +58,9 @@ export function EventRSVPModal({
         });
 
       if (rsvpError) {
-        // If error is duplicate, user already RSVP'd - that's OK
-        if (!rsvpError.message.includes('duplicate') && !rsvpError.code?.includes('23505')) {
+        // PostgreSQL unique constraint violation code
+        const isDuplicateError = rsvpError.code === '23505';
+        if (!isDuplicateError) {
           throw rsvpError;
         }
       }
@@ -75,7 +76,7 @@ export function EventRSVPModal({
           meta: { action: 'event_rsvp', plus_ones: plusOnes }
         });
 
-      if (xpError && !xpError.message.includes('duplicate') && !xpError.code?.includes('23505')) {
+      if (xpError && xpError.code !== '23505') {
         console.error('Failed to award XP:', xpError);
         // Don't fail the RSVP if XP fails
       }
