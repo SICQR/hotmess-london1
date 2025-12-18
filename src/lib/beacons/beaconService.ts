@@ -92,7 +92,9 @@ export async function createBeacon(
     }
 
     // Collision detected - retry with new code
-    console.log(`Beacon code collision on attempt ${attempt + 1}, retrying...`);
+    if (import.meta.env.DEV) {
+      console.log(`[BeaconService] Beacon code collision on attempt ${attempt + 1}, retrying...`);
+    }
   }
 
   return {

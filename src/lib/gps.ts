@@ -13,7 +13,7 @@ export async function requestLocationPermission(): Promise<boolean> {
   try {
     // Check if geolocation is supported
     if (!navigator.geolocation) {
-      console.error('Geolocation not supported');
+      console.error('[GPS] Geolocation not supported');
       return false;
     }
 
@@ -31,7 +31,9 @@ export async function requestLocationPermission(): Promise<boolean> {
         }
       } catch (e) {
         // Some browsers don't support permissions.query for geolocation
-        console.log('Permissions API not available, requesting directly');
+        if (import.meta.env.DEV) {
+          console.log('[GPS] Permissions API not available, requesting directly');
+        }
       }
     }
     
@@ -46,7 +48,7 @@ export async function requestLocationPermission(): Promise<boolean> {
     
     return true;
   } catch (error: any) {
-    console.error('Location permission error:', error);
+    console.error('[GPS] Location permission error:', error);
     
     // Check error code
     if (error?.code === 1) {
@@ -93,11 +95,13 @@ export async function verifyProximity(
     // Calculate distance using Haversine formula
     const distance = calculateDistance(userLat, userLng, beaconLat, beaconLng);
     
-    console.log(`Distance to beacon: ${distance.toFixed(0)}m (max: ${maxDistanceMeters}m)`);
+    if (import.meta.env.DEV) {
+      console.log(`[GPS] Distance to beacon: ${distance.toFixed(0)}m (max: ${maxDistanceMeters}m)`);
+    }
     
     return distance <= maxDistanceMeters;
   } catch (error) {
-    console.error('GPS verification error:', error);
+    console.error('[GPS] GPS verification error:', error);
     return false;
   }
 }
@@ -146,7 +150,7 @@ export async function getCurrentCoordinates(): Promise<{ lat: number; lng: numbe
       lng: position.coords.longitude,
     };
   } catch (error) {
-    console.error('Get coordinates error:', error);
+    console.error('[GPS] Get coordinates error:', error);
     return null;
   }
 }

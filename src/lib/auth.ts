@@ -2,6 +2,7 @@
  * Auth utilities for Supabase authentication
  */
 import { supabase } from './supabase';
+import { debug } from './debug';
 
 export interface AuthUser {
   id: string;
@@ -36,7 +37,7 @@ export function getAccessToken(): string | null {
     
     return null;
   } catch (err) {
-    console.error('Failed to get access token:', err);
+    console.error('[Auth] Failed to get access token:', err);
     return null;
   }
 }
@@ -46,53 +47,38 @@ export function getAccessToken(): string | null {
  */
 export async function getAccessTokenAsync(): Promise<string | null> {
   try {
-    // Debug localStorage
-    console.log('🔍 Checking localStorage for auth token...');
-    const keys = Object.keys(localStorage);
-    const authKeys = keys.filter(k => k.includes('auth') || k.startsWith('sb-'));
-    console.log('Auth-related keys:', authKeys);
-    
-    authKeys.forEach(key => {
-      try {
-        const value = localStorage.getItem(key);
-        if (value) {
-          const parsed = JSON.parse(value);
-          console.log(`Key: ${key}`, {
-            hasAccessToken: !!parsed?.access_token,
-            hasCurrentSession: !!parsed?.currentSession,
-            hasUser: !!parsed?.user || !!parsed?.currentSession?.user
-          });
-        }
-      } catch {
-        // Not JSON, skip
-      }
-    });
+    if (import.meta.env.DEV) {
+      debug.log('[Auth] Checking for auth token...');
+    }
     
     const { data: { session }, error } = await supabase.auth.getSession();
     
-    console.log('getAccessTokenAsync - Session check:', {
-      hasSession: !!session,
-      hasUser: !!session?.user,
-      hasAccessToken: !!session?.access_token,
-      userId: session?.user?.id,
-      email: session?.user?.email,
-      error: error?.message
-    });
+    if (import.meta.env.DEV) {
+      debug.log('[Auth] Session check:', {
+        hasSession: !!session,
+        hasUser: !!session?.user,
+        hasAccessToken: !!session?.access_token,
+        // Never log actual tokens, user IDs, or emails - even in dev
+        error: error?.message
+      });
+    }
     
     if (error) {
-      console.error('Error getting session for token:', error);
+      console.error('[Auth] Error getting session for token:', error);
       return null;
     }
     
-    if (session?.access_token) {
-      console.log('✅ Access token retrieved:', session.access_token.slice(0, 20) + '...');
-    } else {
-      console.warn('⚠️ No access token in session');
+    if (import.meta.env.DEV) {
+      if (session?.access_token) {
+        debug.log('[Auth] ✅ Access token retrieved');
+      } else {
+        debug.warn('[Auth] ⚠️ No access token in session');
+      }
     }
     
     return session?.access_token || null;
   } catch (err) {
-    console.error('Failed to get access token async:', err);
+    console.error('[Auth] Failed to get access token async:', err);
     return null;
   }
 }
@@ -112,7 +98,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     const { data: { session }, error } = await supabase.auth.getSession();
     
     if (error) {
-      console.error('Error getting session:', error);
+      console.error('[Auth] Error getting session:', error);
       return null;
     }
     
@@ -130,7 +116,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       role: adminOverride ? 'admin' : (session.user.user_metadata?.role || session.user.role || 'user')
     };
   } catch (err) {
-    console.error('Failed to get current user:', err);
+    console.error('[Auth] Failed to get current user:', err);
     return null;
   }
 }
@@ -139,24 +125,26 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
  * Sign in with email and password
  */
 export async function signIn(email: string, password: string): Promise<void> {
-  console.log('🔐 Attempting sign in...', { email });
+  if (import.meta.env.DEV) {
+    debug.log('[Auth] Attempting sign in...');
+  }
   
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password
   });
   
-  console.log('Sign in response:', {
-    hasSession: !!data?.session,
-    hasUser: !!data?.user,
-    userId: data?.user?.id,
-    userEmail: data?.user?.email,
-    emailConfirmed: data?.user?.email_confirmed_at,
-    error: error?.message
-  });
+  if (import.meta.env.DEV) {
+    debug.log('[Auth] Sign in response:', {
+      hasSession: !!data?.session,
+      hasUser: !!data?.user,
+      emailConfirmed: !!data?.user?.email_confirmed_at,
+      error: error?.message
+    });
+  }
   
   if (error) {
-    console.error('❌ Sign in error:', error);
+    console.error('[Auth] Sign in error:', error);
     throw new Error(`Sign in failed: ${error.message}`);
   }
   
@@ -164,7 +152,9 @@ export async function signIn(email: string, password: string): Promise<void> {
     throw new Error('Sign in failed: No session created');
   }
   
-  console.log('✅ Sign in successful!');
+  if (import.meta.env.DEV) {
+    debug.log('[Auth] ✅ Sign in successful!');
+  }
 }
 
 /**
@@ -189,7 +179,9 @@ export async function signUp(email: string, password: string, displayName?: stri
     throw new Error(`Sign up failed: ${data.error || 'Unknown error'}`);
   }
 
-  console.log('✅ User created successfully, now signing in...');
+  if (import.meta.env.DEV) {
+    debug.log('[Auth] ✅ User created successfully, now signing in...');
+  }
 
   // Now sign in with the newly created account
   await signIn(email, password);
@@ -211,7 +203,9 @@ export async function signOut(): Promise<void> {
  */
 export function onAuthStateChange(callback: (user: AuthUser | null) => void) {
   return supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log('Auth state changed:', event);
+    if (import.meta.env.DEV) {
+      debug.log('[Auth] Auth state changed:', event);
+    }
     
     if (session?.user) {
       // Check for dev admin override
@@ -236,7 +230,7 @@ export async function getSession() {
   const { data: { session }, error } = await supabase.auth.getSession();
   
   if (error) {
-    console.error('Error getting session:', error);
+    console.error('[Auth] Error getting session:', error);
     return null;
   }
   
