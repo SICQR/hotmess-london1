@@ -15,6 +15,7 @@ import {
   Radio,
   Users,
   Shield,
+  type LucideIcon,
 } from 'lucide-react';
 
 interface ProjectDashboardProps {
@@ -24,7 +25,7 @@ interface ProjectDashboardProps {
 interface FeatureArea {
   id: string;
   name: string;
-  icon: any;
+  icon: LucideIcon;
   progress: number; // 0-100
   status: 'complete' | 'in-progress' | 'not-started' | 'needs-polish';
   tasks: Task[];
@@ -130,7 +131,7 @@ export function ProjectDashboard({ onNavigate }: ProjectDashboardProps) {
         id: 'radio',
         name: 'HOTMESS Radio',
         icon: Radio,
-        progress: 95,
+        progress: 100,
         status: 'complete',
         priority: 'medium',
         tasks: [
@@ -194,7 +195,7 @@ export function ProjectDashboard({ onNavigate }: ProjectDashboardProps) {
         id: 'design',
         name: 'Design System',
         icon: Palette,
-        progress: 90,
+        progress: 100,
         status: 'complete',
         priority: 'low',
         tasks: [
