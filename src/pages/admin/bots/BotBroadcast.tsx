@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 import { Send, AlertCircle } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 export function BotBroadcast() {
   const [message, setMessage] = useState('');

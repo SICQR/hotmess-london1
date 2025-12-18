@@ -5,7 +5,7 @@ import { Search, RefreshCw, DollarSign, CheckCircle, XCircle } from 'lucide-reac
 import { LoadingState } from '../../components/LoadingState';
 import { ErrorState } from '../../components/ErrorState';
 import { EmptyState } from '../../components/EmptyState';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
 import { Button } from '../../components/ui/button';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';

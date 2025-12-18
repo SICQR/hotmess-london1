@@ -4,7 +4,7 @@ import { ShoppingBag, Heart, Share2, Zap, Info, ExternalLink, ChevronLeft, Chevr
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 import { getProductByHandle, getProductsByCollection, createCheckout } from '../lib/shopify-api';
 import { Badge } from '../components/Badge';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { SaveButton } from '../components/SaveButton';
 import { useCart } from '../contexts/CartContext';
 import { analytics } from '../lib/analytics';

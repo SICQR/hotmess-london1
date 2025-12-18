@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Lock, ArrowLeft, Check, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { RouteId } from '../lib/routes';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { supabase } from '../lib/supabase';
 
 interface SetNewPasswordPageProps {

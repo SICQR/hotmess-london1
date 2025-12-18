@@ -25,7 +25,7 @@ import { Card } from '../../components/design-system/Card';
 import { HMInput } from '../../components/library/HMInput';
 import { createEvent, ClubEvent } from '../../lib/clubMode/clubModeService';
 import { RouteId } from '../../lib/routes';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface Props {
   clubId: string;

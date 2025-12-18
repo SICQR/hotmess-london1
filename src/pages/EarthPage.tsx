@@ -21,7 +21,7 @@ import LiveGlobe3D, { type Beacon as GlobeBeacon, type GlobeLayers } from '../co
 import { LocationSearchInput } from '../components/LocationSearchInput';
 import { LocationPickerOverlay } from '../components/LocationPickerOverlay';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface EarthPageProps {
   onNavigate: (route: string) => void;

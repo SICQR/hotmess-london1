@@ -5,7 +5,7 @@ import { Plus, Edit, Trash2, Eye, EyeOff, Package } from 'lucide-react';
 import { LoadingState } from '../../components/LoadingState';
 import { ErrorState } from '../../components/ErrorState';
 import { EmptyState } from '../../components/EmptyState';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { getMyListings, updateListing, deleteListing } from '../../lib/api/messmarket';
 
 interface SellerListingsProps {

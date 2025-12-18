@@ -2,7 +2,7 @@
 import './lib/suppress-three-warning';
 
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { Toaster } from 'sonner@2.0.3';
+import { Toaster } from 'sonner';
 import { Splash } from './components/Splash';
 import { AgeGate } from './components/gate';
 import { AppContent } from './components/AppContent';

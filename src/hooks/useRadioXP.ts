@@ -6,7 +6,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { useAuth } from '../contexts/AuthContext';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface UseRadioXPOptions {
   enabled?: boolean;
