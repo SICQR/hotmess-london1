@@ -2,7 +2,7 @@ import * as React from "react";
 import Map, { Marker, NavigationControl, type ViewStateChangeEvent } from "react-map-gl";
 import type { MapRef } from "react-map-gl";
 import Supercluster from "supercluster";
-import "mapbox-gl/dist/mapbox-gl.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 

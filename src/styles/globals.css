@@ -1,5 +1,5 @@
-/* Mapbox GL CSS */
-@import url('https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css');
+/* MapLibre GL CSS */
+@import url('https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css');
 
 /* Tailwind Directives */
 @tailwind base;
