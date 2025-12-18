@@ -2,9 +2,8 @@ import * as React from "react";
 import Map, { Marker, NavigationControl, type ViewStateChangeEvent } from "react-map-gl";
 import type { MapRef } from "react-map-gl";
 import Supercluster from "supercluster";
+import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
 import type { BeaconType, GateContext, RequirementChip } from "../lib/beaconTypes";
 import {
@@ -189,7 +188,7 @@ function useSuperclusterPoints(args: {
   return { clusters, clusterer };
 }
 
-function boundsFromMap(map: mapboxgl.Map | null): [number, number, number, number] | null {
+function boundsFromMap(map: maplibregl.Map | null): [number, number, number, number] | null {
   if (!map) return null;
   const b = map.getBounds();
   return [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()];
@@ -315,8 +314,8 @@ export function MapBeaconView(props: Props) {
     setLayers(newLayers);
     props.onChangeLayers?.(newLayers);
 
-    // Update Mapbox layers
-    const map = mapRef.current?.getMap() as mapboxgl.Map | undefined;
+    // Update MapLibre layers
+    const map = mapRef.current?.getMap() as maplibregl.Map | undefined;
     if (!map) return;
 
     // Pins visibility handled by React markers
@@ -405,7 +404,7 @@ export function MapBeaconView(props: Props) {
       {/* Map */}
       <Map
         ref={mapRef as any}
-        mapboxAccessToken={MAPBOX_TOKEN}
+        mapLib={maplibregl}
         mapStyle={props.mapStyleUrl}
         initialViewState={viewState}
         onMove={onMove}
