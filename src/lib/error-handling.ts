@@ -75,6 +75,8 @@ export function isApiError(error: unknown): error is { message: string; status: 
     typeof error === 'object' &&
     error !== null &&
     'message' in error &&
-    'status' in error
+    'status' in error &&
+    typeof (error as any).message === 'string' &&
+    typeof (error as any).status === 'number'
   );
 }

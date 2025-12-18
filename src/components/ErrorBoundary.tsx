@@ -1,6 +1,15 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 
+// Define global types for analytics
+interface WindowWithGtag extends Window {
+  gtag?: (
+    command: 'event',
+    eventName: string,
+    eventParams: { description: string; fatal: boolean }
+  ) => void;
+}
+
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
@@ -29,9 +38,10 @@ export class ErrorBoundary extends Component<Props, State> {
     // Call optional error handler
     this.props.onError?.(error, errorInfo);
 
-    // Send to analytics
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'exception', {
+    // Send to analytics if gtag is available
+    const win = window as WindowWithGtag;
+    if (typeof window !== 'undefined' && win.gtag) {
+      win.gtag('event', 'exception', {
         description: error.message,
         fatal: false,
       });
