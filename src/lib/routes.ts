@@ -192,7 +192,8 @@ export type RouteId =
   | "quickTestSetup"
   // Test pages
   | "testCart"
-  | "authDebug"; // Debug auth state
+  | "authDebug" // Debug auth state
+  | "projectDashboard"; // NEW: Internal project management dashboard
 
 export interface RouteDef {
   id: RouteId;
@@ -1382,6 +1383,13 @@ export const ROUTES: Record<RouteId, RouteDef> = {
     href: "/auth-debug",
     group: "hidden",
     description: "Debug auth state",
+  },
+  projectDashboard: {
+    id: "projectDashboard",
+    label: "Project Dashboard",
+    href: "/project-dashboard",
+    group: "admin",
+    description: "Internal build management and progress tracking",
   },
 };
 
