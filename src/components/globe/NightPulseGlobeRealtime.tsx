@@ -35,10 +35,20 @@ export function NightPulseGlobeRealtime({ onCityClick }: NightPulseGlobeRealtime
     if (!containerRef.current) return;
 
     const container = containerRef.current;
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    
+    // Wait for container to have dimensions (using a small timeout)
+    const initializeGlobe = () => {
+      const width = container.clientWidth;
+      const height = container.clientHeight;
 
-    console.log('🌍 Initializing Night Pulse globe:', width, 'x', height);
+      console.log('🌍 Initializing Night Pulse globe:', width, 'x', height);
+      
+      // Don't initialize if container has no dimensions
+      if (width === 0 || height === 0) {
+        console.warn('⚠️ Container has no dimensions, retrying...');
+        setTimeout(initializeGlobe, 100);
+        return;
+      }
 
     // Scene
     const scene = new THREE.Scene();
@@ -215,6 +225,10 @@ export function NightPulseGlobeRealtime({ onCityClick }: NightPulseGlobeRealtime
       }
       renderer.dispose();
     };
+    }; // End of initializeGlobe function
+    
+    // Start initialization
+    initializeGlobe();
   }, []);
 
   // Update markers when cities data changes
