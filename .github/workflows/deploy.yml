@@ -9,6 +9,8 @@ jobs:
   deploy-vercel:
     name: Deploy to Vercel
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     environment:
       name: production
       url: https://hotmess.london
@@ -55,6 +57,8 @@ jobs:
   deploy-supabase-functions:
     name: Deploy Supabase Edge Functions
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       
@@ -71,6 +75,7 @@ jobs:
     name: Send Deployment Notification
     needs: [deploy-vercel, deploy-supabase-functions]
     runs-on: ubuntu-latest
+    permissions: {}
     if: always()
     steps:
       - name: Send Slack notification
