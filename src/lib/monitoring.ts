@@ -140,6 +140,11 @@ export function trackWebVitals() {
 }
 
 /**
+ * Metrics that should be excluded from dev logging (too noisy)
+ */
+const EXCLUDED_DEV_METRICS = ['CLS'];
+
+/**
  * Report metric to analytics
  */
 function reportMetric(metric: PerformanceMetric) {
@@ -150,7 +155,7 @@ function reportMetric(metric: PerformanceMetric) {
   });
 
   // Only log significant metrics in development (not every CLS update)
-  if (import.meta.env.DEV && !['CLS'].includes(metric.name)) {
+  if (import.meta.env.DEV && !EXCLUDED_DEV_METRICS.includes(metric.name)) {
     console.log(`[Monitoring] 📊 ${metric.name}:`, {
       value: Math.round(metric.value),
       rating: metric.rating,
