@@ -105,6 +105,11 @@ Each migration has a corresponding rollback script:
 - `rollback_002_create_rls_policies.sql` - Drops all policies and helper functions
 - `rollback_003_create_indexes.sql` - Drops additional indexes
 - `rollback_004_create_views.sql` - Drops all views
+- `rollback_005_night_pulse_realtime.sql` - Drops Night Pulse infrastructure
+
+## Verification Scripts
+
+- `VERIFY_005_night_pulse.sql` - Comprehensive test suite for Night Pulse migration (run after applying 005)
 
 ## Running Migrations
 
