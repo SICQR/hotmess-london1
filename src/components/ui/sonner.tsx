@@ -1,10 +1,8 @@
-"use client";
-
-import { useTheme } from "next-themes";
 import { Toaster as Sonner, ToasterProps } from "sonner";
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme();
+  // Use dark theme by default for HOTMESS LONDON
+  const theme = "dark";
 
   return (
     <Sonner
