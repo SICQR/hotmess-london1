@@ -41,6 +41,17 @@ A real-time platform connecting queer nightlife through a 3D globe, XP economy, 
    cp .env.example .env
    # Edit .env and fill in your API keys and configuration
    ```
+   
+   **⚠️ IMPORTANT**: All credentials must be set via environment variables. Never commit secrets to the repository.
+   
+   **Required services:**
+   - Shopify: Get Storefront API token from your Shopify store settings
+   - Supabase: Create project at https://supabase.com and copy URL + anon key
+   - Stripe: Get publishable key from https://dashboard.stripe.com/apikeys
+   
+   **Optional services:**
+   - RadioKing: Get API token from https://manager.radioking.com/ for live listener data
+   - Last.fm: Get API credentials from https://www.last.fm/api/account/create for scrobbling
 
 4. **Start development server**
    ```bash
@@ -48,22 +59,41 @@ A real-time platform connecting queer nightlife through a 3D globe, XP economy, 
    ```
 
 5. **Open in browser**
-   - Navigate to `http://localhost:3000`
+   - Navigate to `http://localhost:5173` (Vite default port)
 
 ## Environment Variables
 
 See `.env.example` for all required and optional environment variables.
 
-**Required:**
-- `VITE_SHOPIFY_DOMAIN` - Your Shopify store domain
+**Required (App will not work without these):**
+- `VITE_SHOPIFY_DOMAIN` - Your Shopify store domain (e.g., yourstore.myshopify.com)
 - `VITE_SHOPIFY_STOREFRONT_TOKEN` - Shopify Storefront API token
 - `VITE_SUPABASE_URL` - Your Supabase project URL
-- `VITE_SUPABASE_ANON_KEY` - Supabase anonymous key
-- `VITE_STRIPE_PUBLISHABLE_KEY` - Stripe publishable key
+- `VITE_SUPABASE_ANON_KEY` - Supabase anonymous/public key
+- `VITE_STRIPE_PUBLISHABLE_KEY` - Stripe publishable key (pk_test_* or pk_live_*)
 
-**Optional:**
-- `VITE_MAPBOX_TOKEN` - For map features
-- `HOTMESS_NEW_BOT_TOKEN` - For Telegram bot integration
+**Optional (Enhanced features):**
+- `VITE_RADIOKING_TOKEN` - RadioKing API token for live listener counts (without this, mock data is used)
+- `VITE_LASTFM_API_KEY` - Last.fm API key for music scrobbling (if implementing)
+- `VITE_LASTFM_SHARED_SECRET` - Last.fm shared secret (if implementing)
+- `VITE_MAPBOX_TOKEN` - Mapbox token for map features
+- `HOTMESS_NEW_BOT_TOKEN` - Telegram bot token (server-side only)
+
+**Supabase Edge Functions Configuration:**
+
+RadioKing API credentials must also be set in Supabase Dashboard:
+```
+Navigate to: Supabase Dashboard → Edge Functions → Environment Variables
+Add:
+  RADIOKING_STATION_ID=736103
+  RADIOKING_API_KEY=rk_live_your_token_here
+```
+
+**⚠️ Security Notes:**
+- Never commit `.env` file to version control
+- Use `pk_test_*` keys for development, `pk_live_*` for production
+- Rotate all API keys regularly
+- All hardcoded secrets have been removed from this codebase
 
 ## Development
 
@@ -104,7 +134,7 @@ See [HOTMESS_OS_COMPLETE.md](./HOTMESS_OS_COMPLETE.md) for comprehensive documen
 
 - **Frontend**: React 18, TypeScript, Vite, Tailwind CSS
 - **Backend**: Supabase (Postgres + Auth + Edge Functions)
-- **Maps**: Mapbox GL
+- **Maps**: MapLibre GL
 - **Payments**: Stripe Connect
 - **Messaging**: Telegram Bot API
 
@@ -116,8 +146,17 @@ See [HOTMESS_OS_COMPLETE.md](./HOTMESS_OS_COMPLETE.md) for comprehensive documen
 ✅ TypeScript strict mode enabled
 ✅ ESLint + Prettier configured
 ✅ Production-ready build system
+✅ All hardcoded secrets removed
 
 **Ready for deployment to Vercel + Supabase**
+
+### Post-Deployment Checklist
+
+After deploying, ensure you:
+1. **Rotate all API keys** - Any previously committed secrets should be regenerated
+2. **Configure RadioKing** - Add API token to Supabase Edge Functions for live listener data
+3. **Setup Shopify** - Upload products and create collections (superhung, hnh-mess, raw, hung, high, super)
+4. **Test all integrations** - Verify Stripe, Shopify, and Supabase are working in production
 
 ---
 
