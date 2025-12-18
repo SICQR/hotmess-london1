@@ -4,7 +4,6 @@
 "use client";
 
 import * as React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ShieldAlert, HeartHandshake } from "lucide-react";
@@ -64,8 +63,6 @@ function mapSendError(raw: string) {
 }
 
 export default function Thread({ mode, threadId, sendEndpoint }: Props) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const copy = COPY[mode];
 
   const [me, setMe] = React.useState<string | null>(null);
@@ -79,7 +76,7 @@ export default function Thread({ mode, threadId, sendEndpoint }: Props) {
   const { locked } = useThreadStatus(mode, threadId);
 
   // Ticket-specific: load listing context if listingId is present
-  const listingId = searchParams.get("listingId");
+  const listingId = new URLSearchParams(window.location.search).get("listingId");
   const [ticketListing, setTicketListing] = React.useState<any | null>(null);
 
   React.useEffect(() => {
@@ -220,13 +217,13 @@ export default function Thread({ mode, threadId, sendEndpoint }: Props) {
             otherUserId={otherUserId || undefined}
           />
 
-          <Button variant="secondary" className="rounded-2xl" onClick={() => router.push("/map")}>
+          <Button variant="secondary" className="rounded-2xl" onClick={() => window.location.href = "/map"}>
             Map
           </Button>
           
           {/* Add My Tickets link for ticket threads */}
           {mode === "tickets" && (
-            <Button variant="outline" className="rounded-2xl" onClick={() => router.push(buildPath("myTickets"))}>
+            <Button variant="outline" className="rounded-2xl" onClick={() => window.location.href = buildPath("myTickets")}>
               My Tickets
             </Button>
           )}
@@ -371,13 +368,13 @@ export default function Thread({ mode, threadId, sendEndpoint }: Props) {
       <div className="flex items-center justify-between text-sm">
         <button
           className="flex items-center gap-2 opacity-80 hover:opacity-100 underline underline-offset-4"
-          onClick={() => router.push("/care")}
+          onClick={() => window.location.href = "/care"}
         >
           <HeartHandshake className="h-4 w-4" /> Care
         </button>
         <button
           className="flex items-center gap-2 opacity-80 hover:opacity-100 underline underline-offset-4"
-          onClick={() => router.push(`/report?thread=${threadId}&mode=${copy.reportMode}`)}
+          onClick={() => window.location.href = `/report?thread=${threadId}&mode=${copy.reportMode}`}
         >
           <ShieldAlert className="h-4 w-4" /> Report
         </button>
