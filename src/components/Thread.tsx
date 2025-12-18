@@ -76,7 +76,10 @@ export default function Thread({ mode, threadId, sendEndpoint }: Props) {
   const { locked } = useThreadStatus(mode, threadId);
 
   // Ticket-specific: load listing context if listingId is present
-  const listingId = new URLSearchParams(window.location.search).get("listingId");
+  const listingId = React.useMemo(() => 
+    new URLSearchParams(window.location.search).get("listingId"), 
+    []
+  );
   const [ticketListing, setTicketListing] = React.useState<any | null>(null);
 
   React.useEffect(() => {

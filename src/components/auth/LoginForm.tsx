@@ -35,7 +35,7 @@ export function LoginForm() {
 
       console.log('✅ Login successful:', data.user?.email);
       
-      // Reload the page to update auth state
+      // Reload the page to update auth state (full reload required to refresh session)
       window.location.href = '/';
     } catch (err: any) {
       console.error('Login exception:', err);
