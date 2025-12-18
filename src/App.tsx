@@ -17,7 +17,8 @@ import { initMonitoring } from './lib/monitoring';
 import './styles/globals.css';
 
 // 🔓 DEV MODE: Force auth bypass to 'true' for development
-if (typeof localStorage !== 'undefined') {
+// Only enable in development environment, NOT in production
+if (import.meta.env.DEV && typeof localStorage !== 'undefined') {
   const currentValue = localStorage.getItem('hotmess_dev_auth_bypass');
   if (currentValue !== 'true') {
     console.log('🔧 Auto-enabling dev bypass for testing... (was:', currentValue, ')');
@@ -39,16 +40,20 @@ export default function App() {
     // Track initial page view
     analytics.pageView(window.location.pathname, 'HOTMESS LONDON');
     
-    console.log('📊 Analytics & monitoring initialized');
+    if (import.meta.env.DEV) {
+      console.log('📊 Analytics & monitoring initialized');
+    }
   }, []);
 
   // Check localStorage for existing verification
   useEffect(() => {
     const verified = localStorage.getItem('hotmess_age_verified');
     
-    // DEBUG: Log current state
-    console.log('🔍 Age verification status:', verified);
-    console.log('🔍 Current localStorage:', localStorage.getItem('hotmess_age_verified'));
+    // DEBUG: Log current state (dev only)
+    if (import.meta.env.DEV) {
+      console.log('🔍 Age verification status:', verified);
+      console.log('🔍 Current localStorage:', localStorage.getItem('hotmess_age_verified'));
+    }
     
     if (verified === 'true') {
       setAgeVerified(true);
@@ -106,14 +111,18 @@ export default function App() {
   }, []);
 
   const handleAgeGateEnter = () => {
-    console.log('✅ Age gate ENTER clicked');
+    if (import.meta.env.DEV) {
+      console.log('✅ Age gate ENTER clicked');
+    }
     localStorage.setItem('hotmess_age_verified', 'true');
     setAgeVerified(true);
     setSplashComplete(true);
   };
 
   const handleAgeGateLeave = () => {
-    console.log('❌ Age gate LEAVE clicked');
+    if (import.meta.env.DEV) {
+      console.log('❌ Age gate LEAVE clicked');
+    }
     window.location.href = 'https://google.com';
   };
 
