@@ -38,7 +38,7 @@ SELECT
       SELECT column_name FROM information_schema.columns
       WHERE table_schema = 'public' AND table_name = 'market_listings'
     ) THEN '✅ EXISTS'
-    ELSE '❌ MISSING - run /FIX_ALL_MISSING_COLUMNS.sql'
+    ELSE '❌ MISSING - run scripts/FIX_ALL_MISSING_COLUMNS.sql'
   END as status
 FROM (VALUES 
   ('id'),
