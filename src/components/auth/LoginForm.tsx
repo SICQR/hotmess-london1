@@ -5,11 +5,9 @@
 
 import { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
-import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 export function LoginForm() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -37,9 +35,8 @@ export function LoginForm() {
 
       console.log('✅ Login successful:', data.user?.email);
       
-      // Redirect to home
-      router.push('/');
-      router.refresh();
+      // Reload the page to update auth state (full reload required to refresh session)
+      window.location.href = '/';
     } catch (err: any) {
       console.error('Login exception:', err);
       setError(err.message || 'An error occurred');

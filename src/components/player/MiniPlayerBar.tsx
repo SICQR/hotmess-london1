@@ -4,7 +4,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { usePlayer } from "@/components/player/PlayerProvider";
 
 function fmt(t: number) {
@@ -75,12 +74,12 @@ export function MiniPlayerBar() {
 
           <div className="flex items-center gap-2 shrink-0">
             {current.href ? (
-              <Link
+              <a
                 href={current.href}
                 className="rounded-2xl border px-3 py-2 text-sm"
               >
                 Open
-              </Link>
+              </a>
             ) : null}
 
             <button

@@ -5,11 +5,9 @@
 
 import { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
-import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 export function RegisterForm() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -59,10 +57,9 @@ export function RegisterForm() {
       console.log('✅ Registration successful:', data.user?.email);
       setSuccess(true);
       
-      // Redirect after 2 seconds
+      // Reload the page after 2 seconds
       setTimeout(() => {
-        router.push('/');
-        router.refresh();
+        window.location.href = '/';
       }, 2000);
     } catch (err: any) {
       console.error('Registration exception:', err);
