@@ -77,6 +77,25 @@ See `.env.example` for all required and optional environment variables.
 - `npm run format` - Format code with Prettier
 - `npm run format:check` - Check code formatting
 - `npm run type-check` - Validate TypeScript types
+- `npm test` - Run tests in watch mode
+- `npm run test:run` - Run tests once
+- `npm run test:ui` - Open test UI
+- `npm run test:coverage` - Generate coverage report
+
+### Testing
+
+Run tests:
+```bash
+npm test              # Watch mode
+npm run test:run      # Run once
+npm run test:ui       # Open UI
+npm run test:coverage # Generate coverage report
+```
+
+Write tests in:
+- `src/__tests__/unit/` - Pure logic tests
+- `src/__tests__/integration/` - Feature tests
+- `src/__tests__/components/` - Component tests
 
 ### Before Committing
 
@@ -86,6 +105,7 @@ Always run these commands before committing:
 npm run type-check  # Ensure no TypeScript errors
 npm run lint:fix    # Fix linting issues
 npm run format      # Format code
+npm test:run        # Run tests
 ```
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed contribution guidelines.
@@ -116,6 +136,8 @@ See [HOTMESS_OS_COMPLETE.md](./HOTMESS_OS_COMPLETE.md) for comprehensive documen
 ✅ TypeScript strict mode enabled
 ✅ ESLint + Prettier configured
 ✅ Production-ready build system
+✅ Testing framework with Vitest
+✅ Unit, integration, and component tests
 
 **Ready for deployment to Vercel + Supabase**
 
