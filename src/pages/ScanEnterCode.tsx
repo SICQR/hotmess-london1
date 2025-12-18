@@ -152,8 +152,8 @@ export function ScanEnterCode({ onNavigate }: ScanEnterCodeProps) {
   }
 
   useEffect(() => {
+    // Cleanup camera on component unmount
     return () => stopCamera();
-     
   }, []);
 
   const cleaned = cleanCode(code);

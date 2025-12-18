@@ -451,42 +451,52 @@ export function TextOverImageEnhanced({
           )}
           
           {/* Headline */}
-          {staggerText > 0 && words.length > 0 ? (
-            <h1 className={getHeadlineStyles()} style={getRotationStyle()}>
-              {words.map((word, i) => (
-                <span 
-                  key={i}
-                  className="inline-block"
-                  style={{
-                    animation: isVisible ? `fadeInWord 0.5s ease-out ${i * (staggerText / 1000)}s forwards` : 'none',
-                    opacity: isVisible ? 1 : 0,
-                  }}
+          {(() => {
+            const rotationStyle = getRotationStyle();
+            
+            if (staggerText > 0 && words.length > 0) {
+              return (
+                <h1 className={getHeadlineStyles()} style={rotationStyle}>
+                  {words.map((word, i) => (
+                    <span 
+                      key={i}
+                      className="inline-block"
+                      style={{
+                        animation: isVisible ? `fadeInWord 0.5s ease-out ${i * (staggerText / 1000)}s forwards` : 'none',
+                        opacity: isVisible ? 1 : 0,
+                      }}
+                    >
+                      {word}{i < words.length - 1 ? ' ' : ''}
+                    </span>
+                  ))}
+                </h1>
+              );
+            } else if (quote) {
+              return (
+                <blockquote className={getHeadlineStyles()} style={rotationStyle}>
+                  "{headline}"
+                </blockquote>
+              );
+            } else {
+              return (
+                <h1 
+                  className={getHeadlineStyles()}
+                  style={
+                    finalTextTreatment === 'masked' || finalTextTreatment === 'chrome'
+                      ? {
+                          fontWeight: 900,
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          ...rotationStyle,
+                        }
+                      : { fontWeight: 900, ...rotationStyle }
+                  }
                 >
-                  {word}{i < words.length - 1 ? ' ' : ''}
-                </span>
-              ))}
-            </h1>
-          ) : quote ? (
-            <blockquote className={getHeadlineStyles()} style={getRotationStyle()}>
-              "{headline}"
-            </blockquote>
-          ) : (
-            <h1 
-              className={getHeadlineStyles()}
-              style={
-                finalTextTreatment === 'masked' || finalTextTreatment === 'chrome'
-                  ? {
-                      fontWeight: 900,
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      ...getRotationStyle(),
-                    }
-                  : { fontWeight: 900, ...getRotationStyle() }
-              }
-            >
-              {headline}
-            </h1>
-          )}
+                  {headline}
+                </h1>
+              );
+            }
+          })()}
           
           {/* Byline */}
           {byline && (
