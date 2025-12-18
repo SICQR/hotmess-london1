@@ -71,15 +71,16 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   // Use async token getter for reliable auth
   const accessToken = await getAccessTokenAsync();
   
-  console.log('fetchAPI called:', {
-    endpoint,
-    method: options.method || 'GET',
-    hasAccessToken: !!accessToken,
-    token: accessToken ? `${accessToken.slice(0, 20)}...` : 'none'
-  });
+  if (import.meta.env.DEV) {
+    console.log('[MessMarket] fetchAPI:', {
+      endpoint,
+      method: options.method || 'GET',
+      hasAccessToken: !!accessToken,
+      // Never log actual tokens, even partial
+    });
+  }
   
   const url = `${API_BASE}${endpoint}`;
-  console.log('Making request to:', url);
   
   const response = await fetch(url, {
     ...options,
@@ -90,20 +91,20 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     },
   });
 
-  console.log('Response received:', {
-    status: response.status,
-    statusText: response.statusText,
-    ok: response.ok
-  });
+  if (import.meta.env.DEV) {
+    console.log('[MessMarket] Response:', {
+      status: response.status,
+      ok: response.ok
+    });
+  }
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: 'Request failed' }));
-    console.error('API error response:', error);
+    console.error('[MessMarket] API error:', error);
     throw new Error(error.error || `HTTP ${response.status}`);
   }
 
   const result = await response.json();
-  console.log('API success response:', result);
   return result;
 }
 
@@ -158,14 +159,15 @@ export async function uploadImage(file: File): Promise<{ url: string; filename: 
   // Use async token getter for more reliable auth
   const accessToken = await getAccessTokenAsync();
   
-  console.log('uploadImage called:', {
-    fileName: file.name,
-    fileSize: file.size,
-    fileType: file.type,
-    hasAccessToken: !!accessToken,
-    token: accessToken ? `${accessToken.slice(0, 20)}...` : 'none',
-    apiUrl: `${API_BASE}/images`
-  });
+  if (import.meta.env.DEV) {
+    console.log('[MessMarket] uploadImage:', {
+      fileName: file.name,
+      fileSize: file.size,
+      fileType: file.type,
+      hasAccessToken: !!accessToken,
+      // Never log actual tokens
+    });
+  }
   
   const formData = new FormData();
   formData.append('file', file);
@@ -179,23 +181,26 @@ export async function uploadImage(file: File): Promise<{ url: string; filename: 
       body: formData,
     });
     
-    console.log('Upload response:', {
-      status: response.status,
-      statusText: response.statusText,
-      ok: response.ok
-    });
+    if (import.meta.env.DEV) {
+      console.log('[MessMarket] Upload response:', {
+        status: response.status,
+        ok: response.ok
+      });
+    }
     
     if (!response.ok) {
       const error = await response.json().catch(() => ({ error: 'Upload failed' }));
-      console.error('Upload error response:', error);
+      console.error('[MessMarket] Upload error:', error);
       throw new Error(error.error || `HTTP ${response.status}`);
     }
     
     const result = await response.json();
-    console.log('Upload success:', result);
+    if (import.meta.env.DEV) {
+      console.log('[MessMarket] Upload success');
+    }
     return result;
   } catch (err) {
-    console.error('Upload fetch error:', err);
+    console.error('[MessMarket] Upload fetch error:', err);
     throw err;
   }
 }
