@@ -77,6 +77,9 @@ See `.env.example` for all required and optional environment variables.
 - `npm run format` - Format code with Prettier
 - `npm run format:check` - Check code formatting
 - `npm run type-check` - Validate TypeScript types
+- `npm run test` - Run tests in watch mode
+- `npm run test:run` - Run tests once
+- `npm run test:coverage` - Run tests with coverage report
 
 ### Before Committing
 
@@ -86,9 +89,38 @@ Always run these commands before committing:
 npm run type-check  # Ensure no TypeScript errors
 npm run lint:fix    # Fix linting issues
 npm run format      # Format code
+npm run test:run    # Run tests
 ```
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed contribution guidelines.
+
+## CI/CD Pipeline
+
+### Automated Checks (on every PR):
+- ✅ Linting (ESLint)
+- ✅ Type checking (TypeScript)
+- ✅ Unit tests (Vitest)
+- ✅ Build verification
+- ✅ Security scanning (CodeQL, dependency audit, secret scanning)
+- ✅ Performance audits (Lighthouse)
+
+### Deployments:
+- **Preview:** Automatic on PR (Vercel preview environment)
+- **Production:** Automatic on merge to `main` (Vercel + Supabase Edge Functions)
+
+### Running Checks Locally:
+```bash
+npm run lint          # Check code style
+npm run type-check    # Check types
+npm run test:run      # Run tests
+npm run build         # Test build
+```
+
+### Branch Protection:
+The `main` branch requires:
+- ✅ Pull request with 1 approval
+- ✅ All status checks passing (lint, typecheck, test, build)
+- ✅ Branch up to date with main
 
 ## Documentation
 

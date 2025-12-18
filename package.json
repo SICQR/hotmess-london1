@@ -11,7 +11,10 @@
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,md}\"",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@googlemaps/extended-component-library": "^0.6.12",
@@ -80,11 +83,13 @@
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react-swc": "^3.10.2",
+    "@vitest/coverage-v8": "^1.6.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.18.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
+    "jsdom": "^23.2.0",
     "postcss": "^8.4.49",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.9",
@@ -92,6 +97,7 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.19.1",
-    "vite": "^6.4.1"
+    "vite": "^6.4.1",
+    "vitest": "^1.6.0"
   }
 }
