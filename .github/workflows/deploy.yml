@@ -13,6 +13,7 @@ jobs:
   check-ci-status:
     name: Check CI Status
     runs-on: ubuntu-latest
+    permissions: {}
     if: ${{ github.event_name == 'workflow_run' }}
     steps:
       - name: Check CI conclusion
