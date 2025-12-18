@@ -64,6 +64,39 @@ Safe public views (aggregate-only, no PII):
 - `city_heat_map` - Geographic activity (no coordinates)
 - Admin-only views for moderation queue
 
+### 005_night_pulse_realtime.sql
+Night Pulse real-time globe visualization infrastructure:
+
+- **Support Columns**: Adds `active` boolean and `city` generated column to beacons table
+- **Cities Table**: Reference table with coordinates and metadata for 24 major cities
+- **Night Pulse Events**: Real-time delta stream table for live activity updates
+- **Materialized View**: `night_pulse_realtime` - Aggregated city activity with privacy (<5 beacons hidden)
+- **Triggers**: Auto-emit events on beacon status changes and scan creation
+- **Refresh Function**: `refresh_night_pulse()` - Update materialized view and clean up old events
+- **RLS Policies**: Public read access for cities and events, system-only insert
+
+Features:
+- Privacy-first aggregation (hide cities with <5 beacons)
+- Real-time event stream via Supabase Realtime
+- Heat intensity calculation (0-100 scale based on scans/hour)
+- Auto-cleanup of events older than 24 hours
+- Preflight diagnostics to verify schema requirements
+- Idempotent (safe to run multiple times)
+
+Usage:
+```sql
+-- Initial load
+SELECT * FROM night_pulse_realtime ORDER BY heat_intensity DESC;
+
+-- Manual refresh
+SELECT refresh_night_pulse();
+
+-- Subscribe to real-time events (client-side)
+supabase.channel('night_pulse_updates')
+  .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'night_pulse_events' }, callback)
+  .subscribe();
+```
+
 ## Rollback Scripts
 
 Each migration has a corresponding rollback script:
