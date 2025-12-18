@@ -360,6 +360,7 @@ export function transformShopifyCartToItems(cart: ShopifyCart | null): Array<{
   id: string;
   lineId: string;
   productId: string;
+  variantId?: string;
   slug: string;
   title: string;
   category: string;
@@ -376,6 +377,7 @@ export function transformShopifyCartToItems(cart: ShopifyCart | null): Array<{
     id: node.id, // This is the line ID for cart operations
     lineId: node.id,
     productId: node.merchandise.product.id,
+    variantId: node.merchandise.id, // Shopify variant ID for checkout
     slug: node.merchandise.product.handle,
     title: node.merchandise.product.title,
     category: 'shop', // Default category, could be extracted from tags
