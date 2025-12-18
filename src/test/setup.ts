@@ -12,9 +12,9 @@ afterEach(() => {
 
 // Mock environment variables
 vi.mock('../lib/env', () => ({
-  SUPABASE_URL: 'https://test.supabase.co',
-  SUPABASE_ANON_KEY: 'test-key',
-  STRIPE_PUBLISHABLE_KEY: 'pk_test_123',
-  SHOPIFY_DOMAIN: 'test.myshopify.com',
-  SHOPIFY_STOREFRONT_TOKEN: 'test-token',
+  SUPABASE_URL: 'https://test-project.supabase.test',
+  SUPABASE_ANON_KEY: 'test-anon-key-not-real',
+  STRIPE_PUBLISHABLE_KEY: 'pk_test_not_a_real_key',
+  SHOPIFY_DOMAIN: 'test-store.myshopify.test',
+  SHOPIFY_STOREFRONT_TOKEN: 'test-storefront-token',
 }));

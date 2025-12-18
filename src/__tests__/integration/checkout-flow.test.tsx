@@ -3,16 +3,17 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { CartProvider, useCart } from '../../contexts/CartContext';
 
 // Mock the Shopify cart API
+// Note: Mock values are inlined to avoid hoisting issues with vi.mock
 vi.mock('../../lib/shopify-cart', () => ({
   createCart: vi.fn().mockResolvedValue({
     id: 'test-cart-id',
-    checkoutUrl: 'https://test.myshopify.com/checkout',
+    checkoutUrl: 'https://test-store.myshopify.test/checkout/test-cart-id',
     lines: { edges: [] },
   }),
   getCart: vi.fn().mockResolvedValue(null),
   addToCart: vi.fn().mockResolvedValue({
     id: 'test-cart-id',
-    checkoutUrl: 'https://test.myshopify.com/checkout',
+    checkoutUrl: 'https://test-store.myshopify.test/checkout/test-cart-id',
     lines: {
       edges: [
         {
@@ -23,7 +24,7 @@ vi.mock('../../lib/shopify-cart', () => ({
               id: 'variant-1',
               product: {
                 title: 'Test Product',
-                featuredImage: { url: 'https://test.com/image.jpg' },
+                featuredImage: { url: 'https://test-store.myshopify.test/image.jpg' },
               },
               price: { amount: '25.00' },
             },
@@ -45,7 +46,7 @@ vi.mock('../../lib/shopify-cart', () => ({
       category: 'raw',
       price: 25,
       qty: 1,
-      image: 'https://test.com/image.jpg',
+      image: 'https://test-store.myshopify.test/image.jpg',
     },
   ]),
 }));
