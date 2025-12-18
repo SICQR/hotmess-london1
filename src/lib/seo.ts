@@ -37,11 +37,63 @@ export interface SEOConfig {
   };
 }
 
+// Generic metadata interface for return type
+export interface GeneratedMetadata {
+  title: string;
+  description: string;
+  keywords?: string[];
+  authors?: Array<{ name: string }>;
+  creator?: string;
+  publisher?: string;
+  robots?: {
+    index: boolean;
+    follow: boolean;
+    googleBot?: {
+      index: boolean;
+      follow: boolean;
+      'max-image-preview': string;
+      'max-snippet': number;
+    };
+  };
+  openGraph?: {
+    type: string;
+    siteName: string;
+    title: string;
+    description: string;
+    url: string;
+    images: Array<{ url: string; width: number; height: number; alt: string }>;
+    locale: string;
+    publishedTime?: string;
+    modifiedTime?: string;
+  };
+  twitter?: {
+    card: string;
+    site: string;
+    creator: string;
+    title: string;
+    description: string;
+    images: string[];
+  };
+  alternates?: {
+    canonical: string;
+  };
+  icons?: {
+    icon: string;
+    apple: string;
+  };
+  manifest?: string;
+  viewport?: {
+    width: string;
+    initialScale: number;
+    maximumScale: number;
+  };
+  themeColor?: string;
+}
+
 /**
  * Generate metadata object with full SEO tags
- * Note: Return type changed from Next.js Metadata to generic object
  */
-export function generateMetadata(config: SEOConfig = {}): any {
+export function generateMetadata(config: SEOConfig = {}): GeneratedMetadata {
   const {
     title = DEFAULT_TITLE,
     description = DEFAULT_DESCRIPTION,
