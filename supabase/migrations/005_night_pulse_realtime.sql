@@ -171,7 +171,7 @@ SELECT
   now() as refreshed_at
   
 FROM cities c
-LEFT JOIN beacons b ON b.city = c.id 
+LEFT JOIN beacons b ON b.city_id = c.id 
   AND b.active = true
 LEFT JOIN beacon_scans s ON s.beacon_id = b.id
 GROUP BY c.id, c.name, c.country_code, c.latitude, c.longitude
@@ -198,13 +198,13 @@ CREATE OR REPLACE FUNCTION emit_night_pulse_beacon_event()
 RETURNS TRIGGER AS $$
 BEGIN
   -- Only emit if beacon has a valid city
-  IF NEW.city IS NOT NULL THEN
+  IF NEW.city_id IS NOT NULL THEN
     IF NEW.active = true AND (OLD.active IS NULL OR OLD.active = false) THEN
       INSERT INTO night_pulse_events (event_type, city_id, delta_beacons)
-      VALUES ('beacon_live', NEW.city, 1);
+      VALUES ('beacon_live', NEW.city_id, 1);
     ELSIF NEW.active = false AND OLD.active = true THEN
       INSERT INTO night_pulse_events (event_type, city_id, delta_beacons)
-      VALUES ('beacon_expired', NEW.city, -1);
+      VALUES ('beacon_expired', NEW.city_id, -1);
     END IF;
   END IF;
   RETURN NEW;
@@ -218,7 +218,7 @@ DECLARE
   beacon_city TEXT;
 BEGIN
   -- Get the city from the beacon
-  SELECT city INTO beacon_city FROM beacons WHERE id = NEW.beacon_id;
+  SELECT city_id INTO beacon_city FROM beacons WHERE id = NEW.beacon_id;
   
   IF beacon_city IS NOT NULL THEN
     INSERT INTO night_pulse_events (event_type, city_id, delta_scans)
@@ -282,7 +282,9 @@ CREATE POLICY night_pulse_events_insert_system ON night_pulse_events FOR INSERT 
 -- STEP 11: Initial refresh
 -- ============================================================================
 
--- Perform initial refresh of the materialized view
+-- Note: Materialized view is already populated on creation.
+-- We call refresh_night_pulse() here to ensure it works correctly.
+-- This uses CONCURRENT refresh, which requires the unique index created in step 6.
 SELECT refresh_night_pulse();
 
 COMMIT;
