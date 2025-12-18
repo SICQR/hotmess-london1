@@ -1,5 +1,9 @@
 # HOTMESS Nightlife OS
 
+[![CI](https://github.com/SICQR/hotmess-london1/actions/workflows/ci.yml/badge.svg)](https://github.com/SICQR/hotmess-london1/actions/workflows/ci.yml)
+[![Security Scan](https://github.com/SICQR/hotmess-london1/actions/workflows/security.yml/badge.svg)](https://github.com/SICQR/hotmess-london1/actions/workflows/security.yml)
+[![Deploy to Production](https://github.com/SICQR/hotmess-london1/actions/workflows/deploy.yml/badge.svg)](https://github.com/SICQR/hotmess-london1/actions/workflows/deploy.yml)
+
 **Men-only, 18+, nightlife-first operating system for queer cities.**
 
 A real-time platform connecting queer nightlife through a 3D globe, XP economy, multi-vendor marketplace, and Telegram integration.
