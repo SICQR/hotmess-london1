@@ -275,31 +275,38 @@ export function TextOverImageEnhanced({
   // Text treatment styles
   const getHeadlineStyles = () => {
     const baseStyles = `text-4xl md:text-6xl lg:text-8xl uppercase tracking-tighter transition-all duration-700`;
-    const rotationStyle = rotation !== 0 ? `rotate-[${rotation}deg]` : '';
     const orientationStyle = orientation === 'vertical' ? 'writing-mode-vertical-rl' : '';
     
     switch (finalTextTreatment) {
       case 'masked':
-        return `${baseStyles} ${rotationStyle} ${orientationStyle} bg-clip-text text-transparent bg-gradient-to-br from-hot via-heat to-hot drop-shadow-[0_0_60px_rgba(231,15,60,0.8)]`;
+        return `${baseStyles} ${orientationStyle} bg-clip-text text-transparent bg-gradient-to-br from-hot via-heat to-hot drop-shadow-[0_0_60px_rgba(231,15,60,0.8)]`;
       case 'chrome':
-        return `${baseStyles} ${rotationStyle} ${orientationStyle} bg-clip-text text-transparent bg-gradient-to-br from-gray-300 via-white to-gray-400 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]`;
+        return `${baseStyles} ${orientationStyle} bg-clip-text text-transparent bg-gradient-to-br from-gray-300 via-white to-gray-400 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]`;
       case 'motion-blur':
-        return `${baseStyles} ${rotationStyle} ${orientationStyle} ${modeConfig.textColor} drop-shadow-[4px_0_12px_rgba(231,15,60,0.8)]`;
+        return `${baseStyles} ${orientationStyle} ${modeConfig.textColor} drop-shadow-[4px_0_12px_rgba(231,15,60,0.8)]`;
       case 'knockout':
-        return `${baseStyles} ${rotationStyle} ${orientationStyle} ${modeConfig.textColor} [text-shadow:_-2px_-2px_0_#000,_2px_-2px_0_#000,_-2px_2px_0_#000,_2px_2px_0_#000]`;
+        return `${baseStyles} ${orientationStyle} ${modeConfig.textColor} [text-shadow:_-2px_-2px_0_#000,_2px_-2px_0_#000,_-2px_2px_0_#000,_2px_2px_0_#000]`;
       case 'glitch':
-        return `${baseStyles} ${rotationStyle} ${orientationStyle} text-hot animate-glitch`;
+        return `${baseStyles} ${orientationStyle} text-hot animate-glitch`;
       case '3d-extrusion':
-        return `${baseStyles} ${rotationStyle} ${orientationStyle} ${modeConfig.textColor} [text-shadow:_1px_1px_0_rgba(0,0,0,0.8),_2px_2px_0_rgba(0,0,0,0.7),_3px_3px_0_rgba(0,0,0,0.6),_4px_4px_0_rgba(0,0,0,0.5),_5px_5px_0_rgba(0,0,0,0.4)]`;
+        return `${baseStyles} ${orientationStyle} ${modeConfig.textColor} [text-shadow:_1px_1px_0_rgba(0,0,0,0.8),_2px_2px_0_rgba(0,0,0,0.7),_3px_3px_0_rgba(0,0,0,0.6),_4px_4px_0_rgba(0,0,0,0.5),_5px_5px_0_rgba(0,0,0,0.4)]`;
       case 'outline-fill':
-        return `${baseStyles} ${rotationStyle} ${orientationStyle} text-hot [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff]`;
+        return `${baseStyles} ${orientationStyle} text-hot [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff]`;
       case 'liquid-drip':
-        return `${baseStyles} ${rotationStyle} ${orientationStyle} ${modeConfig.textColor} drop-shadow-[0_4px_12px_rgba(231,15,60,0.9)] animate-drip`;
+        return `${baseStyles} ${orientationStyle} ${modeConfig.textColor} drop-shadow-[0_4px_12px_rgba(231,15,60,0.9)] animate-drip`;
       case 'texture-overlay':
-        return `${baseStyles} ${rotationStyle} ${orientationStyle} ${modeConfig.textColor} bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48ZmlsdGVyIGlkPSJuIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjciIG51bU9jdGF2ZXM9IjMiLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsdGVyPSJ1cmwoI24pIiBvcGFjaXR5PSIuMyIvPjwvc3ZnPg==')] bg-clip-text`;
+        return `${baseStyles} ${orientationStyle} ${modeConfig.textColor} bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48ZmlsdGVyIGlkPSJuIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjciIG51bU9jdGF2ZXM9IjMiLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsdGVyPSJ1cmwoI24pIiBvcGFjaXR5PSIuMyIvPjwvc3ZnPg==')] bg-clip-text`;
       default:
-        return `${baseStyles} ${rotationStyle} ${orientationStyle} ${modeConfig.textColor} drop-shadow-lg`;
+        return `${baseStyles} ${orientationStyle} ${modeConfig.textColor} drop-shadow-lg`;
     }
+  };
+  
+  // Get rotation inline style
+  const getRotationStyle = (): CSSProperties => {
+    if (rotation !== 0) {
+      return { transform: `rotate(${rotation}deg)` };
+    }
+    return {};
   };
   
   // Reveal animation classes
@@ -444,41 +451,52 @@ export function TextOverImageEnhanced({
           )}
           
           {/* Headline */}
-          {staggerText > 0 && words.length > 0 ? (
-            <h1 className={getHeadlineStyles()}>
-              {words.map((word, i) => (
-                <span 
-                  key={i}
-                  className="inline-block"
-                  style={{
-                    animation: isVisible ? `fadeInWord 0.5s ease-out ${i * (staggerText / 1000)}s forwards` : 'none',
-                    opacity: isVisible ? 1 : 0,
-                  }}
+          {(() => {
+            const rotationStyle = getRotationStyle();
+            
+            if (staggerText > 0 && words.length > 0) {
+              return (
+                <h1 className={getHeadlineStyles()} style={rotationStyle}>
+                  {words.map((word, i) => (
+                    <span 
+                      key={i}
+                      className="inline-block"
+                      style={{
+                        animation: isVisible ? `fadeInWord 0.5s ease-out ${i * (staggerText / 1000)}s forwards` : 'none',
+                        opacity: isVisible ? 1 : 0,
+                      }}
+                    >
+                      {word}{i < words.length - 1 ? ' ' : ''}
+                    </span>
+                  ))}
+                </h1>
+              );
+            } else if (quote) {
+              return (
+                <blockquote className={getHeadlineStyles()} style={rotationStyle}>
+                  "{headline}"
+                </blockquote>
+              );
+            } else {
+              return (
+                <h1 
+                  className={getHeadlineStyles()}
+                  style={
+                    finalTextTreatment === 'masked' || finalTextTreatment === 'chrome'
+                      ? {
+                          fontWeight: 900,
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          ...rotationStyle,
+                        }
+                      : { fontWeight: 900, ...rotationStyle }
+                  }
                 >
-                  {word}{i < words.length - 1 ? ' ' : ''}
-                </span>
-              ))}
-            </h1>
-          ) : quote ? (
-            <blockquote className={getHeadlineStyles()}>
-              "{headline}"
-            </blockquote>
-          ) : (
-            <h1 
-              className={getHeadlineStyles()}
-              style={
-                finalTextTreatment === 'masked' || finalTextTreatment === 'chrome'
-                  ? {
-                      fontWeight: 900,
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                    }
-                  : { fontWeight: 900 }
-              }
-            >
-              {headline}
-            </h1>
-          )}
+                  {headline}
+                </h1>
+              );
+            }
+          })()}
           
           {/* Byline */}
           {byline && (

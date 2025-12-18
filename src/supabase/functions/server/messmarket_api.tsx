@@ -58,7 +58,7 @@ app.get('/listings', async (c) => {
     const { category, search, status = 'active', limit = 50, offset = 0 } = c.req.query();
     
     // Build prefix for filtering
-    let prefix = 'messmarket:listing:';
+    const prefix = 'messmarket:listing:';
     
     // Get all listings
     const allListings = await kv.getByPrefix(prefix);
@@ -66,7 +66,7 @@ app.get('/listings', async (c) => {
     console.log(`[MessMarket] getByPrefix returned ${allListings?.length || 0} items`);
     
     // FIXED: Handle both formats - getByPrefix might return values only or {key,value} objects
-    let filtered = allListings
+    const filtered = allListings
       .filter((item: any) => {
         const listing = item.value || item;
         return listing?.status === status || status === 'all';

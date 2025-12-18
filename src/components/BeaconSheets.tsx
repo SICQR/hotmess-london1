@@ -91,7 +91,7 @@ function formatRemaining(expiresAtMs: number, nowMs: number) {
 
 function buildRequirements(beacon: Beacon, base: BeaconTypeConfig): RequirementChip[] {
   // Start with type-level requirements
-  let req = [...base.requirements];
+  const req = [...base.requirements];
 
   // Instance overrides (optional)
   if (beacon.gpsRequired && !req.includes("GPS")) req.push("GPS");
