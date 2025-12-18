@@ -259,7 +259,7 @@ export function MapPage({ onNavigate }: MapPageProps) {
       lat: beacon.lat,
       lng: beacon.lng,
       city: beacon.city,
-      kind: beacon.type as any, // BeaconType maps to kind
+      kind: beacon.type as 'checkin' | 'ticket' | 'product' | 'drop' | 'event' | 'chat' | 'other', // BeaconType maps to kind
       intensity: 0.5, // Default intensity, could be calculated from scans or other metrics
       sponsored: beacon.sponsored || false,
       scans: beacon.xp, // Using xp as proxy for activity
