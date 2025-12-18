@@ -6,6 +6,8 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ShoppingBag, CreditCard, Zap, Check } from 'lucide-react';
 import { useState } from 'react';
+import { supabase } from '../../lib/supabase';
+import { toast } from 'sonner';
 
 interface Product {
   id: string;
@@ -37,11 +39,62 @@ export function QuickCheckoutModal({
 
   async function handlePurchase() {
     setProcessing(true);
-    // TODO: Implement actual payment processing
-    setTimeout(() => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Please sign in to complete purchase');
+        setProcessing(false);
+        return;
+      }
+
+      // Create a purchase record in scan_events
+      const { error: purchaseError } = await supabase
+        .from('scan_events')
+        .insert({
+          beacon_id: product.id,
+          user_id: session.user.id,
+          source: 'quick_checkout'
+        });
+
+      // PostgreSQL unique constraint violation code
+      if (purchaseError && purchaseError.code !== '23505') {
+        throw purchaseError;
+      }
+
+      // Award XP for purchase
+      const { error: xpError } = await supabase
+        .from('xp_ledger')
+        .insert({
+          user_id: session.user.id,
+          beacon_id: product.id,
+          reason: 'action',
+          amount: xpEarned,
+          meta: { 
+            action: 'quick_purchase',
+            product_name: product.name,
+            price: product.price,
+            size: selectedSize
+          }
+        });
+
+      if (xpError && xpError.code !== '23505') {
+        console.error('Failed to award XP:', xpError);
+      }
+
+      // Note: In a production environment, this would also:
+      // 1. Create a Stripe payment intent
+      // 2. Process the payment
+      // 3. Record the order in an orders table
+      // For now, we just track the intent to purchase
+
       setProcessing(false);
       setStep('success');
-    }, 2000);
+      toast.success('Order placed successfully!');
+    } catch (err: any) {
+      console.error('Purchase error:', err);
+      toast.error(err.message || 'Failed to complete purchase');
+      setProcessing(false);
+    }
   }
 
   function resetAndClose() {

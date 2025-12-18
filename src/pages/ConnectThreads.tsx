@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react';
 import { RouteId } from '../lib/routes';
 import { HMButton } from '../components/library/HMButton';
-import { MessageCircle, Heart, Clock, User, Plus, Flame, Inbox, Search } from 'lucide-react';
+import { MessageCircle, User, Plus, Inbox, Search } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { toast } from 'sonner';
 
@@ -50,49 +50,97 @@ export function ConnectThreads({ onNavigate }: ConnectThreadsProps) {
         return;
       }
 
-      // For now, use mock data since backend might not be fully set up
-      // TODO: Replace with actual Supabase query
-      const mockThreads: Thread[] = [
-        {
-          id: 'thread-1',
-          user1_id: session.user.id,
-          user2_id: 'user-2',
-          status: 'active',
-          created_at: new Date(Date.now() - 3600000).toISOString(),
-          updated_at: new Date(Date.now() - 300000).toISOString(),
-          last_message: 'Hey! Still at the venue?',
-          last_message_at: new Date(Date.now() - 300000).toISOString(),
-          other_user: {
-            username: 'anonymous_flame',
-            avatar_url: undefined
-          },
-          unread_count: 2
-        },
-        {
-          id: 'thread-2',
-          user1_id: session.user.id,
-          user2_id: 'user-3',
-          status: 'active',
-          created_at: new Date(Date.now() - 7200000).toISOString(),
-          updated_at: new Date(Date.now() - 3600000).toISOString(),
-          last_message: 'Nice meeting you!',
-          last_message_at: new Date(Date.now() - 3600000).toISOString(),
-          other_user: {
-            username: 'hotmess_king',
-            avatar_url: undefined
-          },
-          unread_count: 0
-        }
-      ];
+      // Query connect_threads where user is a member
+      const { data: threadMemberships, error: memberError } = await supabase
+        .from('connect_thread_members')
+        .select(`
+          thread_id,
+          connect_threads!inner (
+            id,
+            beacon_id,
+            status,
+            created_at,
+            closed_at
+          )
+        `)
+        .eq('user_id', session.user.id);
 
-      const filteredThreads = mockThreads.filter(t => 
+      if (memberError) {
+        throw memberError;
+      }
+
+      if (!threadMemberships || threadMemberships.length === 0) {
+        setThreads([]);
+        return;
+      }
+
+      // Get thread IDs
+      const threadIds = threadMemberships.map((m: any) => m.thread_id);
+
+      // Get the other members for each thread
+      const { data: otherMembers, error: otherMembersError } = await supabase
+        .from('connect_thread_members')
+        .select('thread_id, user_id')
+        .in('thread_id', threadIds)
+        .neq('user_id', session.user.id);
+
+      if (otherMembersError) {
+        throw otherMembersError;
+      }
+
+      // Get last messages for each thread
+      const { data: lastMessages, error: messagesError } = await supabase
+        .from('connect_messages')
+        .select('thread_id, body, created_at')
+        .in('thread_id', threadIds)
+        .order('created_at', { ascending: false });
+
+      if (messagesError) {
+        throw messagesError;
+      }
+
+      // Group messages by thread
+      const messagesByThread = new Map<string, any>();
+      if (lastMessages) {
+        lastMessages.forEach((msg: any) => {
+          if (!messagesByThread.has(msg.thread_id)) {
+            messagesByThread.set(msg.thread_id, msg);
+          }
+        });
+      }
+
+      // Build thread objects
+      const threadsData: Thread[] = threadMemberships.map((membership: any) => {
+        const thread = membership.connect_threads;
+        const otherMember = otherMembers?.find((m: any) => m.thread_id === thread.id);
+        const lastMsg = messagesByThread.get(thread.id);
+
+        return {
+          id: thread.id,
+          user1_id: session.user.id,
+          user2_id: otherMember?.user_id || '',
+          status: thread.status === 'open' ? 'active' : 'closed',
+          created_at: thread.created_at,
+          updated_at: lastMsg?.created_at || thread.created_at,
+          last_message: lastMsg?.body,
+          last_message_at: lastMsg?.created_at,
+          other_user: {
+            username: 'Anonymous', // Privacy: don't expose usernames
+            avatar_url: undefined
+          },
+          unread_count: 0 // TODO: Implement unread tracking
+        };
+      });
+
+      // Apply filter
+      const filteredThreads = threadsData.filter(t => 
         filter === 'all' ? true : t.status === filter
       );
 
       setThreads(filteredThreads);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading threads:', error);
-      toast.error('Failed to load threads');
+      toast.error(error.message || 'Failed to load threads');
     } finally {
       setLoading(false);
     }
