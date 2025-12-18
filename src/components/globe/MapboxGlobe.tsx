@@ -143,15 +143,13 @@ export function MapboxGlobe({ timeWindow, onCityClick, useLiveData = false }: Ma
   useEffect(() => {
     if (!mapContainer.current || mapRef.current) return;
 
-    const loadMapbox = async () => {
+    const loadMapLibre = async () => {
       try {
-        const mapboxgl = await import('mapbox-gl');
+        const maplibregl = await import('maplibre-gl');
         
-        (mapboxgl as any).default.accessToken = MAPBOX_TOKEN;
-
-        const map = new (mapboxgl as any).default.Map({
+        const map = new (maplibregl as any).default.Map({
           container: mapContainer.current!,
-          style: 'mapbox://styles/mapbox/dark-v11',
+          style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
           center: [0, 20],
           zoom: 1.5,
         });
@@ -159,7 +157,7 @@ export function MapboxGlobe({ timeWindow, onCityClick, useLiveData = false }: Ma
         mapRef.current = map;
 
         map.on('load', () => {
-          console.log('✅ Mapbox loaded');
+          console.log('✅ MapLibre loaded');
 
           // Try to set globe projection
           try {
@@ -324,14 +322,14 @@ export function MapboxGlobe({ timeWindow, onCityClick, useLiveData = false }: Ma
         });
 
         map.on('error', (e: any) => {
-          console.error('❌ Mapbox error:', e);
+          console.error('❌ MapLibre error:', e);
         });
       } catch (error) {
-        console.error('❌ Failed to load Mapbox:', error);
+        console.error('❌ Failed to load MapLibre:', error);
       }
     };
 
-    loadMapbox();
+    loadMapLibre();
 
     return () => {
       if (mapRef.current) {
