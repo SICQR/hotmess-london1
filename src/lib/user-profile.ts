@@ -54,7 +54,9 @@ export async function getCurrentUser(): Promise<{ user: any; profile: UserProfil
     const { data: { user }, error } = await supabase.auth.getUser();
     
     if (error || !user) {
-      console.log('No authenticated user');
+      if (import.meta.env.DEV) {
+        console.log('[UserProfile] No authenticated user');
+      }
       return null;
     }
 
@@ -63,7 +65,7 @@ export async function getCurrentUser(): Promise<{ user: any; profile: UserProfil
     
     return { user, profile };
   } catch (error) {
-    console.error('Error getting current user:', error);
+    console.error('[UserProfile] Error getting current user:', error);
     return null;
   }
 }
@@ -97,7 +99,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
     const data = await response.json();
     return data.profile;
   } catch (error) {
-    console.error('Error fetching user profile:', error);
+    console.error('[UserProfile] Error fetching user profile:', error);
     return null;
   }
 }
@@ -181,7 +183,7 @@ export async function updateUserProfile(
     const data = await response.json();
     return data.profile;
   } catch (error) {
-    console.error('Error updating user profile:', error);
+    console.error('[UserProfile] Error updating user profile:', error);
     throw error;
   }
 }
@@ -218,7 +220,7 @@ export async function awardXP(amount: number, reason: string): Promise<{ newXP: 
       leveledUp: data.leveledUp,
     };
   } catch (error) {
-    console.error('Error awarding XP:', error);
+    console.error('[UserProfile] Error awarding XP:', error);
     throw error;
   }
 }

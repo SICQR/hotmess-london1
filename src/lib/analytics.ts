@@ -86,8 +86,8 @@ class Analytics {
       this.userId = userProps.userId;
     }
 
-    if (this.debug) {
-      console.log('📊 Analytics initialized', { userProps, sessionId: this.sessionId });
+    if (import.meta.env.DEV) {
+      console.log('[Analytics] 📊 Analytics initialized', { sessionId: this.sessionId });
     }
 
     // Set user properties if using analytics provider
@@ -108,10 +108,10 @@ class Analytics {
     };
 
     // Debug mode - only log important events to reduce noise
-    if (this.debug) {
+    if (import.meta.env.DEV) {
       const importantEvents = ['page_view', 'purchase_completed', 'error_occurred', 'api_error'];
       if (importantEvents.includes(event.event)) {
-        console.log('📊 Analytics Event:', event.event, event.metadata || '');
+        console.log('[Analytics] 📊 Event:', event.event);
       }
     }
 
@@ -209,8 +209,8 @@ class Analytics {
     });
 
     // Also log to console in development
-    if (this.debug) {
-      console.error('❌ Error tracked:', error, context);
+    if (import.meta.env.DEV) {
+      console.error('[Analytics] ❌ Error tracked:', typeof error === 'string' ? error : error.message);
     }
   }
 
@@ -307,8 +307,8 @@ class Analytics {
       });
     } catch (err) {
       // Silently fail - don't break user experience
-      if (this.debug) {
-        console.warn('Failed to send analytics to backend:', err);
+      if (import.meta.env.DEV) {
+        console.warn('[Analytics] Failed to send analytics to backend:', err);
       }
     }
   }

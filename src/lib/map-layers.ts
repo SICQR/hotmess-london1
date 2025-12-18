@@ -129,7 +129,9 @@ export async function fetchHeatData(args: {
   bounds?: [number, number, number, number];
 }): Promise<GeoJSON.FeatureCollection> {
   try {
-    console.log("fetchHeatData", args);
+    if (import.meta.env.DEV) {
+      console.log("[MapLayers] fetchHeatData", args);
+    }
     
     // Build query params
     const params = new URLSearchParams();
@@ -142,17 +144,19 @@ export async function fetchHeatData(args: {
     );
     
     if (!response.ok) {
-      console.error('Heat data API error:', response.status);
+      console.error('[MapLayers] Heat data API error:', response.status);
       // Return empty on error
       return { type: "FeatureCollection", features: [] };
     }
     
     const data = await response.json();
-    console.log('✅ Heat data loaded:', data.metadata);
+    if (import.meta.env.DEV) {
+      console.log('[MapLayers] ✅ Heat data loaded:', data.metadata);
+    }
     return data;
     
   } catch (error) {
-    console.error('Heat data fetch error:', error);
+    console.error('[MapLayers] Heat data fetch error:', error);
     // Return empty on error
     return { type: "FeatureCollection", features: [] };
   }
@@ -171,7 +175,9 @@ export async function fetchTrailsData(args: {
   bounds?: [number, number, number, number];
 }): Promise<GeoJSON.FeatureCollection> {
   try {
-    console.log("fetchTrailsData", args);
+    if (import.meta.env.DEV) {
+      console.log("[MapLayers] fetchTrailsData", args);
+    }
     
     // Build query params
     const params = new URLSearchParams();
@@ -184,17 +190,19 @@ export async function fetchTrailsData(args: {
     );
     
     if (!response.ok) {
-      console.error('Trails data API error:', response.status);
+      console.error('[MapLayers] Trails data API error:', response.status);
       // Return empty on error
       return { type: "FeatureCollection", features: [] };
     }
     
     const data = await response.json();
-    console.log('✅ Trails data loaded:', data.metadata);
+    if (import.meta.env.DEV) {
+      console.log('[MapLayers] ✅ Trails data loaded:', data.metadata);
+    }
     return data;
     
   } catch (error) {
-    console.error('Trails data fetch error:', error);
+    console.error('[MapLayers] Trails data fetch error:', error);
     // Return empty on error
     return { type: "FeatureCollection", features: [] };
   }
