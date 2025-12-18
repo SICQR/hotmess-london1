@@ -199,9 +199,6 @@ import BeaconScanResult from '../pages/BeaconScanResult';
 // Quick Test Setup
 import QuickTestAccountSetup from '../pages/QuickTestAccountSetup';
 
-// Test pages
-import TestCart from '../pages/test-cart';
-
 interface RouterProps {
   currentRoute: RouteId;
   routeParams?: Record<string, string>;
@@ -415,7 +412,7 @@ export function Router({ currentRoute, routeParams, onNavigate }: RouterProps) {
     quickTestSetup: <QuickTestAccountSetup />,
 
     // Test pages
-    testCart: <TestCart />,
+    // testCart route removed - cart-api.ts was deleted
   };
 
   // If route requires auth and user not logged in, show login page

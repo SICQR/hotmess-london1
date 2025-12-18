@@ -1,5 +1,26 @@
+/**
+ * HOTMESS LONDON - Shopping Cart Context
+ * 
+ * ARCHITECTURE:
+ * - Single source of truth: Shopify Cart API
+ * - Persistence: localStorage stores only Shopify cart ID
+ * - Data flow: UI → CartContext → Shopify API → UI
+ * 
+ * CART LIFECYCLE:
+ * 1. User adds item → Create Shopify cart (if doesn't exist)
+ * 2. Shopify returns cart ID + checkout URL
+ * 3. Store cart ID in localStorage (key: 'hotmess_shopify_cart_id')
+ * 4. Fetch cart data on page load using stored cart ID
+ * 5. Cart expires after ~10 days (Shopify managed)
+ * 
+ * NO DATABASE CART:
+ * - Cart items are NOT stored in Supabase
+ * - All cart operations go directly to Shopify
+ * - No database sync needed
+ */
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { 
   createCart, 
   getCart, 

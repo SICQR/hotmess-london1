@@ -3,38 +3,18 @@
  * Code splitting, lazy loading, and bundle optimization helpers
  */
 
-import dynamic from 'next/dynamic';
+// Note: LazyComponents are commented out as they use Next.js-specific APIs
+// For Vite/React, use React.lazy() and Suspense instead
+// 
+// Example:
+// const AdminOverview = React.lazy(() => import('@/components/admin/AdminOverviewClient'));
+// 
+// <Suspense fallback={<div>Loading...</div>}>
+//   <AdminOverview />
+// </Suspense>
 
-// Lazy load heavy components with loading fallbacks
 export const LazyComponents = {
-  // Admin components (only load when needed)
-  AdminOverview: dynamic(() => import('@/components/admin/AdminOverviewClient').then(m => ({ default: m.AdminOverviewClient })), {
-    loading: () => <div className="animate-pulse p-8">Loading admin dashboard...</div>,
-    ssr: false, // Don't SSR admin components
-  }),
-  
-  AdminBeacons: dynamic(() => import('@/components/admin/AdminBeaconsClient').then(m => ({ default: m.AdminBeaconsClient })), {
-    loading: () => <div className="animate-pulse p-8">Loading beacons...</div>,
-    ssr: false,
-  }),
-  
-  AdminUsers: dynamic(() => import('@/components/admin/AdminUsersClient').then(m => ({ default: m.AdminUsersClient })), {
-    loading: () => <div className="animate-pulse p-8">Loading users...</div>,
-    ssr: false,
-  }),
-
-  // User-facing components
-  RewardsClient: dynamic(() => import('@/components/RewardsClient').then(m => ({ default: m.RewardsClient })), {
-    loading: () => <div className="animate-pulse p-8">Loading rewards...</div>,
-  }),
-  
-  DropsClient: dynamic(() => import('@/components/DropsClient').then(m => ({ default: m.DropsClient })), {
-    loading: () => <div className="animate-pulse p-8">Loading drops...</div>,
-  }),
-  
-  AccountClient: dynamic(() => import('@/components/AccountClient').then(m => ({ default: m.AccountClient })), {
-    loading: () => <div className="animate-pulse p-8">Loading profile...</div>,
-  }),
+  // Placeholder - implement with React.lazy when needed
 };
 
 // Image optimization settings
