@@ -4,13 +4,12 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Map, Search, Filter, Ticket, MapPin, Calendar, Clock, Globe, List } from 'lucide-react';
+import { Map, Search, Filter, Ticket, MapPin, Calendar, Clock } from 'lucide-react';
 import { Button } from '../components/design-system/Button';
 import { Card } from '../components/design-system/Card';
 import { Input } from '../components/design-system/Input';
 import { RouteId } from '../lib/routes';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
-import LiveGlobe3D, { type Beacon } from '../components/LiveGlobe3D';
 
 interface TicketsBrowseProps {
   onNavigate: (route: RouteId, params?: any) => void;
@@ -24,8 +23,6 @@ interface BeaconType {
   ends_at: string;
   is_active: boolean;
   listing_count?: number;
-  venue_lat?: number;
-  venue_lng?: number;
 }
 
 export function TicketsBrowse({ onNavigate }: TicketsBrowseProps) {
@@ -33,7 +30,6 @@ export function TicketsBrowse({ onNavigate }: TicketsBrowseProps) {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [cityFilter, setCityFilter] = useState('');
-  const [viewMode, setViewMode] = useState<'list' | 'globe'>('list');
 
   useEffect(() => {
     loadBeacons();
@@ -42,7 +38,7 @@ export function TicketsBrowse({ onNavigate }: TicketsBrowseProps) {
   async function loadBeacons() {
     try {
       // TODO: Replace with actual API call to /supabase/functions/server/tickets_api
-      // For now, using mock data with coordinates
+      // For now, using mock data
       const mockBeacons: BeaconType[] = [
         {
           id: '1',
@@ -52,8 +48,6 @@ export function TicketsBrowse({ onNavigate }: TicketsBrowseProps) {
           ends_at: new Date(Date.now() + 86400000 * 2 + 18000000).toISOString(),
           is_active: true,
           listing_count: 3,
-          venue_lat: 51.5145,
-          venue_lng: -0.1270,
         },
         {
           id: '2',
@@ -63,8 +57,6 @@ export function TicketsBrowse({ onNavigate }: TicketsBrowseProps) {
           ends_at: new Date(Date.now() + 86400000 * 5 + 21600000).toISOString(),
           is_active: true,
           listing_count: 8,
-          venue_lat: 51.5074,
-          venue_lng: -0.0272,
         },
         {
           id: '3',
@@ -74,8 +66,6 @@ export function TicketsBrowse({ onNavigate }: TicketsBrowseProps) {
           ends_at: new Date(Date.now() + 86400000 * 7 + 18000000).toISOString(),
           is_active: true,
           listing_count: 2,
-          venue_lat: 51.5392,
-          venue_lng: -0.0559,
         },
       ];
       setBeacons(mockBeacons);
@@ -91,18 +81,6 @@ export function TicketsBrowse({ onNavigate }: TicketsBrowseProps) {
     const matchesCity = !cityFilter || beacon.city.toLowerCase().includes(cityFilter.toLowerCase());
     return matchesSearch && matchesCity;
   });
-
-  // Convert beacons to LiveGlobe3D format
-  const ticketBeacons: Beacon[] = filteredBeacons.map(ticket => ({
-    id: ticket.id,
-    title: ticket.title,
-    kind: 'event' as const,
-    lat: ticket.venue_lat || 51.5074,
-    lng: ticket.venue_lng || -0.1270,
-    city: ticket.city || 'LONDON',
-    intensity: ticket.listing_count ? Math.min(ticket.listing_count / 10, 1) : 0.5,
-    ts: new Date(ticket.starts_at).getTime(),
-  }));
 
   function formatDate(dateString: string) {
     try {
@@ -152,32 +130,6 @@ export function TicketsBrowse({ onNavigate }: TicketsBrowseProps) {
 
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-3">
-              {/* View Mode Toggle */}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
-                    viewMode === 'list'
-                      ? 'bg-[#ff1694] text-white'
-                      : 'bg-white/5 text-white/60 hover:bg-white/10'
-                  }`}
-                >
-                  <List className="w-4 h-4" />
-                  LIST
-                </button>
-                <button
-                  onClick={() => setViewMode('globe')}
-                  className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
-                    viewMode === 'globe'
-                      ? 'bg-[#ff1694] text-white'
-                      : 'bg-white/5 text-white/60 hover:bg-white/10'
-                  }`}
-                >
-                  <Globe className="w-4 h-4" />
-                  GLOBE
-                </button>
-              </div>
-              
               <Button
                 variant="primary"
                 size="md"
@@ -222,26 +174,9 @@ export function TicketsBrowse({ onNavigate }: TicketsBrowseProps) {
         </div>
       </div>
 
-      {/* Beacons Grid or Globe View */}
+      {/* Beacons Grid */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {viewMode === 'globe' ? (
-          <div className="h-[600px] rounded-2xl overflow-hidden border border-white/10">
-            <LiveGlobe3D
-              className="w-full h-full"
-              layers={{
-                pins: true,
-                heat: true,
-                trails: false,
-                cities: true,
-              }}
-              beacons={ticketBeacons}
-              onBeaconClick={(beacon) => {
-                // Navigate to ticket details for that venue
-                onNavigate('ticketsBeacon', { beaconId: beacon.id });
-              }}
-            />
-          </div>
-        ) : loading ? (
+        {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="h-64 bg-white/5 rounded-2xl animate-pulse" />
