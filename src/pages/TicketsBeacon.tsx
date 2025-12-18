@@ -27,7 +27,6 @@ export function TicketsBeacon({ beaconId, onNavigate }: TicketsBeaconProps) {
   const [beacon, setBeacon] = useState<any>(null);
   const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadBeaconAndListings();
@@ -36,7 +35,6 @@ export function TicketsBeacon({ beaconId, onNavigate }: TicketsBeaconProps) {
   async function loadBeaconAndListings() {
     try {
       setLoading(true);
-      setError(null);
 
       // Fetch beacon data from beacons table
       const { data: beaconData, error: beaconError } = await supabase
@@ -82,7 +80,6 @@ export function TicketsBeacon({ beaconId, onNavigate }: TicketsBeaconProps) {
       setListings(transformedListings);
     } catch (err: any) {
       console.error('Failed to load beacon:', err);
-      setError(err.message || 'Failed to load beacon data');
       toast.error(err.message || 'Failed to load beacon data');
     } finally {
       setLoading(false);

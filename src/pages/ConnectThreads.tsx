@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react';
 import { RouteId } from '../lib/routes';
 import { HMButton } from '../components/library/HMButton';
-import { MessageCircle, Heart, Clock, User, Plus, Flame, Inbox, Search } from 'lucide-react';
+import { MessageCircle, User, Plus, Inbox, Search } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { toast } from 'sonner';
 
