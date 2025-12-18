@@ -5,8 +5,7 @@
 
 import { useState } from 'react';
 import { RouteId } from '../lib/routes';
-import LiveGlobe3D from '../components/LiveGlobe3D';
-import type { Beacon } from '../components/LiveGlobe3D';
+import LiveGlobe3D, { type Beacon } from '../components/LiveGlobe3D';
 import { GLOBAL_MICROCOPY } from '../constants/copy';
 import { ArrowLeft, Clock, TrendingUp, MapPin, Users, Zap } from 'lucide-react';
 import type { NightPulseCity } from '../types/night-pulse';

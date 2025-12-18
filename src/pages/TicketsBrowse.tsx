@@ -10,8 +10,7 @@ import { Card } from '../components/design-system/Card';
 import { Input } from '../components/design-system/Input';
 import { RouteId } from '../lib/routes';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
-import LiveGlobe3D from '../components/LiveGlobe3D';
-import type { Beacon } from '../components/LiveGlobe3D';
+import LiveGlobe3D, { type Beacon } from '../components/LiveGlobe3D';
 
 interface TicketsBrowseProps {
   onNavigate: (route: RouteId, params?: any) => void;
@@ -99,7 +98,7 @@ export function TicketsBrowse({ onNavigate }: TicketsBrowseProps) {
     title: ticket.title,
     kind: 'event' as const,
     lat: ticket.venue_lat || 51.5074,
-    lng: ticket.venue_lng || -0.1278,
+    lng: ticket.venue_lng || -0.1270,
     city: ticket.city || 'LONDON',
     intensity: ticket.listing_count ? Math.min(ticket.listing_count / 10, 1) : 0.5,
     ts: new Date(ticket.starts_at).getTime(),
