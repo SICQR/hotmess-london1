@@ -6,6 +6,8 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Calendar, MapPin, Clock, Users, Zap, Check, Star } from 'lucide-react';
 import { useState } from 'react';
+import { supabase } from '../../lib/supabase';
+import { toast } from 'sonner';
 
 interface Event {
   id: string;
@@ -38,8 +40,51 @@ export function EventRSVPModal({
   const [plusOnes, setPlusOnes] = useState(0);
 
   async function handleRSVP() {
-    // TODO: Implement actual RSVP API
-    setStep('success');
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Please sign in to RSVP');
+        return;
+      }
+
+      // Create a scan event for the RSVP
+      // This records the user's intent to attend
+      const { error: rsvpError } = await supabase
+        .from('scan_events')
+        .insert({
+          beacon_id: event.id,
+          user_id: session.user.id,
+          source: 'rsvp'
+        });
+
+      if (rsvpError) {
+        // If error is duplicate, user already RSVP'd - that's OK
+        if (!rsvpError.message.includes('duplicate') && !rsvpError.code?.includes('23505')) {
+          throw rsvpError;
+        }
+      }
+
+      // Award XP for RSVP
+      const { error: xpError } = await supabase
+        .from('xp_ledger')
+        .insert({
+          user_id: session.user.id,
+          beacon_id: event.id,
+          reason: 'action',
+          amount: xpEarned,
+          meta: { action: 'event_rsvp', plus_ones: plusOnes }
+        });
+
+      if (xpError && !xpError.message.includes('duplicate') && !xpError.code?.includes('23505')) {
+        console.error('Failed to award XP:', xpError);
+        // Don't fail the RSVP if XP fails
+      }
+
+      setStep('success');
+    } catch (err: any) {
+      console.error('RSVP error:', err);
+      toast.error(err.message || 'Failed to create RSVP');
+    }
   }
 
   const spotsLeft = event.capacity - event.attending;

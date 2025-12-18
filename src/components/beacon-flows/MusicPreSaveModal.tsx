@@ -6,6 +6,8 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Music, Zap, Play, Pause, Heart, Share2, Check } from 'lucide-react';
 import { useState } from 'react';
+import { supabase } from '../../lib/supabase';
+import { toast } from 'sonner';
 
 interface Track {
   id: string;
@@ -49,8 +51,57 @@ export function MusicPreSaveModal({
   }
 
   async function handlePreSave() {
-    // TODO: Implement actual pre-save API calls
-    setPreSaved(true);
+    try {
+      if (selectedPlatforms.length === 0) {
+        toast.error('Please select at least one platform');
+        return;
+      }
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Please sign in to pre-save');
+        return;
+      }
+
+      // Store pre-save preference in scan_events with metadata
+      const { error: presaveError } = await supabase
+        .from('scan_events')
+        .insert({
+          beacon_id: track.id,
+          user_id: session.user.id,
+          source: 'music_presave'
+        });
+
+      if (presaveError && !presaveError.message.includes('duplicate') && !presaveError.code?.includes('23505')) {
+        throw presaveError;
+      }
+
+      // Award XP for pre-save
+      const { error: xpError } = await supabase
+        .from('xp_ledger')
+        .insert({
+          user_id: session.user.id,
+          beacon_id: track.id,
+          reason: 'action',
+          amount: xpEarned,
+          meta: { 
+            action: 'music_presave', 
+            platforms: selectedPlatforms,
+            track_title: track.title,
+            artist: track.artist
+          }
+        });
+
+      if (xpError && !xpError.message.includes('duplicate') && !xpError.code?.includes('23505')) {
+        console.error('Failed to award XP:', xpError);
+      }
+
+      setPreSaved(true);
+      toast.success('Track pre-saved! You\'ll be notified when it drops.');
+    } catch (err: any) {
+      console.error('Pre-save error:', err);
+      toast.error(err.message || 'Failed to pre-save track');
+    }
   }
 
   return (
