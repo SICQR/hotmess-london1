@@ -16,10 +16,14 @@ import { AttachmentViewer } from "@/components/tickets/AttachmentViewer";
 import { trackTicketEvent } from "@/lib/tickets/track";
 import { buildPath } from "@/lib/routes";
 
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL!,
-  import.meta.env.VITE_SUPABASE_ANON_KEY!
-);
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Missing Supabase environment variables. Please check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY');
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 type Mode = "connect" | "tickets";
 
@@ -63,7 +67,13 @@ function mapSendError(raw: string) {
 
 export default function Thread({ mode, threadId, sendEndpoint, onNavigate }: Props) {
   // Use browser's URLSearchParams instead of Next.js useSearchParams
-  const searchParams = React.useMemo(() => new URLSearchParams(window.location.search), []);
+  // Only access window in client-side context
+  const searchParams = React.useMemo(() => {
+    if (typeof window !== 'undefined') {
+      return new URLSearchParams(window.location.search);
+    }
+    return new URLSearchParams();
+  }, []);
   const copy = COPY[mode];
 
   const [me, setMe] = React.useState<string | null>(null);

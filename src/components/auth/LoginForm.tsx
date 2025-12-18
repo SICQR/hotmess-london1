@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { Loader2 } from 'lucide-react';
 
-export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
+export function LoginForm({ onSuccess }: { onSuccess?: () => void } = {}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
