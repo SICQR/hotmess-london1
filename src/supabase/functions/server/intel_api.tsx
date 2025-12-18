@@ -53,7 +53,7 @@ app.post('/events/normalise', async (c) => {
  */
 function normalizeEvent(raw: any) {
   const source = raw.source;
-  let event: any = {
+  const event: any = {
     id: `event:${Date.now()}:${Math.random().toString(36).substr(2, 9)}`,
     city: 'london',
     created_at: new Date().toISOString(),

@@ -153,7 +153,7 @@ export function ScanEnterCode({ onNavigate }: ScanEnterCodeProps) {
 
   useEffect(() => {
     return () => stopCamera();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   const cleaned = cleanCode(code);

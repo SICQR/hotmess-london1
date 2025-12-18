@@ -323,7 +323,7 @@ app.post('/scan', async (c) => {
       await kv.set(`beacon:${beacon_id}`, beacon);
 
       // Send Telegram notifications to both users
-      let notificationsSent = { scanner: false, target: false };
+      const notificationsSent = { scanner: false, target: false };
 
       // Notify scanner
       const scannerProfile = await kv.get(`user_profile:${user.id}`);
