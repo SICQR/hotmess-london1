@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Zap, Radio, Globe, Target, MapPin, Clock, Copy, Share2, X, Search, Filter, TrendingUp, Users, Calendar } from 'lucide-react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { WorldMap2D } from '../components/WorldMap2D';
-import LiveGlobe3D from '../components/LiveGlobe3D';
+import { UnifiedGlobe, type BeaconMarker } from '../components/globe/UnifiedGlobe';
 
 type BeaconType = 'checkin' | 'ticket' | 'product' | 'drop' | 'event' | 'chat' | 'vendor' | 'reward' | 'sponsor';
 
@@ -251,6 +251,21 @@ export function MapPage({ onNavigate }: MapPageProps) {
     return result;
   }, [beacons, filterType, searchQuery]);
 
+  // Convert LiveBeacon to BeaconMarker for UnifiedGlobe
+  const beaconMarkers: BeaconMarker[] = useMemo(() => {
+    return filteredBeacons.map(beacon => ({
+      id: beacon.id,
+      title: beacon.title,
+      lat: beacon.lat,
+      lng: beacon.lng,
+      city: beacon.city,
+      kind: beacon.type as 'checkin' | 'ticket' | 'product' | 'drop' | 'event' | 'chat' | 'other', // BeaconType maps to kind
+      intensity: 0.5, // Default intensity, could be calculated from scans or other metrics
+      sponsored: beacon.sponsored || false,
+      scans: beacon.xp, // Using xp as proxy for activity
+    }));
+  }, [filteredBeacons]);
+
   // Selection
   const selectedBeacon = useMemo(
     () => beacons.find(b => b.id === selectedId) ?? null,
@@ -366,12 +381,21 @@ export function MapPage({ onNavigate }: MapPageProps) {
       {/* Map Visualization Background */}
       <div className="absolute inset-0">
         {mode3d ? (
-          <LiveGlobe3D
-            beacons={filteredBeacons}
-            onBeaconClick={setSelectedId}
-            selectedId={selectedId}
-            showPins={layerPins}
+          <UnifiedGlobe
+            beacons={beaconMarkers}
+            showBeacons={layerPins}
+            showHeat={layerHeat}
             showCities={layerCities}
+            showTrails={layerTrails}
+            showTickets={false}
+            onMarkerClick={(marker) => {
+              // Find the original beacon by id to set selectedId
+              const beacon = filteredBeacons.find(b => b.id === marker.id);
+              if (beacon) {
+                setSelectedId(beacon.id);
+              }
+            }}
+            mode3d={true}
           />
         ) : (
           <WorldMap2D

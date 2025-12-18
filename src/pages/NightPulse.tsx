@@ -5,7 +5,8 @@
 
 import { useState } from 'react';
 import { RouteId } from '../lib/routes';
-import { NightPulseGlobeRealtime } from '../components/globe/NightPulseGlobeRealtime';
+import { UnifiedGlobe } from '../components/globe/UnifiedGlobe';
+import { useNightPulseRealtime } from '../hooks/useNightPulseRealtime';
 import { GLOBAL_MICROCOPY } from '../constants/copy';
 import { ArrowLeft, Clock, TrendingUp, MapPin, Users, Zap } from 'lucide-react';
 import type { NightPulseCity } from '../types/night-pulse';
@@ -16,6 +17,7 @@ interface NightPulseProps {
 
 export function NightPulse({ onNavigate }: NightPulseProps) {
   const [selectedCity, setSelectedCity] = useState<NightPulseCity | null>(null);
+  const { cities, loading, error, lastUpdate } = useNightPulseRealtime();
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
@@ -44,10 +46,42 @@ export function NightPulse({ onNavigate }: NightPulseProps) {
       {/* Globe Container - FIXED HEIGHT */}
       <div className="flex-1 relative min-h-0">
         <div className="absolute inset-0">
-          <NightPulseGlobeRealtime 
-            onCityClick={setSelectedCity}
+          <UnifiedGlobe 
+            nightPulseCities={cities}
+            showBeacons={false}
+            showHeat={true}
+            showCities={true}
+            showTickets={false}
+            showTrails={false}
+            onCityClick={(city) => {
+              if ('city_name' in city) {
+                setSelectedCity(city as NightPulseCity);
+              }
+            }}
+            realtimeEnabled={true}
           />
         </div>
+      </div>
+
+      {/* Stats Overlay */}
+      <div className="absolute top-20 right-4 bg-black/90 border border-[#ff1694]/30 backdrop-blur-md p-4 max-w-xs z-20">
+        <p className="text-[#ff1694] uppercase mb-2" style={{ fontWeight: 900, fontSize: '11px', letterSpacing: '0.1em' }}>
+          🌍 NIGHT PULSE REAL-TIME
+        </p>
+        <p className="text-white mb-1" style={{ fontWeight: 900, fontSize: '24px' }}>
+          {cities.length} CITIES
+        </p>
+        <p className="text-white/60 mb-2" style={{ fontWeight: 400, fontSize: '11px' }}>
+          Live nightlife activity
+        </p>
+        <div className="text-white/40 mb-3" style={{ fontWeight: 400, fontSize: '9px' }}>
+          Updated: {lastUpdate.toLocaleTimeString()}
+        </div>
+        {error && (
+          <p className="text-red-500 text-xs mt-2">
+            ⚠️ {error}
+          </p>
+        )}
       </div>
 
       {/* City Details Panel */}
