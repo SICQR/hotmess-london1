@@ -122,6 +122,9 @@ The `main` branch requires:
 - ✅ All status checks passing (lint, typecheck, test, build)
 - ✅ Branch up to date with main
 
+### Setup CI/CD:
+See [GITHUB_SECRETS_SETUP.md](./GITHUB_SECRETS_SETUP.md) for instructions on configuring required GitHub secrets for the CI/CD pipeline.
+
 ## Documentation
 
 See [HOTMESS_OS_COMPLETE.md](./HOTMESS_OS_COMPLETE.md) for comprehensive documentation including:
