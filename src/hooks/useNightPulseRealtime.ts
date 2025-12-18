@@ -11,6 +11,9 @@ import type { NightPulseCity, NightPulseEvent } from '../types/night-pulse';
 
 const supabase = createClient();
 
+// Heat intensity calculation constant
+const HEAT_INTENSITY_MULTIPLIER = 10;
+
 export function useNightPulseRealtime() {
   const [cities, setCities] = useState<NightPulseCity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,7 +67,7 @@ export function useNightPulseRealtime() {
                   longitude: beacon.longitude,
                   active_beacons: 1,
                   scans_last_hour: beacon.scan_count || 0,
-                  heat_intensity: Math.min(100, (beacon.scan_count || 0) * 10),
+                  heat_intensity: Math.min(100, (beacon.scan_count || 0) * HEAT_INTENSITY_MULTIPLIER),
                   last_activity_at: new Date().toISOString(),
                   refreshed_at: new Date().toISOString(),
                 });
@@ -72,7 +75,7 @@ export function useNightPulseRealtime() {
                 const city = cityMap.get(cityId)!;
                 city.active_beacons = (city.active_beacons || 0) + 1;
                 city.scans_last_hour += beacon.scan_count || 0;
-                city.heat_intensity = Math.min(100, city.scans_last_hour * 10);
+                city.heat_intensity = Math.min(100, city.scans_last_hour * HEAT_INTENSITY_MULTIPLIER);
               }
             });
             
@@ -115,7 +118,7 @@ export function useNightPulseRealtime() {
 
   // Calculate heat intensity from scan count
   const calculateHeat = useCallback((scans: number): number => {
-    return Math.min(100, scans * 10);
+    return Math.min(100, scans * HEAT_INTENSITY_MULTIPLIER);
   }, []);
 
   // Handle real-time event updates
