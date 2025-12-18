@@ -1,10 +1,10 @@
 // components/records/NextUpReleases.tsx
 // Show next 3 releases + ecosystem links
 
-"use client";
+
 
 import * as React from "react";
-import Link from "next/link";
+
 
 export function NextUpReleases({ releaseId }: { releaseId: string }) {
   const [items, setItems] = React.useState<any[]>([]);

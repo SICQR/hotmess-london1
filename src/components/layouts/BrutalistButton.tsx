@@ -1,10 +1,10 @@
 // components/layouts/BrutalistButton.tsx
 // Reusable brutalist button component
 
-"use client";
+
 
 import * as React from "react";
-import Link from "next/link";
+
 import { buttons, cn } from "@/lib/design-system";
 
 interface BrutalistButtonProps {
@@ -40,9 +40,9 @@ export function BrutalistButton({
   
   if (href && !disabled) {
     return (
-      <Link href={href} className={combinedClasses}>
+      <a href={href} className={combinedClasses}>
         {content}
-      </Link>
+      </a>
     );
   }
   

@@ -1,10 +1,7 @@
 // components/Thread.tsx
 // Unified Thread component for Connect + Tickets with Realtime + Optimistic UI
 
-"use client";
-
 import * as React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ShieldAlert, HeartHandshake } from "lucide-react";
@@ -20,8 +17,8 @@ import { trackTicketEvent } from "@/lib/tickets/track";
 import { buildPath } from "@/lib/routes";
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  import.meta.env.VITE_SUPABASE_URL!,
+  import.meta.env.VITE_SUPABASE_ANON_KEY!
 );
 
 type Mode = "connect" | "tickets";
@@ -30,6 +27,7 @@ type Props = {
   mode: Mode;
   threadId: string;
   sendEndpoint: string; // "/api/connect/thread/send" | "/api/tickets/thread/send"
+  onNavigate: (route: string, params?: Record<string, string>) => void;
 };
 
 const COPY: Record<Mode, { title: string; sub: string; reportMode: string }> = {
@@ -63,9 +61,9 @@ function mapSendError(raw: string) {
   return raw || "Not sent.";
 }
 
-export default function Thread({ mode, threadId, sendEndpoint }: Props) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+export default function Thread({ mode, threadId, sendEndpoint, onNavigate }: Props) {
+  // Use browser's URLSearchParams instead of Next.js useSearchParams
+  const searchParams = React.useMemo(() => new URLSearchParams(window.location.search), []);
   const copy = COPY[mode];
 
   const [me, setMe] = React.useState<string | null>(null);
@@ -220,13 +218,13 @@ export default function Thread({ mode, threadId, sendEndpoint }: Props) {
             otherUserId={otherUserId || undefined}
           />
 
-          <Button variant="secondary" className="rounded-2xl" onClick={() => router.push("/map")}>
+          <Button variant="secondary" className="rounded-2xl" onClick={() => onNavigate("/map")}>
             Map
           </Button>
           
           {/* Add My Tickets link for ticket threads */}
           {mode === "tickets" && (
-            <Button variant="outline" className="rounded-2xl" onClick={() => router.push(buildPath("myTickets"))}>
+            <Button variant="outline" className="rounded-2xl" onClick={() => onNavigate(buildPath("myTickets"))}>
               My Tickets
             </Button>
           )}
@@ -371,13 +369,13 @@ export default function Thread({ mode, threadId, sendEndpoint }: Props) {
       <div className="flex items-center justify-between text-sm">
         <button
           className="flex items-center gap-2 opacity-80 hover:opacity-100 underline underline-offset-4"
-          onClick={() => router.push("/care")}
+          onClick={() => onNavigate("/care")}
         >
           <HeartHandshake className="h-4 w-4" /> Care
         </button>
         <button
           className="flex items-center gap-2 opacity-80 hover:opacity-100 underline underline-offset-4"
-          onClick={() => router.push(`/report?thread=${threadId}&mode=${copy.reportMode}`)}
+          onClick={() => onNavigate(`/report?thread=${threadId}&mode=${copy.reportMode}`)}
         >
           <ShieldAlert className="h-4 w-4" /> Report
         </button>

@@ -2,10 +2,10 @@
 // Ticket context header shown at top of ticket threads
 // Shows listing details + links back to beacon/listing pages
 
-"use client";
+
 
 import * as React from "react";
-import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import { Ticket, ExternalLink } from "lucide-react";
 
@@ -32,16 +32,16 @@ export function TicketThreadHeader({ listing }: { listing: any }) {
 
         <div className="flex gap-2">
           <Button asChild variant="outline" size="sm" className="rounded-2xl">
-            <Link href={`/tickets/${listing.beacon_id}`}>
+            <a href={`/tickets/${listing.beacon_id}`}>
               Beacon
               <ExternalLink className="h-3 w-3 ml-1" />
-            </Link>
+            </a>
           </Button>
           <Button asChild variant="outline" size="sm" className="rounded-2xl">
-            <Link href={`/tickets/listing/${listing.id}`}>
+            <a href={`/tickets/listing/${listing.id}`}>
               Listing
               <ExternalLink className="h-3 w-3 ml-1" />
-            </Link>
+            </a>
           </Button>
         </div>
       </div>
