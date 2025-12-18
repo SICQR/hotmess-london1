@@ -1,9 +1,13 @@
 /**
  * HOTMESS LONDON - SEO Utilities
  * Meta tags, Open Graph, structured data, and SEO helpers
+ * 
+ * Note: This file contains Next.js Metadata type which is not used in Vite app.
+ * The functions and data here can still be useful for manual meta tag generation.
  */
 
-import { Metadata } from 'next';
+// Removed Next.js dependency - using plain types instead
+// import { Metadata } from 'next';
 
 // Base SEO configuration
 const BASE_URL = 'https://hotmess.london';
@@ -34,9 +38,10 @@ export interface SEOConfig {
 }
 
 /**
- * Generate Next.js metadata object with full SEO tags
+ * Generate metadata object with full SEO tags
+ * Note: Return type changed from Next.js Metadata to generic object
  */
-export function generateMetadata(config: SEOConfig = {}): Metadata {
+export function generateMetadata(config: SEOConfig = {}): any {
   const {
     title = DEFAULT_TITLE,
     description = DEFAULT_DESCRIPTION,

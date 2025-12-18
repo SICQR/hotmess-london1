@@ -1,11 +1,14 @@
 /**
  * HOTMESS LONDON - Robots.txt Generator
  * Controls search engine crawling
+ * 
+ * Note: This file was for Next.js. For Vite, create a static public/robots.txt instead.
  */
 
-import { MetadataRoute } from 'next';
+// Removed Next.js dependency
+// import { MetadataRoute } from 'next';
 
-export default function robots(): MetadataRoute.Robots {
+export default function robots() {
   const baseUrl = 'https://hotmess.london';
 
   return {

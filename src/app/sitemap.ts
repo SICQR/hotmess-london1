@@ -1,13 +1,16 @@
 /**
  * HOTMESS LONDON - Dynamic Sitemap Generator
  * Generates XML sitemap for SEO
+ * 
+ * Note: This file was for Next.js. For Vite, create a static public/sitemap.xml instead.
  */
 
-import { MetadataRoute } from 'next';
+// Removed Next.js dependency
+// import { MetadataRoute } from 'next';
 
 const BASE_URL = 'https://hotmess.london';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default function sitemap() {
   // Static pages
   const staticRoutes = [
     {
