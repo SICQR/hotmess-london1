@@ -86,7 +86,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
           setItems(cartItems);
         } else {
           // Cart expired or not found, create new one
-          console.log('Cart expired, creating new cart');
+          if (import.meta.env.DEV) {
+            console.log('Cart expired, creating new cart');
+          }
           localStorage.removeItem(CART_ID_KEY);
           setCartId(null);
           setCheckoutUrl(null);

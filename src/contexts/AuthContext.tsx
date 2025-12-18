@@ -19,7 +19,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // BYPASS: Auto-login for testing (remove in production)
     const devBypass = localStorage.getItem('hotmess_dev_auth_bypass');
-    console.log('🔍 Checking dev bypass flag:', devBypass);
+    if (import.meta.env.DEV) {
+      console.log('🔍 Checking dev bypass flag:', devBypass);
+    }
     
     if (devBypass === 'true') {
       const mockUser: AuthUser = {
@@ -30,12 +32,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
       setUser(mockUser);
       setLoading(false);
-      console.log('🔓 Auth bypassed for testing');
-      console.log('✅ Dev user created:', mockUser);
+      if (import.meta.env.DEV) {
+        console.log('🔓 Auth bypassed for testing');
+        console.log('✅ Dev user created:', mockUser);
+      }
       return; // Don't set up real auth listeners when bypassed
     }
     
-    console.log('⚠️ Dev bypass NOT active - using real auth');
+    if (import.meta.env.DEV) {
+      console.log('⚠️ Dev bypass NOT active - using real auth');
+    }
 
     // Check for existing session on mount
     getCurrentUser()
