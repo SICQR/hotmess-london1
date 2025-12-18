@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * Admin Dashboard Overview with real backend data
  */
@@ -11,7 +9,6 @@ import { StatCard } from '../StatCard';
 import { EmptyState } from '../EmptyState';
 import { StatCardSkeleton, CardSkeleton } from '../LoadingSkeleton';
 import { Users, ShoppingBag, Package, DollarSign, AlertCircle, FileText, Shield } from 'lucide-react';
-import Link from 'next/link';
 
 const supabase = createClient(
   `https://${projectId}.supabase.co`,
@@ -268,7 +265,7 @@ export function AdminOverviewClient() {
           Quick Actions
         </h2>
         <div className="grid md:grid-cols-3 gap-4">
-          <Link
+          <a
             href="/admin/moderation"
             className="rounded-3xl border p-6 hover:bg-white/5 transition-colors group"
           >
@@ -283,7 +280,7 @@ export function AdminOverviewClient() {
             </p>
           </a>
 
-          <Link
+          <a
             href="/admin/beacons"
             className="rounded-3xl border p-6 hover:bg-white/5 transition-colors group"
           >
@@ -298,7 +295,7 @@ export function AdminOverviewClient() {
             </p>
           </a>
 
-          <Link
+          <a
             href="/admin/records"
             className="rounded-3xl border p-6 hover:bg-white/5 transition-colors group"
           >
