@@ -251,13 +251,7 @@ export function setupGlobalErrorHandling() {
     });
   });
 
-  // Handle unhandled promise rejections
-  window.addEventListener('unhandledrejection', (event) => {
-    analytics.error(event.reason?.message || 'Promise rejected', {
-      type: 'unhandled_rejection',
-      promise: 'Promise rejected',
-    });
-  });
+  // Note: unhandledrejection is now handled in main.tsx with toast notifications
 
   // Catch console errors (optional - can be noisy)
   const originalError = console.error;

@@ -5,6 +5,7 @@
 
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 import { getAccessToken, getAccessTokenAsync } from '../auth';
+import { retry } from '../error-handling';
 
 const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/api/messmarket`;
 
@@ -114,20 +115,34 @@ export async function getListings(params?: {
   limit?: number;
   offset?: number;
 }) {
-  const queryParams = new URLSearchParams();
-  
-  if (params?.category) queryParams.set('category', params.category);
-  if (params?.search) queryParams.set('search', params.search);
-  if (params?.status) queryParams.set('status', params.status);
-  if (params?.limit) queryParams.set('limit', params.limit.toString());
-  if (params?.offset) queryParams.set('offset', params.offset.toString());
-  
-  const query = queryParams.toString();
-  return fetchAPI(`/listings${query ? '?' + query : ''}`);
+  return retry(
+    async () => {
+      const queryParams = new URLSearchParams();
+      
+      if (params?.category) queryParams.set('category', params.category);
+      if (params?.search) queryParams.set('search', params.search);
+      if (params?.status) queryParams.set('status', params.status);
+      if (params?.limit) queryParams.set('limit', params.limit.toString());
+      if (params?.offset) queryParams.set('offset', params.offset.toString());
+      
+      const query = queryParams.toString();
+      return fetchAPI(`/listings${query ? '?' + query : ''}`);
+    },
+    {
+      maxAttempts: 3,
+      onRetry: (attempt) => console.log(`Retrying listings fetch (${attempt}/3)`),
+    }
+  );
 }
 
 export async function getListing(id: string) {
-  return fetchAPI(`/listings/${id}`);
+  return retry(
+    async () => fetchAPI(`/listings/${id}`),
+    {
+      maxAttempts: 3,
+      onRetry: (attempt) => console.log(`Retrying listing fetch (${attempt}/3)`),
+    }
+  );
 }
 
 export async function getMyListings() {
