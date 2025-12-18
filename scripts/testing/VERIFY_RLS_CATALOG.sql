@@ -74,7 +74,7 @@ WHERE p.schemaname = 'public'
 ORDER BY p.tablename, p.cmd, p.policyname;
 
 -- This will show the actual SQL conditions for each policy
--- Review to ensure they match expectations from /RLS_POLICIES_SUMMARY.md
+-- Review to ensure they match expectations from supabase/migrations/002_create_rls_policies.sql
 
 -- ========================================
 
