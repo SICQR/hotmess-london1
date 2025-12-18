@@ -7,13 +7,13 @@
  * - No individual tracking, no precise movement, no live stalking
  */
 
-import type { Map as MapLibreMap } from "maplibre-gl";
+import type { Map as MapboxMap } from "mapbox-gl";
 
 // ============================================================================
 // HEAT LAYER - Aggregated scan activity
 // ============================================================================
 
-export function upsertHeatLayer(map: MapLibreMap, geojson: any) {
+export function upsertHeatLayer(map: MapboxMap, geojson: any) {
   const srcId = "heat-src";
   const layerId = "heat-layer";
 
@@ -51,14 +51,14 @@ export function upsertHeatLayer(map: MapLibreMap, geojson: any) {
   }
 }
 
-export function setHeatVisible(map: MapLibreMap, visible: boolean) {
+export function setHeatVisible(map: MapboxMap, visible: boolean) {
   const layerId = "heat-layer";
   if (map.getLayer(layerId)) {
     map.setLayoutProperty(layerId, "visibility", visible ? "visible" : "none");
   }
 }
 
-export function removeHeatLayer(map: MapLibreMap) {
+export function removeHeatLayer(map: MapboxMap) {
   const layerId = "heat-layer";
   const srcId = "heat-src";
   if (map.getLayer(layerId)) map.removeLayer(layerId);
@@ -69,7 +69,7 @@ export function removeHeatLayer(map: MapLibreMap) {
 // TRAILS LAYER - Anonymous movement flows
 // ============================================================================
 
-export function upsertTrailsLayer(map: MapLibreMap, geojson: any) {
+export function upsertTrailsLayer(map: MapboxMap, geojson: any) {
   const srcId = "trails-src";
   const layerId = "trails-layer";
 
@@ -98,14 +98,14 @@ export function upsertTrailsLayer(map: MapLibreMap, geojson: any) {
   }
 }
 
-export function setTrailsVisible(map: MapLibreMap, visible: boolean) {
+export function setTrailsVisible(map: MapboxMap, visible: boolean) {
   const layerId = "trails-layer";
   if (map.getLayer(layerId)) {
     map.setLayoutProperty(layerId, "visibility", visible ? "visible" : "none");
   }
 }
 
-export function removeTrailsLayer(map: MapLibreMap) {
+export function removeTrailsLayer(map: MapboxMap) {
   const layerId = "trails-layer";
   const srcId = "trails-src";
   if (map.getLayer(layerId)) map.removeLayer(layerId);
