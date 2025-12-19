@@ -47,11 +47,11 @@ export type AnalyticsEvent =
 
 interface AnalyticsEventData {
   event: AnalyticsEvent;
-  category?: string;
+  category?:  string;
   label?: string;
   value?: number;
   metadata?: Record<string, any>;
-  timestamp?: number;
+  timestamp?:  number;
 }
 
 interface UserProperties {
@@ -65,7 +65,7 @@ interface UserProperties {
 class Analytics {
   private enabled: boolean = false;
   private debug: boolean = false;
-  private userId: string | null = null;
+  private userId:  string | null = null;
   private sessionId: string;
 
   constructor() {
@@ -82,7 +82,7 @@ class Analytics {
    * Initialize analytics with user data
    */
   init(userProps?: UserProperties) {
-    if (userProps?.userId) {
+    if (userProps?. userId) {
       this.userId = userProps.userId;
     }
 
@@ -99,12 +99,12 @@ class Analytics {
    */
   track(eventData: AnalyticsEventData) {
     const event = {
-      ...eventData,
+      ... eventData,
       timestamp: eventData.timestamp || Date.now(),
       sessionId: this.sessionId,
       userId: this.userId,
       url: typeof window !== 'undefined' ? window.location.href : undefined,
-      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+      userAgent: typeof navigator !== 'undefined' ? navigator. userAgent : undefined,
     };
 
     // Debug mode - only log important events to reduce noise
@@ -134,8 +134,8 @@ class Analytics {
       label: pageTitle || pagePath,
       metadata: {
         path: pagePath,
-        title: pageTitle,
-        referrer: typeof document !== 'undefined' ? document.referrer : undefined,
+        title:  pageTitle,
+        referrer: typeof document !== 'undefined' ? document. referrer : undefined,
       },
     });
   }
@@ -157,7 +157,7 @@ class Analytics {
    * Track commerce event
    */
   commerce(event: 'product_viewed' | 'add_to_cart' | 'purchase_completed', data: {
-    productId?: string;
+    productId?:  string;
     productName?: string;
     price?: number;
     currency?: string;
@@ -167,7 +167,7 @@ class Analytics {
   }) {
     this.track({
       event,
-      category: 'commerce',
+      category:  'commerce',
       value: data.price || data.revenue,
       metadata: data,
     });
@@ -185,7 +185,7 @@ class Analytics {
     this.track({
       event,
       category: 'gamification',
-      value: data.xpAmount || data.newLevel,
+      value: data. xpAmount || data.newLevel,
       metadata: data,
     });
   }
@@ -204,7 +204,7 @@ class Analytics {
       label: errorData.message,
       metadata: {
         ...errorData,
-        ...context,
+        ... context,
       },
     });
 
@@ -258,7 +258,7 @@ class Analytics {
           user_id: props.userId,
           role: props.role,
           xp_level: props.xpLevel,
-          is_premium: props.isPremium,
+          is_premium: props. isPremium,
         });
       }
     }
@@ -267,7 +267,7 @@ class Analytics {
   /**
    * Send to analytics provider (GA4, PostHog, etc.)
    */
-  private sendToProvider(event: any) {
+  private sendToProvider(event:  any) {
     if (typeof window === 'undefined') return;
 
     // Google Analytics 4
@@ -282,11 +282,11 @@ class Analytics {
 
     // PostHog (if using)
     if ((window as any).posthog) {
-      (window as any).posthog.capture(event.event, {
+      (window as any).posthog. capture(event.event, {
         category: event.category,
         label: event.label,
         value: event.value,
-        ...event.metadata,
+        ... event.metadata,
       });
     }
   }
@@ -296,11 +296,12 @@ class Analytics {
    */
   private async sendToInternalLog(event: any) {
     // Don't send in development
-    if (!this.enabled) return;
+    if (! this.enabled) return;
 
     try {
       // Send to backend for storage/analysis
-      await fetch('/api/analytics/log', {
+      const baseUrl = import.meta.env. VITE_SUPABASE_FUNCTIONS_URL || '';
+      await fetch(`${baseUrl}/api/analytics/log`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(event),
@@ -326,7 +327,7 @@ export const analytics = new Analytics();
 
 // Convenience functions
 export const trackPageView = (path: string, title?: string) => analytics.pageView(path, title);
-export const trackAction = (action: string, category: string, value?: number, metadata?: Record<string, any>) => 
+export const trackAction = (action:  string, category: string, value?:  number, metadata?: Record<string, any>) => 
   analytics.action(action, category, value, metadata);
 export const trackCommerce = (event: 'product_viewed' | 'add_to_cart' | 'purchase_completed', data: any) => 
   analytics.commerce(event, data);
