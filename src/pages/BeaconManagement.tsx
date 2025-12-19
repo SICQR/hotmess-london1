@@ -206,7 +206,12 @@ export function BeaconManagement({ onNavigate }: BeaconManagementProps) {
 
       {/* Beacons List */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {viewMode === 'grid' ? (
+        {loading ? (
+          <div className="text-center py-20">
+            <div className="size-16 mx-auto mb-4 rounded-full border-4 border-white/10 border-t-[#ff1694] animate-spin" />
+            <p className="text-[14px] text-white/40">Loading beacons...</p>
+          </div>
+        ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredBeacons.map((beacon) => (
               <BeaconCard
@@ -228,7 +233,7 @@ export function BeaconManagement({ onNavigate }: BeaconManagementProps) {
           </div>
         )}
 
-        {filteredBeacons.length === 0 && (
+        {!loading && filteredBeacons.length === 0 && (
           <div className="text-center py-20">
             <QrCode className="size-16 text-white/20 mx-auto mb-4" />
             <h3 className="text-[20px] font-bold text-white/60 mb-2">No beacons found</h3>
