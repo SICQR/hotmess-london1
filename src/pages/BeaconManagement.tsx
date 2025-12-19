@@ -8,6 +8,7 @@ import {
   Plus, QrCode, BarChart3, Eye, Pause, Play, Archive, 
   MapPin, Calendar, Zap, TrendingUp, Users, Target, ChevronRight, Home
 } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   type Beacon,
   type BeaconType,
@@ -16,7 +17,7 @@ import {
   generateBeaconCode,
   generateBeaconQRData,
 } from '../lib/beacon-system';
-import { listBeacons, createBeacon as createBeaconAPI } from '../lib/api/beacons';
+import { getBeacons, updateBeacon, deleteBeacon } from '../lib/beacons/beaconService';
 import { publicAnonKey } from '../utils/supabase/info';
 import { BeaconQRCode } from '../components/BeaconQRCode';
 import { BeaconQrPanel } from '../components/BeaconQrPanel';
@@ -28,14 +29,14 @@ interface BeaconManagementProps {
 }
 
 type ViewMode = 'grid' | 'list';
-type FilterStatus = 'all' | 'active' | 'paused' | 'expired';
+type FilterStatus = 'all' | 'live' | 'draft' | 'archived';
 
 export function BeaconManagement({ onNavigate }: BeaconManagementProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
-  const [selectedBeacon, setSelectedBeacon] = useState<Beacon | null>(null);
+  const [selectedBeacon, setSelectedBeacon] = useState<any | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [beacons, setBeacons] = useState<Beacon[]>([]);
+  const [beacons, setBeacons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Load beacons from API
@@ -47,11 +48,17 @@ export function BeaconManagement({ onNavigate }: BeaconManagementProps) {
     try {
       setLoading(true);
       const filters = filterStatus !== 'all' ? { status: filterStatus } : undefined;
-      const result = await listBeacons(filters);
-      setBeacons(result.beacons || []);
+      const result = await getBeacons(filters);
+      
+      if (result.ok) {
+        setBeacons(result.beacons || []);
+      } else {
+        toast.error(result.error || 'Failed to load beacons');
+        setBeacons([]);
+      }
     } catch (error) {
       console.error('Failed to load beacons:', error);
-      // Fallback to empty array
+      toast.error('Failed to load beacons');
       setBeacons([]);
     } finally {
       setLoading(false);
@@ -63,8 +70,8 @@ export function BeaconManagement({ onNavigate }: BeaconManagementProps) {
     return beacon.status === filterStatus;
   });
 
-  const totalScans = beacons.reduce((sum, b) => sum + b.scanCount, 0);
-  const activeCount = beacons.filter(b => isBeaconActive(b)).length;
+  const totalScans = beacons.reduce((sum, b) => sum + (b.scan_count || 0), 0);
+  const activeCount = beacons.filter(b => b.status === 'live').length;
 
   return (
     <div className="min-h-screen bg-black text-white pb-32">
@@ -148,7 +155,7 @@ export function BeaconManagement({ onNavigate }: BeaconManagementProps) {
         <div className="flex items-center justify-between">
           {/* Status Filters */}
           <div className="flex gap-2">
-            {(['all', 'active', 'paused', 'expired'] as FilterStatus[]).map((status) => (
+            {(['all', 'live', 'draft', 'archived'] as FilterStatus[]).map((status) => (
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
@@ -256,24 +263,16 @@ export function BeaconManagement({ onNavigate }: BeaconManagementProps) {
   );
 }
 
-function BeaconCard({ beacon, onSelect }: { beacon: Beacon; onSelect: (b: Beacon) => void }) {
-  const isActive = isBeaconActive(beacon);
-  const meta = BEACON_TYPE_META[beacon.type];
+function BeaconCard({ beacon, onSelect }: { beacon: any; onSelect: (b: any) => void }) {
+  const isActive = beacon.status === 'live';
+  // Use default meta if type is not found
+  const meta = BEACON_TYPE_META[beacon.type as BeaconType] || BEACON_TYPE_META['checkin'];
 
   return (
     <div
       onClick={() => onSelect(beacon)}
       className="bg-white/[0.02] border border-white/10 rounded-lg p-5 hover:bg-white/[0.04] transition-all cursor-pointer group"
     >
-      {/* Image */}
-      {beacon.imageUrl && (
-        <img
-          src={beacon.imageUrl}
-          alt={beacon.name}
-          className="w-full h-40 object-cover rounded-lg mb-4"
-        />
-      )}
-
       {/* Status Badge */}
       <div className="flex items-center justify-between mb-3">
         <span className={`px-2 py-1 rounded text-[10px] uppercase font-bold tracking-wider ${
@@ -289,33 +288,33 @@ function BeaconCard({ beacon, onSelect }: { beacon: Beacon; onSelect: (b: Beacon
 
       {/* Name & Type */}
       <h3 className="text-[16px] font-bold text-white mb-1 group-hover:text-red-400 transition-colors">
-        {beacon.name}
+        {beacon.title}
       </h3>
       <p className="text-[12px] text-white/60 mb-4">{meta.label}</p>
 
       {/* Stats */}
       <div className="flex items-center gap-4 text-[13px]">
         <div className="flex items-center gap-1.5">
-          <Zap className="size-3 text-yellow-500" />
-          <span className="text-white/60">{beacon.xpReward} XP</span>
+          <Eye className="size-3 text-blue-500" />
+          <span className="text-white/60">{beacon.scan_count || 0}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <Eye className="size-3 text-blue-500" />
-          <span className="text-white/60">{beacon.scanCount}</span>
+          <MapPin className="size-3 text-white/40" />
+          <span className="text-white/60">{beacon.city_id}</span>
         </div>
       </div>
 
-      {/* Code */}
+      {/* Slug */}
       <div className="mt-4 pt-4 border-t border-white/5">
-        <span className="text-[11px] font-mono text-white/40">{beacon.code}</span>
+        <span className="text-[11px] font-mono text-white/40">{beacon.slug}</span>
       </div>
     </div>
   );
 }
 
-function BeaconListItem({ beacon, onSelect }: { beacon: Beacon; onSelect: (b: Beacon) => void }) {
-  const isActive = isBeaconActive(beacon);
-  const meta = BEACON_TYPE_META[beacon.type];
+function BeaconListItem({ beacon, onSelect }: { beacon: any; onSelect: (b: any) => void }) {
+  const isActive = beacon.status === 'live';
+  const meta = BEACON_TYPE_META[beacon.type as BeaconType] || BEACON_TYPE_META['checkin'];
 
   return (
     <div
@@ -328,7 +327,7 @@ function BeaconListItem({ beacon, onSelect }: { beacon: Beacon; onSelect: (b: Be
       {/* Info */}
       <div className="flex-1">
         <div className="flex items-center gap-3 mb-1">
-          <h3 className="text-[16px] font-bold text-white">{beacon.name}</h3>
+          <h3 className="text-[16px] font-bold text-white">{beacon.title}</h3>
           <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${
             isActive ? 'bg-green-950/40 text-green-400' : 'bg-white/10 text-white/40'
           }`}>
@@ -341,26 +340,25 @@ function BeaconListItem({ beacon, onSelect }: { beacon: Beacon; onSelect: (b: Be
       {/* Stats */}
       <div className="flex items-center gap-6">
         <div className="text-center">
-          <div className="text-[20px] font-bold text-white">{beacon.scanCount}</div>
+          <div className="text-[20px] font-bold text-white">{beacon.scan_count || 0}</div>
           <div className="text-[11px] text-white/40 uppercase tracking-wider">Scans</div>
         </div>
         <div className="text-center">
-          <div className="text-[20px] font-bold text-yellow-500">{beacon.xpReward}</div>
-          <div className="text-[11px] text-white/40 uppercase tracking-wider">XP</div>
+          <div className="text-[20px] font-bold text-white/60">{beacon.city_id}</div>
+          <div className="text-[11px] text-white/40 uppercase tracking-wider">City</div>
         </div>
       </div>
 
-      {/* Code */}
+      {/* Slug */}
       <div className="text-right flex-shrink-0">
-        <span className="text-[12px] font-mono text-white/60">{beacon.code}</span>
+        <span className="text-[12px] font-mono text-white/60">{beacon.slug}</span>
       </div>
     </div>
   );
 }
 
-function BeaconDetailModal({ beacon, onClose }: { beacon: Beacon; onClose: () => void }) {
-  const meta = BEACON_TYPE_META[beacon.type];
-  const qrData = generateBeaconQRData(beacon.code);
+function BeaconDetailModal({ beacon, onClose }: { beacon: any; onClose: () => void }) {
+  const meta = BEACON_TYPE_META[beacon.type as BeaconType] || BEACON_TYPE_META['checkin'];
   const functionsUrl = `https://${projectId}.supabase.co/functions/v1/make-server-a670c824`;
 
   return (
@@ -372,7 +370,7 @@ function BeaconDetailModal({ beacon, onClose }: { beacon: Beacon; onClose: () =>
             <div className="flex items-center gap-4">
               <div className="text-[48px]">{meta.icon}</div>
               <div>
-                <h2 style={{ fontSize: '24px', fontWeight: 700 }} className="text-white mb-1">{beacon.name}</h2>
+                <h2 style={{ fontSize: '24px', fontWeight: 700 }} className="text-white mb-1">{beacon.title}</h2>
                 <p style={{ fontSize: '14px', fontWeight: 400 }} className="text-white/60">{meta.label}</p>
               </div>
             </div>
@@ -390,32 +388,36 @@ function BeaconDetailModal({ beacon, onClose }: { beacon: Beacon; onClose: () =>
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4">
             <div className="bg-white/[0.02] border border-white/10 rounded-lg p-4 text-center">
-              <div style={{ fontSize: '24px', fontWeight: 900 }} className="text-white mb-1">{beacon.scanCount}</div>
+              <div style={{ fontSize: '24px', fontWeight: 900 }} className="text-white mb-1">{beacon.scan_count || 0}</div>
               <div style={{ fontSize: '11px', fontWeight: 600 }} className="text-white/40 uppercase tracking-wider">Total Scans</div>
             </div>
             <div className="bg-white/[0.02] border border-white/10 rounded-lg p-4 text-center">
-              <div style={{ fontSize: '24px', fontWeight: 900 }} className="text-yellow-500 mb-1">{beacon.xpReward}</div>
-              <div style={{ fontSize: '11px', fontWeight: 600 }} className="text-white/40 uppercase tracking-wider">XP Reward</div>
+              <div style={{ fontSize: '24px', fontWeight: 900 }} className="text-white/60 mb-1">{beacon.city_id}</div>
+              <div style={{ fontSize: '11px', fontWeight: 600 }} className="text-white/40 uppercase tracking-wider">City</div>
             </div>
             <div className="bg-white/[0.02] border border-white/10 rounded-lg p-4 text-center">
               <div style={{ fontSize: '24px', fontWeight: 900 }} className="text-green-500 mb-1">
-                {beacon.status === 'active' ? 'Active' : 'Paused'}
+                {beacon.status === 'live' ? 'Live' : beacon.status}
               </div>
               <div style={{ fontSize: '11px', fontWeight: 600 }} className="text-white/40 uppercase tracking-wider">Status</div>
             </div>
           </div>
 
-          {/* QR Panel */}
-          <BeaconQrPanel
-            beacon={{
-              id: beacon.id,
-              code: beacon.code,
-              type: beacon.type,
-              subtype: beacon.type, // Map beacon.type to subtype for now
-              label: beacon.name,
-            }}
-            baseUrl={functionsUrl}
-          />
+          {/* Beacon Details */}
+          <div className="bg-white/[0.02] border border-white/10 rounded-lg p-4">
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-white/60 text-sm">Slug:</span>
+                <span className="text-white font-mono text-sm">{beacon.slug}</span>
+              </div>
+              {beacon.description && (
+                <div className="pt-2 border-t border-white/10">
+                  <span className="text-white/60 text-sm">Description:</span>
+                  <p className="text-white/80 text-sm mt-1">{beacon.description}</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
