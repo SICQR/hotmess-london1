@@ -71,7 +71,9 @@ export function AdminOrders({ onNavigate }: AdminOrdersProps) {
   const handleRefund = async (orderId: string, amount?: string) => {
     try {
       // TODO: Implement refund API call
-      console.log('Refunding order:', orderId, 'Amount:', amount);
+      if (import.meta.env.DEV) {
+        console.log('Refunding order:', orderId, 'Amount:', amount);
+      }
       toast.success(`Order ${orderId} refunded successfully`);
       setShowRefundModal(false);
       setSelectedOrder(null);
@@ -84,7 +86,9 @@ export function AdminOrders({ onNavigate }: AdminOrdersProps) {
   const handleUpdateStatus = async (orderId: string, newStatus: string) => {
     try {
       // TODO: Implement status update API call
-      console.log('Updating order:', orderId, 'Status:', newStatus);
+      if (import.meta.env.DEV) {
+        console.log('Updating order:', orderId, 'Status:', newStatus);
+      }
       toast.success(`Order status updated to ${newStatus}`);
       loadOrders();
     } catch (err) {

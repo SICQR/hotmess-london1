@@ -189,7 +189,9 @@ export function ShopProductDetail({ slug, onNavigate }: ShopProductDetailProps) 
         });
         analytics.action('product_shared', 'commerce', undefined, { productId: product.id, method: 'native' });
       } catch (err) {
-        console.log('Share cancelled');
+        if (import.meta.env.DEV) {
+          console.log('Share cancelled');
+        }
       }
     } else {
       setShowShareModal(true);

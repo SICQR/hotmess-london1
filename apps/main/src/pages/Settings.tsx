@@ -108,7 +108,9 @@ export function Settings({ onNavigate }: SettingsProps) {
       // Get access token (fallback to publicAnonKey for dev bypass)
       let accessToken = await getAccessTokenAsync();
       if (!accessToken) {
-        console.log('⚠️ No access token, using publicAnonKey (dev mode)');
+        if (import.meta.env.DEV) {
+          console.log('⚠️ No access token, using publicAnonKey (dev mode)');
+        }
         accessToken = publicAnonKey;
       }
 

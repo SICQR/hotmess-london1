@@ -56,12 +56,16 @@ export function ShopCheckout({ onNavigate }: ShopCheckoutProps) {
         quantity: item.qty,
       }));
 
-      console.log('Creating Shopify checkout with items:', lineItems);
+      if (import.meta.env.DEV) {
+        console.log('Creating Shopify checkout with items:', lineItems);
+      }
 
       // Create real Shopify checkout session
       const checkout = await createCheckout(lineItems);
 
-      console.log('Checkout created successfully:', checkout);
+      if (import.meta.env.DEV) {
+        console.log('Checkout created successfully:', checkout);
+      }
 
       // Redirect to Shopify hosted checkout page
       window.location.href = checkout.webUrl;

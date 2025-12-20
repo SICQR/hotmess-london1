@@ -58,15 +58,21 @@ export function SellerListingCreate({ onNavigate }: SellerListingCreateProps) {
 
     try {
       setSubmitting(true);
-      console.log('Starting listing creation...', { status, imageCount: images.length });
+      if (import.meta.env.DEV) {
+        console.log('Starting listing creation...', { status, imageCount: images.length });
+      }
       
       // Upload images first
       const imageUrls: string[] = [];
       for (const file of images) {
         try {
-          console.log(`Uploading image: ${file.name} (${file.size} bytes)`);
+          if (import.meta.env.DEV) {
+            console.log(`Uploading image: ${file.name} (${file.size} bytes)`);
+          }
           const { url } = await uploadImage(file);
-          console.log(`Upload successful: ${url}`);
+          if (import.meta.env.DEV) {
+            console.log(`Upload successful: ${url}`);
+          }
           imageUrls.push(url);
         } catch (err) {
           console.error('Image upload failed:', err);
@@ -77,7 +83,9 @@ export function SellerListingCreate({ onNavigate }: SellerListingCreateProps) {
         }
       }
       
-      console.log('All images uploaded, creating listing...', imageUrls);
+      if (import.meta.env.DEV) {
+        console.log('All images uploaded, creating listing...', imageUrls);
+      }
       
       // Create listing
       const listingData = {
@@ -93,9 +101,13 @@ export function SellerListingCreate({ onNavigate }: SellerListingCreateProps) {
         status
       };
       
-      console.log('Creating listing with data:', listingData);
+      if (import.meta.env.DEV) {
+        console.log('Creating listing with data:', listingData);
+      }
       const { listing } = await createListing(listingData);
-      console.log('Listing created successfully:', listing);
+      if (import.meta.env.DEV) {
+        console.log('Listing created successfully:', listing);
+      }
       
       toast.success(status === 'draft' ? 'Draft saved' : 'Listing published');
       onNavigate('sellerListings');

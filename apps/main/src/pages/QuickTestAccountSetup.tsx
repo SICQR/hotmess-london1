@@ -68,7 +68,9 @@ export default function QuickTestAccountSetup() {
     const password = (document.getElementById('login-password') as HTMLInputElement)?.value;
 
     try {
-      console.log('🔐 Attempting login...', { email });
+      if (import.meta.env.DEV) {
+        console.log('🔐 Attempting login...', { email });
+      }
       
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
@@ -77,24 +79,26 @@ export default function QuickTestAccountSetup() {
 
       if (signInError) throw signInError;
 
-      console.log('✅ Login successful!', {
-        hasSession: !!data.session,
-        hasUser: !!data.user,
-        hasAccessToken: !!data.session?.access_token,
-        userId: data.user?.id
-      });
+      if (import.meta.env.DEV) {
+        console.log('✅ Login successful!', {
+          hasSession: !!data.session,
+          hasUser: !!data.user,
+          hasAccessToken: !!data.session?.access_token,
+          userId: data.user?.id
+        });
 
-      // Verify session is stored
-      const { data: verifyData } = await supabase.auth.getSession();
-      console.log('🔍 Session verification:', {
-        hasSession: !!verifyData.session,
-        hasAccessToken: !!verifyData.session?.access_token
-      });
+        // Verify session is stored
+        const { data: verifyData } = await supabase.auth.getSession();
+        console.log('🔍 Session verification:', {
+          hasSession: !!verifyData.session,
+          hasAccessToken: !!verifyData.session?.access_token
+        });
 
-      // Check localStorage
-      const keys = Object.keys(localStorage);
-      const authKeys = keys.filter(k => k.includes('auth') || k.startsWith('sb-'));
-      console.log('💾 localStorage auth keys:', authKeys);
+        // Check localStorage
+        const keys = Object.keys(localStorage);
+        const authKeys = keys.filter(k => k.includes('auth') || k.startsWith('sb-'));
+        console.log('💾 localStorage auth keys:', authKeys);
+      }
 
       alert('✅ Login successful! Check console for session details. Now go to ?route=sellerListingsNew');
 

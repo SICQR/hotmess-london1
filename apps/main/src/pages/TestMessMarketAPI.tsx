@@ -13,9 +13,13 @@ export default function TestMessMarketAPI() {
     setResult(null);
 
     try {
-      console.log('Testing MessMarket API...');
+      if (import.meta.env.DEV) {
+        console.log('Testing MessMarket API...');
+      }
       const data = await getListings({ limit: 5 });
-      console.log('API Response:', data);
+      if (import.meta.env.DEV) {
+        console.log('API Response:', data);
+      }
       setResult(data);
     } catch (err) {
       console.error('API Test Failed:', err);

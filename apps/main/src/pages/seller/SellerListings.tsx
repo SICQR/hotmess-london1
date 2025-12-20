@@ -41,21 +41,25 @@ export function SellerListings({ onNavigate }: SellerListingsProps) {
       setLoading(true);
       setError(null);
       
-      console.log('🔍 Loading seller listings...');
-      console.log('🔍 Current time:', new Date().toISOString());
+      if (import.meta.env.DEV) {
+        console.log('🔍 Loading seller listings...');
+        console.log('🔍 Current time:', new Date().toISOString());
+      }
       
       // Fetch from API
       const { listings: apiListings } = await getMyListings();
       
-      console.log('📦 Loaded listings:', {
-        count: apiListings?.length || 0,
-        listings: apiListings
-      });
-      
-      if (apiListings && apiListings.length > 0) {
-        console.log('📋 First listing:', apiListings[0]);
-        console.log('📋 Listing IDs:', apiListings.map((l: any) => l.id));
-        console.log('📋 Listing statuses:', apiListings.map((l: any) => `${l.title}: ${l.status}`));
+      if (import.meta.env.DEV) {
+        console.log('📦 Loaded listings:', {
+          count: apiListings?.length || 0,
+          listings: apiListings
+        });
+        
+        if (apiListings && apiListings.length > 0) {
+          console.log('📋 First listing:', apiListings[0]);
+          console.log('📋 Listing IDs:', apiListings.map((l: any) => l.id));
+          console.log('📋 Listing statuses:', apiListings.map((l: any) => `${l.title}: ${l.status}`));
+        }
       }
       
       setListings(apiListings);

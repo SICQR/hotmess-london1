@@ -26,10 +26,14 @@ export function QrLogin({ onNavigate }: QrLoginProps) {
   const serverUrl = `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/auth`;
 
   // Debug log
-  console.log('[QrLogin] Component mounted', { projectId, serverUrl });
+  if (import.meta.env.DEV) {
+    console.log('[QrLogin] Component mounted', { projectId, serverUrl });
+  }
 
   async function createQR() {
-    console.log('[QrLogin] Creating QR code...');
+    if (import.meta.env.DEV) {
+      console.log('[QrLogin] Creating QR code...');
+    }
     setStatus('creating');
     setError('');
 

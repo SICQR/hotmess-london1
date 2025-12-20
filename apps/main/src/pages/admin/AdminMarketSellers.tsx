@@ -73,17 +73,23 @@ export function AdminMarketSellers({ onNavigate }: AdminMarketSellersProps) {
   const filteredSellers = sellers.filter(s => statusFilter === 'all' || s.status === statusFilter);
 
   const handleApprove = (sellerId: string) => {
-    console.log('Approve seller:', sellerId);
+    if (import.meta.env.DEV) {
+      console.log('Approve seller:', sellerId);
+    }
     // TODO: API call
   };
 
   const handleReject = (sellerId: string) => {
-    console.log('Reject seller:', sellerId);
+    if (import.meta.env.DEV) {
+      console.log('Reject seller:', sellerId);
+    }
     // TODO: API call
   };
 
   const handleSuspend = (sellerId: string) => {
-    console.log('Suspend seller:', sellerId);
+    if (import.meta.env.DEV) {
+      console.log('Suspend seller:', sellerId);
+    }
     // TODO: API call
   };
 
