@@ -312,7 +312,8 @@ class Analytics {
 
     try {
       // Send to backend for storage/analysis
-      await fetch('/api/analytics/log', {
+      const baseUrl = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL || '';
+      await fetch(`${baseUrl}/api/analytics/log`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(event),

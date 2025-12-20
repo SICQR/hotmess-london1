@@ -71,4 +71,4 @@ export type MaybeAsync<T> = T | Promise<T>;
 /**
  * Exact type - prevents excess properties
  */
-export type Exact<T> = T & { [K in Exclude<keyof T, keyof T>]?: never };
+export type Exact<T> = T & { [K in keyof any]: K extends keyof T ? T[K] : never };

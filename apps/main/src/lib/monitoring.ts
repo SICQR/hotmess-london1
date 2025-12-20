@@ -156,8 +156,11 @@ function reportMetric(metric: PerformanceMetric) {
     id: metric.id,
   });
 
+  // Metrics excluded in development mode (too noisy)
+  const EXCLUDED_DEV_METRICS = ['CLS'];
+  
   // Only log significant metrics in development (not every CLS update)
-  if (process.env.NODE_ENV === 'development' && !['CLS'].includes(metric.name)) {
+  if (process.env.NODE_ENV === 'development' && !EXCLUDED_DEV_METRICS.includes(metric.name)) {
     console.log(`📊 ${metric.name}:`, {
       value: Math.round(metric.value),
       rating: metric.rating,
