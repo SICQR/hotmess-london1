@@ -3,7 +3,7 @@
  * Single source of truth for browser-side Supabase client
  */
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { projectId, publicAnonKey } from './supabase/info';
 
 let supabaseInstance: ReturnType<typeof createSupabaseClient> | null = null;
 

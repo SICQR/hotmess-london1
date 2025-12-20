@@ -43,6 +43,6 @@ export function createThread(user1: string, user2: string): TelegramThread {
   return { id: crypto.randomUUID(), participants: [user1, user2], messages: [] };
 }
 
-export function sendMessage(threadId: string, from: string, content: string): TelegramMessage {
+export function sendMessage(_threadId: string, from: string, content: string): TelegramMessage {
   return { id: crypto.randomUUID(), from, content, timestamp: new Date() };
 }

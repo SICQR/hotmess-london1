@@ -76,7 +76,7 @@ export class CrossPromotionEngine {
         return context.currentFeature === 'beacon' && 
                context.recentActivity.filter(a => a.type === 'beacon-scan').length >= 3;
       },
-      createPromotion: (context) => ({
+      createPromotion: (_context) => ({
         id: crypto.randomUUID(),
         type: 'card',
         targetFeature: 'music',
@@ -99,7 +99,7 @@ export class CrossPromotionEngine {
       condition: (context) => {
         return context.currentFeature === 'radio' && context.timeOfDay === 'night';
       },
-      createPromotion: (context) => ({
+      createPromotion: (_context) => ({
         id: crypto.randomUUID(),
         type: 'banner',
         targetFeature: 'beacon',
@@ -122,7 +122,7 @@ export class CrossPromotionEngine {
       condition: (context) => {
         return context.profile.xpLevel >= 5;
       },
-      createPromotion: (context) => ({
+      createPromotion: (_context) => ({
         id: crypto.randomUUID(),
         type: 'card',
         targetFeature: 'shop',
@@ -148,7 +148,7 @@ export class CrossPromotionEngine {
         const daysSince = (Date.now() - lastCareVisit.timestamp.getTime()) / (1000 * 60 * 60 * 24);
         return daysSince > 7;
       },
-      createPromotion: (context) => ({
+      createPromotion: (_context) => ({
         id: crypto.randomUUID(),
         type: 'notification',
         targetFeature: 'care',
@@ -174,7 +174,7 @@ export class CrossPromotionEngine {
         );
         return venueVisits.length >= 2;
       },
-      createPromotion: (context) => ({
+      createPromotion: (_context) => ({
         id: crypto.randomUUID(),
         type: 'card',
         targetFeature: 'tickets',

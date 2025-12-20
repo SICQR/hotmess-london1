@@ -3,7 +3,23 @@
  * 14 beacon types powering scans, routing, XP, and automation
  */
 
-import { XPSource } from './xp-system';
+// XPSource will be imported from @hotmess/xp-engine when needed
+// For now, we'll define a minimal version here to avoid circular dependencies
+
+export type XPSource =
+  | 'beacon-scan'
+  | 'purchase-shop'
+  | 'purchase-market'
+  | 'ticket-sale'
+  | 'ticket-purchase'
+  | 'track-stream'
+  | 'profile-complete'
+  | 'referral'
+  | 'post-create'
+  | 'event-attend'
+  | 'quest-complete'
+  | 'daily-login'
+  | 'bot-interaction';
 
 export type BeaconType =
   | 'checkin'         // Venue check-ins
@@ -264,7 +280,8 @@ export interface BeaconRoute {
 }
 
 export function routeBeacon(beacon: Beacon): BeaconRoute {
-  const meta = BEACON_TYPE_META[beacon.type];
+  // Get metadata for potential future use
+  // const meta = BEACON_TYPE_META[beacon.type];
   
   // Type-specific routing
   switch (beacon.type) {

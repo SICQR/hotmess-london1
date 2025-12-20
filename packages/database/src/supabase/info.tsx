@@ -26,8 +26,19 @@ function getProjectIdFromUrl(url: string): string {
 }
 
 // Get credentials from environment variables with validation
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Support both Vite (import.meta.env) and Node.js (process.env) environments
+const getEnvVar = (key: string): string | undefined => {
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    return import.meta.env[key] as string | undefined;
+  }
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env[key];
+  }
+  return undefined;
+};
+
+const supabaseUrl = getEnvVar('VITE_SUPABASE_URL');
+const anonKey = getEnvVar('VITE_SUPABASE_ANON_KEY');
 
 if (!supabaseUrl) {
   throw new Error(
