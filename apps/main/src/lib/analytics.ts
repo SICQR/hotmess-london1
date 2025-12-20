@@ -3,8 +3,21 @@
  * Unified analytics layer for tracking user behavior and performance
  */
 
+import type {
+  AnalyticsEvent as AnalyticsEventType,
+  AnalyticsEventData,
+  AnalyticsMetadata,
+  UserProperties,
+  CommerceEventData,
+  XPEventData,
+  ErrorContext,
+} from '@/types/analytics';
+
+// Re-export types for convenience
+export type { AnalyticsEventType as AnalyticsEvent };
+
 // Analytics event types
-export type AnalyticsEvent = 
+export type AnalyticsEventName = 
   // User actions
   | 'page_view'
   | 'button_click'
@@ -41,31 +54,26 @@ export type AnalyticsEvent =
   | 'moderation_action'
   | 'user_banned'
   
+  // Performance
+  | 'performance_metric'
+  
   // Errors
   | 'error_occurred'
   | 'api_error';
 
-interface AnalyticsEventData {
-  event: AnalyticsEvent;
-  category?:  string;
+interface AnalyticsEventDataInternal {
+  event: AnalyticsEventName;
+  category?: string;
   label?: string;
   value?: number;
-  metadata?: Record<string, any>;
-  timestamp?:  number;
-}
-
-interface UserProperties {
-  userId?: string;
-  email?: string;
-  role?: string;
-  xpLevel?: number;
-  isPremium?: boolean;
+  metadata?: AnalyticsMetadata;
+  timestamp?: number;
 }
 
 class Analytics {
   private enabled: boolean = false;
   private debug: boolean = false;
-  private userId:  string | null = null;
+  private userId: string | null = null;
   private sessionId: string;
 
   constructor() {
@@ -82,12 +90,12 @@ class Analytics {
    * Initialize analytics with user data
    */
   init(userProps?: UserProperties) {
-    if (userProps?. userId) {
+    if (userProps?.userId) {
       this.userId = userProps.userId;
     }
 
-    if (import.meta.env.DEV) {
-      console.log('[Analytics] 📊 Analytics initialized', { sessionId: this.sessionId });
+    if (this.debug) {
+      console.log('📊 Analytics initialized', { userProps, sessionId: this.sessionId });
     }
 
     // Set user properties if using analytics provider
@@ -97,21 +105,25 @@ class Analytics {
   /**
    * Track a custom event
    */
-  track(eventData: AnalyticsEventData) {
-    const event = {
-      ... eventData,
+  track(eventData: AnalyticsEventDataInternal) {
+    const event: AnalyticsEventType = {
+      event: eventData.event,
+      category: eventData.category || 'general',
+      label: eventData.label,
+      value: eventData.value,
+      metadata: eventData.metadata,
       timestamp: eventData.timestamp || Date.now(),
       sessionId: this.sessionId,
-      userId: this.userId,
+      userId: this.userId || undefined,
       url: typeof window !== 'undefined' ? window.location.href : undefined,
-      userAgent: typeof navigator !== 'undefined' ? navigator. userAgent : undefined,
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
     };
 
     // Debug mode - only log important events to reduce noise
-    if (import.meta.env.DEV) {
+    if (this.debug) {
       const importantEvents = ['page_view', 'purchase_completed', 'error_occurred', 'api_error'];
       if (importantEvents.includes(event.event)) {
-        console.log('[Analytics] 📊 Event:', event.event);
+        console.log('📊 Analytics Event:', event.event, event.metadata || '');
       }
     }
 
@@ -134,8 +146,8 @@ class Analytics {
       label: pageTitle || pagePath,
       metadata: {
         path: pagePath,
-        title:  pageTitle,
-        referrer: typeof document !== 'undefined' ? document. referrer : undefined,
+        title: pageTitle,
+        referrer: typeof document !== 'undefined' ? document.referrer : undefined,
       },
     });
   }
@@ -143,7 +155,7 @@ class Analytics {
   /**
    * Track user action
    */
-  action(action: string, category: string, value?: number, metadata?: Record<string, any>) {
+  action(action: string, category: string, value?: number, metadata?: AnalyticsMetadata) {
     this.track({
       event: 'button_click',
       category,
@@ -156,19 +168,11 @@ class Analytics {
   /**
    * Track commerce event
    */
-  commerce(event: 'product_viewed' | 'add_to_cart' | 'purchase_completed', data: {
-    productId?:  string;
-    productName?: string;
-    price?: number;
-    currency?: string;
-    quantity?: number;
-    orderId?: string;
-    revenue?: number;
-  }) {
+  commerce(event: 'product_viewed' | 'add_to_cart' | 'purchase_completed', data: CommerceEventData) {
     this.track({
       event,
-      category:  'commerce',
-      value: data.price || data.revenue,
+      category: 'commerce',
+      value: data.price || 0,
       metadata: data,
     });
   }
@@ -176,16 +180,11 @@ class Analytics {
   /**
    * Track XP event
    */
-  xp(event: 'xp_earned' | 'level_up' | 'reward_claimed', data: {
-    xpAmount?: number;
-    newLevel?: number;
-    rewardId?: string;
-    action?: string;
-  }) {
+  xp(event: 'xp_earned' | 'level_up' | 'reward_claimed', data: XPEventData) {
     this.track({
       event,
       category: 'gamification',
-      value: data. xpAmount || data.newLevel,
+      value: data.xpAmount || data.level,
       metadata: data,
     });
   }
@@ -193,7 +192,7 @@ class Analytics {
   /**
    * Track error
    */
-  error(error: Error | string, context?: Record<string, any>) {
+  error(error: Error | string, context?: ErrorContext) {
     const errorData = typeof error === 'string' 
       ? { message: error }
       : { message: error.message, stack: error.stack };
@@ -204,13 +203,13 @@ class Analytics {
       label: errorData.message,
       metadata: {
         ...errorData,
-        ... context,
+        ...context,
       },
     });
 
     // Also log to console in development
-    if (import.meta.env.DEV) {
-      console.error('[Analytics] ❌ Error tracked:', typeof error === 'string' ? error : error.message);
+    if (this.debug) {
+      console.error('❌ Error tracked:', error, context);
     }
   }
 
@@ -234,9 +233,9 @@ class Analytics {
   /**
    * Track performance metric
    */
-  performance(metric: string, value: number, metadata?: Record<string, any>) {
+  performance(metric: string, value: number, metadata?: AnalyticsMetadata) {
     this.track({
-      event: 'button_click',
+      event: 'performance_metric',
       category: 'performance',
       label: metric,
       value,
@@ -252,13 +251,18 @@ class Analytics {
 
     // Send to analytics provider
     if (this.enabled && typeof window !== 'undefined') {
+      interface WindowWithGtag extends Window {
+        gtag?: (command: string, ...args: unknown[]) => void;
+      }
+      
       // Google Analytics 4
-      if ((window as any).gtag) {
-        (window as any).gtag('set', 'user_properties', {
+      const win = window as WindowWithGtag;
+      if (win.gtag) {
+        win.gtag('set', 'user_properties', {
           user_id: props.userId,
           role: props.role,
           xp_level: props.xpLevel,
-          is_premium: props. isPremium,
+          is_premium: props.isPremium,
         });
       }
     }
@@ -267,12 +271,21 @@ class Analytics {
   /**
    * Send to analytics provider (GA4, PostHog, etc.)
    */
-  private sendToProvider(event:  any) {
+  private sendToProvider(event: AnalyticsEventType) {
     if (typeof window === 'undefined') return;
 
+    interface WindowWithAnalytics extends Window {
+      gtag?: (command: string, eventName: string, params: Record<string, unknown>) => void;
+      posthog?: {
+        capture: (eventName: string, properties: Record<string, unknown>) => void;
+      };
+    }
+
+    const win = window as WindowWithAnalytics;
+
     // Google Analytics 4
-    if ((window as any).gtag) {
-      (window as any).gtag('event', event.event, {
+    if (win.gtag) {
+      win.gtag('event', event.event, {
         event_category: event.category,
         event_label: event.label,
         value: event.value,
@@ -281,12 +294,12 @@ class Analytics {
     }
 
     // PostHog (if using)
-    if ((window as any).posthog) {
-      (window as any).posthog. capture(event.event, {
+    if (win.posthog) {
+      win.posthog.capture(event.event, {
         category: event.category,
         label: event.label,
         value: event.value,
-        ... event.metadata,
+        ...event.metadata,
       });
     }
   }
@@ -294,22 +307,21 @@ class Analytics {
   /**
    * Send to internal logging endpoint
    */
-  private async sendToInternalLog(event: any) {
+  private async sendToInternalLog(event: AnalyticsEventType) {
     // Don't send in development
-    if (! this.enabled) return;
+    if (!this.enabled) return;
 
     try {
       // Send to backend for storage/analysis
-      const baseUrl = import.meta.env. VITE_SUPABASE_FUNCTIONS_URL || '';
-      await fetch(`${baseUrl}/api/analytics/log`, {
+      await fetch('/api/analytics/log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(event),
       });
     } catch (err) {
       // Silently fail - don't break user experience
-      if (import.meta.env.DEV) {
-        console.warn('[Analytics] Failed to send analytics to backend:', err);
+      if (this.debug) {
+        console.warn('Failed to send analytics to backend:', err);
       }
     }
   }
@@ -327,11 +339,11 @@ export const analytics = new Analytics();
 
 // Convenience functions
 export const trackPageView = (path: string, title?: string) => analytics.pageView(path, title);
-export const trackAction = (action:  string, category: string, value?:  number, metadata?: Record<string, any>) => 
+export const trackAction = (action: string, category: string, value?: number, metadata?: AnalyticsMetadata) => 
   analytics.action(action, category, value, metadata);
-export const trackCommerce = (event: 'product_viewed' | 'add_to_cart' | 'purchase_completed', data: any) => 
+export const trackCommerce = (event: 'product_viewed' | 'add_to_cart' | 'purchase_completed', data: CommerceEventData) => 
   analytics.commerce(event, data);
-export const trackXP = (event: 'xp_earned' | 'level_up' | 'reward_claimed', data: any) => 
+export const trackXP = (event: 'xp_earned' | 'level_up' | 'reward_claimed', data: XPEventData) => 
   analytics.xp(event, data);
-export const trackError = (error: Error | string, context?: Record<string, any>) => 
+export const trackError = (error: Error | string, context?: ErrorContext) => 
   analytics.error(error, context);

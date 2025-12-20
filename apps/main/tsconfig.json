@@ -11,10 +11,18 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    
+    // Strict type-checking (enables noImplicitAny, strictNullChecks, strictFunctionTypes, 
+    // strictBindCallApply, strictPropertyInitialization, noImplicitThis, alwaysStrict)
     "strict": true,
+    
+    // Additional strict options not included in "strict"
+    "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

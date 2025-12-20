@@ -4,15 +4,18 @@
  */
 
 import { analytics } from './analytics';
+import type { 
+  PerformanceMetric, 
+  PerformancePaintTiming,
+  PerformanceLCPEntry,
+  PerformanceFIDEntry,
+  PerformanceCLSEntry,
+  PerformanceEventTiming,
+  PerformanceLongTaskTiming,
+} from '@/types/performance';
+import type { AnalyticsMetadata } from '@/types/analytics';
 
-export interface PerformanceMetric {
-  name: string;
-  value: number;
-  rating: 'good' | 'needs-improvement' | 'poor';
-  delta?: number;
-  id?: string;
-  entries?: any[];
-}
+export type { PerformanceMetric };
 
 /**
  * Web Vitals thresholds (in milliseconds)
@@ -37,12 +40,13 @@ export function trackWebVitals() {
     try {
       const fcpObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries();
-        entries.forEach((entry: any) => {
-          if (entry.name === 'first-contentful-paint') {
+        entries.forEach((entry) => {
+          const paintEntry = entry as PerformancePaintTiming;
+          if (paintEntry.name === 'first-contentful-paint') {
             reportMetric({
               name: 'FCP',
-              value: entry.startTime,
-              rating: getRating(entry.startTime, THRESHOLDS.FCP),
+              value: paintEntry.startTime,
+              rating: getRating(paintEntry.startTime, THRESHOLDS.FCP),
             });
           }
         });
@@ -56,7 +60,7 @@ export function trackWebVitals() {
     try {
       const lcpObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries();
-        const lastEntry = entries[entries.length - 1] as any;
+        const lastEntry = entries[entries.length - 1] as PerformanceLCPEntry;
         reportMetric({
           name: 'LCP',
           value: lastEntry.renderTime || lastEntry.loadTime,
@@ -72,11 +76,12 @@ export function trackWebVitals() {
     try {
       const fidObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries();
-        entries.forEach((entry: any) => {
+        entries.forEach((entry) => {
+          const fidEntry = entry as PerformanceFIDEntry;
           reportMetric({
             name: 'FID',
-            value: entry.processingStart - entry.startTime,
-            rating: getRating(entry.processingStart - entry.startTime, THRESHOLDS.FID),
+            value: fidEntry.processingStart - fidEntry.startTime,
+            rating: getRating(fidEntry.processingStart - fidEntry.startTime, THRESHOLDS.FID),
           });
         });
       });
@@ -90,9 +95,10 @@ export function trackWebVitals() {
       let clsValue = 0;
       const clsObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries();
-        entries.forEach((entry: any) => {
-          if (!entry.hadRecentInput) {
-            clsValue += entry.value;
+        entries.forEach((entry) => {
+          const clsEntry = entry as PerformanceCLSEntry;
+          if (!clsEntry.hadRecentInput) {
+            clsValue += clsEntry.value;
             reportMetric({
               name: 'CLS',
               value: clsValue,
@@ -110,11 +116,12 @@ export function trackWebVitals() {
     try {
       const inpObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries();
-        entries.forEach((entry: any) => {
+        entries.forEach((entry) => {
+          const inpEntry = entry as PerformanceEventTiming;
           reportMetric({
             name: 'INP',
-            value: entry.duration,
-            rating: getRating(entry.duration, THRESHOLDS.INP),
+            value: inpEntry.duration,
+            rating: getRating(inpEntry.duration, THRESHOLDS.INP),
           });
         });
       });
@@ -140,11 +147,6 @@ export function trackWebVitals() {
 }
 
 /**
- * Metrics that should be excluded from dev logging (too noisy)
- */
-const EXCLUDED_DEV_METRICS = ['CLS'];
-
-/**
  * Report metric to analytics
  */
 function reportMetric(metric: PerformanceMetric) {
@@ -155,8 +157,8 @@ function reportMetric(metric: PerformanceMetric) {
   });
 
   // Only log significant metrics in development (not every CLS update)
-  if (import.meta.env.DEV && !EXCLUDED_DEV_METRICS.includes(metric.name)) {
-    console.log(`[Monitoring] 📊 ${metric.name}:`, {
+  if (process.env.NODE_ENV === 'development' && !['CLS'].includes(metric.name)) {
+    console.log(`📊 ${metric.name}:`, {
       value: Math.round(metric.value),
       rating: metric.rating,
     });
@@ -175,7 +177,7 @@ function getRating(value: number, threshold: number): 'good' | 'needs-improvemen
 /**
  * Track custom performance metric
  */
-export function trackCustomMetric(name: string, value: number, metadata?: Record<string, any>) {
+export function trackCustomMetric(name: string, value: number, metadata?: AnalyticsMetadata) {
   analytics.performance(name, value, metadata);
 }
 
@@ -224,17 +226,18 @@ export async function monitorApiCall<T>(
     });
     
     return result;
-  } catch (error: any) {
+  } catch (error) {
     const duration = performance.now() - start;
+    const err = error as Error & { status?: number };
     
     trackCustomMetric(`API_${endpoint}`, duration, {
       status: 'error',
       endpoint,
-      error: error.message,
+      error: err.message,
     });
     
     // Track error
-    analytics.apiError(endpoint, error.status || 500, error.message);
+    analytics.apiError(endpoint, err.status || 500, err.message);
     
     throw error;
   }
@@ -256,13 +259,19 @@ export function setupGlobalErrorHandling() {
     });
   });
 
-  // Note: unhandledrejection is now handled in main.tsx with toast notifications
+  // Handle unhandled promise rejections
+  window.addEventListener('unhandledrejection', (event) => {
+    analytics.error(event.reason?.message || 'Promise rejected', {
+      type: 'unhandled_rejection',
+      promise: 'Promise rejected',
+    });
+  });
 
   // Catch console errors (optional - can be noisy)
   const originalError = console.error;
-  console.error = (...args: any[]) => {
+  console.error = (...args: unknown[]) => {
     // Only track in production
-    if (!import.meta.env.DEV) {
+    if (process.env.NODE_ENV === 'production') {
       analytics.error(args.join(' '), {
         type: 'console_error',
       });
@@ -277,7 +286,7 @@ export function setupGlobalErrorHandling() {
  */
 export function trackLongTasks() {
   // Completely disabled in development - no tracking, no observers, no warnings
-  if (typeof window === 'undefined' || import.meta.env.DEV) {
+  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') {
     return;
   }
   
@@ -286,11 +295,12 @@ export function trackLongTasks() {
     try {
       const observer = new PerformanceObserver((list) => {
         const entries = list.getEntries();
-        entries.forEach((entry: any) => {
-          if (entry.duration > 50) {
-            analytics.performance('Long_Task', entry.duration, {
-              name: entry.name,
-              startTime: entry.startTime,
+        entries.forEach((entry) => {
+          const longTaskEntry = entry as PerformanceLongTaskTiming;
+          if (longTaskEntry.duration > 50) {
+            analytics.performance('Long_Task', longTaskEntry.duration, {
+              name: longTaskEntry.name,
+              startTime: longTaskEntry.startTime,
             });
           }
         });
@@ -313,11 +323,11 @@ export function initMonitoring() {
   
   // Long task tracking disabled in development to avoid console noise
   // Only runs in production environments
-  if (!import.meta.env.DEV) {
+  if (process.env.NODE_ENV === 'production') {
     trackLongTasks();
   }
 
-  if (import.meta.env.DEV) {
-    console.log('[Monitoring] 📊 Performance monitoring initialized (long task tracking disabled in dev)');
+  if (process.env.NODE_ENV === 'development') {
+    console.log('📊 Performance monitoring initialized (long task tracking disabled in dev)');
   }
 }

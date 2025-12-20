@@ -2,6 +2,7 @@
 // Manages cart operations using Shopify's Cart API
 
 import { SHOPIFY_DOMAIN, SHOPIFY_STOREFRONT_TOKEN } from './env';
+import type { ShopifyVariables } from '@/types/api';
 
 // GraphQL query and mutation strings
 const CART_FRAGMENT = `
@@ -162,7 +163,7 @@ interface ShopifyResponse<T> {
 }
 
 // Helper function to make Shopify API requests
-async function shopifyFetch<T>(query: string, variables: Record<string, any> = {}): Promise<T> {
+async function shopifyFetch<T>(query: string, variables: ShopifyVariables = {}): Promise<T> {
   const endpoint = `https://${SHOPIFY_DOMAIN}/api/2024-01/graphql.json`;
 
   const response = await fetch(endpoint, {

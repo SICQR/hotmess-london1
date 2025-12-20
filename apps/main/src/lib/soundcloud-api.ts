@@ -5,6 +5,24 @@ import { SOUNDCLOUD_CLIENT_ID } from './env';
 
 const SOUNDCLOUD_API_URL = 'https://api.soundcloud.com';
 
+// Type declarations for SoundCloud Widget API
+interface SoundCloudWidgetAPI {
+  play(): void;
+  pause(): void;
+  toggle(): void;
+  seekTo(milliseconds: number): void;
+  setVolume(volume: number): void;
+  next(): void;
+  prev(): void;
+  skip(soundIndex: number): void;
+}
+
+interface SoundCloudWindow extends Window {
+  SC?: {
+    Widget: (iframeElement: HTMLIFrameElement) => SoundCloudWidgetAPI;
+  };
+}
+
 export interface SoundCloudTrack {
   id: number;
   title: string;
@@ -283,15 +301,16 @@ export function getStreamUrl(track: SoundCloudTrack): string {
  * Use this in React components to control embedded players
  */
 export class SoundCloudWidget {
-  private widget: any;
+  private widget: SoundCloudWidgetAPI | null;
   private iframe: HTMLIFrameElement;
 
   constructor(iframeElement: HTMLIFrameElement) {
     this.iframe = iframeElement;
-    // @ts-ignore - SC widget API is loaded via script tag
-    if (typeof window !== 'undefined' && window.SC) {
-      // @ts-ignore
-      this.widget = window.SC.Widget(iframeElement);
+    this.widget = null;
+    
+    const win = (typeof window !== 'undefined' ? window : undefined) as SoundCloudWindow | undefined;
+    if (win?.SC) {
+      this.widget = win.SC.Widget(iframeElement);
     }
   }
 
@@ -341,8 +360,8 @@ export function loadSoundCloudWidgetAPI(): Promise<void> {
       return;
     }
 
-    // @ts-ignore
-    if (window.SC) {
+    const win = window as SoundCloudWindow;
+    if (win.SC) {
       resolve();
       return;
     }

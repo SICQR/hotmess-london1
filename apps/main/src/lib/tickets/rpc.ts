@@ -3,8 +3,15 @@
 // Handles both beacon-listing queries and thread operations
 
 import { SupabaseClient } from "@supabase/supabase-js";
+import type { ApiError } from '@/types/api';
+import type { 
+  TicketListing, 
+  TicketListingCard, 
+  CreateListingResponse, 
+  OpenThreadResponse 
+} from '@/types/tickets';
 
-type RpcResult<T> = { data: T | null; error: any | null };
+type RpcResult<T> = { data: T | null; error: ApiError | null };
 
 /**
  * Call RPC with fallback for arg naming styles (beacon_id vs p_beacon_id)
@@ -12,7 +19,7 @@ type RpcResult<T> = { data: T | null; error: any | null };
 async function callRpc<T>(
   sb: SupabaseClient,
   fn: string,
-  args: Record<string, any>
+  args: Record<string, string | number | boolean | null>
 ): Promise<T> {
   // Try common arg naming styles without breaking prod
   const attempts = [
@@ -20,10 +27,11 @@ async function callRpc<T>(
     Object.fromEntries(Object.entries(args).map(([k, v]) => [`p_${k}`, v])),
   ];
 
-  let lastErr: any = null;
+  let lastErr: ApiError | null = null;
 
   for (const a of attempts) {
-    const res = (await sb.rpc(fn as any, a as any)) as RpcResult<T>;
+    // Type assertion is safe here - we're calling Supabase RPC which accepts Record<string, unknown>
+    const res = (await sb.rpc(fn, a as Record<string, unknown>)) as RpcResult<T>;
     if (!res.error) return res.data as T;
     lastErr = res.error;
   }
@@ -35,14 +43,14 @@ async function callRpc<T>(
  * List ticket listings for a beacon
  */
 export async function ticketListListings(sb: SupabaseClient, beaconId: string) {
-  return callRpc<any[]>(sb, "ticket_list_listings", { beacon_id: beaconId });
+  return callRpc<TicketListingCard[]>(sb, "ticket_list_listings", { beacon_id: beaconId });
 }
 
 /**
  * Get single ticket listing by ID
  */
 export async function ticketGetListing(sb: SupabaseClient, listingId: string) {
-  return callRpc<any>(sb, "ticket_get_listing", { listing_id: listingId });
+  return callRpc<TicketListing>(sb, "ticket_get_listing", { listing_id: listingId });
 }
 
 /**
@@ -59,14 +67,14 @@ export async function ticketCreateListing(
     notes?: string;
   }
 ) {
-  return callRpc<any>(sb, "ticket_create_listing", input);
+  return callRpc<CreateListingResponse>(sb, "ticket_create_listing", input);
 }
 
 /**
  * Open a thread with a seller (buyer → seller)
  */
 export async function ticketOpenThread(sb: SupabaseClient, listingId: string) {
-  return callRpc<{ thread_id: string } | string>(sb, "ticket_open_thread", { listing_id: listingId });
+  return callRpc<OpenThreadResponse>(sb, "ticket_open_thread", { listing_id: listingId });
 }
 
 /**
@@ -76,5 +84,5 @@ export async function ticketReportListing(
   sb: SupabaseClient,
   input: { listing_id: string; reason: string; details?: string }
 ) {
-  return callRpc<any>(sb, "ticket_report_listing", input);
+  return callRpc<{ success: boolean }>(sb, "ticket_report_listing", input);
 }

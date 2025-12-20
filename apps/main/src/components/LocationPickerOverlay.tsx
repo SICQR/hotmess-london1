@@ -65,10 +65,18 @@ export function LocationPickerOverlay({
 
       if (!map || !marker || !placePicker) return;
 
-      // @ts-ignore
-      if (window.google?.maps?.InfoWindow) {
-        // @ts-ignore
-        infoWindowRef.current = new google.maps.InfoWindow();
+      // Type-safe access to Google Maps InfoWindow
+      interface GoogleMapsWindow extends Window {
+        google?: {
+          maps?: {
+            InfoWindow: new () => google.maps.InfoWindow;
+          };
+        };
+      }
+      
+      const win = window as GoogleMapsWindow;
+      if (win.google?.maps?.InfoWindow) {
+        infoWindowRef.current = new win.google.maps.InfoWindow();
       }
 
       // Configure map

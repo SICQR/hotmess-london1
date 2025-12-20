@@ -12,7 +12,14 @@ export async function testShopifyConnection() {
   console.log('');
 
   const collections = ['raw', 'hung', 'high', 'super'];
-  const results: Record<string, any> = {};
+  
+  interface TestResult {
+    success: boolean;
+    count?: number;
+    error?: string;
+  }
+  
+  const results: Record<string, TestResult> = {};
 
   for (const collection of collections) {
     console.log(`\n📦 Testing "${collection.toUpperCase()}" collection...`);
@@ -40,9 +47,10 @@ export async function testShopifyConnection() {
         console.log(`   https://admin.shopify.com/store/1e0297-a4/collections\n`);
         results[collection] = { success: true, count: 0 };
       }
-    } catch (error: any) {
-      console.log(`❌ ERROR: ${error.message}`);
-      results[collection] = { success: false, error: error.message };
+    } catch (error) {
+      const err = error as Error;
+      console.log(`❌ ERROR: ${err.message}`);
+      results[collection] = { success: false, error: err.message };
     }
   }
 
@@ -51,8 +59,8 @@ export async function testShopifyConnection() {
   console.log('📊 SUMMARY');
   console.log('='.repeat(60));
 
-  const successful = Object.values(results).filter((r: any) => r.success).length;
-  const totalProducts = Object.values(results).reduce((sum: number, r: any) => sum + (r.count || 0), 0);
+  const successful = Object.values(results).filter((r) => r.success).length;
+  const totalProducts = Object.values(results).reduce((sum: number, r) => sum + (r.count || 0), 0);
 
   console.log(`Collections tested: ${collections.length}`);
   console.log(`Successful connections: ${successful}/${collections.length}`);
