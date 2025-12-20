@@ -1,7 +1,4 @@
 {
-  "buildCommand": "cd apps/main && npm install && npm run build",
-  "devCommand": "cd apps/main && npm run dev",
-  "installCommand": "npm install",
-  "framework": "vite",
-  "outputDirectory": "apps/main/dist"
+  "buildCommand": "pnpm install && pnpm --filter @hotmess/main build",
+  "installCommand": "pnpm install"
 }
