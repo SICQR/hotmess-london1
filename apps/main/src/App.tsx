@@ -16,7 +16,10 @@ import { analytics } from './lib/analytics';
 import { initMonitoring } from './lib/monitoring';
 import './styles/globals.css';
 
-// 🔓 DEV MODE: Force auth bypass to 'true' for development
+// 🔓 DEV MODE ONLY: Auto-enable auth bypass for development testing
+// SECURITY: This ONLY runs in development (import.meta.env.DEV).
+// In production builds, import.meta.env.DEV is false, so this entire block is removed.
+// This allows developers to test features without going through full authentication flow.
 if (import.meta.env.DEV && typeof localStorage !== 'undefined') {
   const currentValue = localStorage.getItem('hotmess_dev_auth_bypass');
   if (currentValue !== 'true') {
