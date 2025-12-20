@@ -1,0 +1,6 @@
+# HOTMESS Platform — PNPM Workspace Configuration
+# Defines all apps and packages in the monorepo
+
+packages:
+  - 'apps/*'
+  - 'packages/*'

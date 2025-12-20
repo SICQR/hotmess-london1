@@ -1,0 +1,51 @@
+🔥 HOTMESS LONDON - Terminal Commands
+=====================================
+
+📍 STEP 1: Make script executable
+----------------------------------
+chmod +x DEPLOY.sh
+
+
+📍 STEP 2: Run deployment
+--------------------------
+./DEPLOY.sh
+
+
+🔑 When prompted:
+------------------
+Username: SICQR
+Password: [Your GitHub Personal Access Token]
+
+Get token from: https://github.com/settings/tokens/new
+Scope needed: ✅ repo (full control)
+
+
+✅ That's it!
+--------------
+The script will:
+1. Push to GitHub (https://github.com/SICQR/HOTMESS-NEXT)
+2. Deploy to Supabase
+3. Test QR generation
+4. Show success message
+
+
+🧪 Test after deployment:
+--------------------------
+# Health check
+curl https://rfoftonnlwudilafhfkl.supabase.co/functions/v1/server/make-server-a670c824/health
+
+# Generate QR code
+curl -o test.svg "https://rfoftonnlwudilafhfkl.supabase.co/functions/v1/server/make-server-a670c824/qr/TEST123.svg?style=hotmess&size=512"
+
+# Open QR code
+open test.svg  # macOS
+xdg-open test.svg  # Linux
+
+
+📖 Need help?
+--------------
+Read: /START_HERE.md
+Read: /DEPLOYMENT_GUIDE.md
+
+
+🔥 HOTMESS LONDON

@@ -1,0 +1,174 @@
+{
+  "version": 8,
+  "name": "HOTMESS Night Pulse Globe",
+  "metadata": {
+    "mapbox:autocomposite": true
+  },
+  "projection": {
+    "type": "globe"
+  },
+  "center": [0, 20],
+  "zoom": 1.5,
+  "bearing": 0,
+  "pitch": 0,
+  "sources": {
+    "composite": {
+      "url": "mapbox://mapbox.mapbox-streets-v8",
+      "type": "vector"
+    },
+    "hotmess-venues": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [
+          {"type":"Feature","properties":{"id":"heaven","name":"Heaven","city":"London","country":"United Kingdom","region":"europe","popularity":"legendary","scans":145,"activityLevel":"high"},"geometry":{"type":"Point","coordinates":[-0.1206,51.5081]}},
+          {"type":"Feature","properties":{"id":"rvt","name":"Royal Vauxhall Tavern","city":"London","country":"United Kingdom","region":"europe","popularity":"legendary","scans":89,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[-0.1235,51.4862]}},
+          {"type":"Feature","properties":{"id":"the-glory","name":"The Glory","city":"London","country":"United Kingdom","region":"europe","popularity":"high","scans":67,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[-0.0559,51.5392]}},
+          {"type":"Feature","properties":{"id":"dalston-superstore","name":"Dalston Superstore","city":"London","country":"United Kingdom","region":"europe","popularity":"high","scans":78,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[-0.0750,51.5466]}},
+          {"type":"Feature","properties":{"id":"eagle-london","name":"Eagle London","city":"London","country":"United Kingdom","region":"europe","popularity":"medium","scans":52,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[-0.1208,51.4848]}},
+          {"type":"Feature","properties":{"id":"xxl-london","name":"XXL London","city":"London","country":"United Kingdom","region":"europe","popularity":"medium","scans":34,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[-0.1270,51.5145]}},
+          {"type":"Feature","properties":{"id":"horse-meat-disco","name":"Horse Meat Disco @ QEII","city":"London","country":"United Kingdom","region":"europe","popularity":"legendary","scans":112,"activityLevel":"high"},"geometry":{"type":"Point","coordinates":[-0.0272,51.5074]}},
+          {"type":"Feature","properties":{"id":"circa","name":"Circa","city":"London","country":"United Kingdom","region":"europe","popularity":"medium","scans":41,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[-0.1149,51.4837]}},
+          {"type":"Feature","properties":{"id":"the-yard","name":"The Yard","city":"London","country":"United Kingdom","region":"europe","popularity":"high","scans":93,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[-0.1319,51.5124]}},
+          {"type":"Feature","properties":{"id":"gay-bar","name":"G-A-Y Bar","city":"London","country":"United Kingdom","region":"europe","popularity":"high","scans":87,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[-0.1340,51.5101]}},
+          {"type":"Feature","properties":{"id":"berghain","name":"Berghain","city":"Berlin","country":"Germany","region":"europe","popularity":"legendary","scans":178,"activityLevel":"high"},"geometry":{"type":"Point","coordinates":[13.4427,52.5108]}},
+          {"type":"Feature","properties":{"id":"schwuz","name":"SchwuZ","city":"Berlin","country":"Germany","region":"europe","popularity":"high","scans":64,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[13.4294,52.4889]}},
+          {"type":"Feature","properties":{"id":"laboratory","name":"Laboratory","city":"Berlin","country":"Germany","region":"europe","popularity":"medium","scans":48,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[13.4125,52.5026]}},
+          {"type":"Feature","properties":{"id":"ficken-3000","name":"Ficken 3000","city":"Berlin","country":"Germany","region":"europe","popularity":"medium","scans":39,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[13.4105,52.5244]}},
+          {"type":"Feature","properties":{"id":"monster-ronsons","name":"Monster Ronsons","city":"Berlin","country":"Germany","region":"europe","popularity":"medium","scans":31,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[13.4205,52.4965]}},
+          {"type":"Feature","properties":{"id":"eagle-nyc","name":"The Eagle NYC","city":"New York","country":"United States","region":"americas","popularity":"legendary","scans":134,"activityLevel":"high"},"geometry":{"type":"Point","coordinates":[-73.9857,40.7484]}},
+          {"type":"Feature","properties":{"id":"phoenix-bar","name":"Phoenix Bar","city":"New York","country":"United States","region":"americas","popularity":"high","scans":76,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[-73.9973,40.7338]}},
+          {"type":"Feature","properties":{"id":"therapy-nyc","name":"Therapy NYC","city":"New York","country":"United States","region":"americas","popularity":"high","scans":69,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[-73.9918,40.7625]}},
+          {"type":"Feature","properties":{"id":"industry-bar","name":"Industry Bar","city":"New York","country":"United States","region":"americas","popularity":"medium","scans":58,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[-74.0070,40.7427]}},
+          {"type":"Feature","properties":{"id":"the-ritz","name":"The Ritz","city":"New York","country":"United States","region":"americas","popularity":"medium","scans":43,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[-73.9878,40.7442]}},
+          {"type":"Feature","properties":{"id":"eagle-sf","name":"The Eagle SF","city":"San Francisco","country":"United States","region":"americas","popularity":"legendary","scans":102,"activityLevel":"high"},"geometry":{"type":"Point","coordinates":[-122.4115,37.7749]}},
+          {"type":"Feature","properties":{"id":"powerhouse-bar","name":"Powerhouse Bar","city":"San Francisco","country":"United States","region":"americas","popularity":"high","scans":67,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[-122.4147,37.7633]}},
+          {"type":"Feature","properties":{"id":"the-stud","name":"The Stud","city":"San Francisco","country":"United States","region":"americas","popularity":"medium","scans":54,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[-122.4105,37.7585]}},
+          {"type":"Feature","properties":{"id":"the-abbey","name":"The Abbey","city":"Los Angeles","country":"United States","region":"americas","popularity":"legendary","scans":121,"activityLevel":"high"},"geometry":{"type":"Point","coordinates":[-118.3617,34.0901]}},
+          {"type":"Feature","properties":{"id":"church","name":"Church","city":"Amsterdam","country":"Netherlands","region":"europe","popularity":"legendary","scans":98,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[4.8945,52.3676]}},
+          {"type":"Feature","properties":{"id":"prik","name":"Prik","city":"Amsterdam","country":"Netherlands","region":"europe","popularity":"high","scans":72,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[4.8952,52.3702]}},
+          {"type":"Feature","properties":{"id":"arq-sydney","name":"ARQ Sydney","city":"Sydney","country":"Australia","region":"asia-pacific","popularity":"legendary","scans":156,"activityLevel":"high"},"geometry":{"type":"Point","coordinates":[151.2093,-33.8688]}},
+          {"type":"Feature","properties":{"id":"imperial-erskineville","name":"Imperial Erskineville","city":"Sydney","country":"Australia","region":"asia-pacific","popularity":"high","scans":81,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[151.1847,-33.9013]}},
+          {"type":"Feature","properties":{"id":"le-depot","name":"Le Depot","city":"Paris","country":"France","region":"europe","popularity":"legendary","scans":143,"activityLevel":"high"},"geometry":{"type":"Point","coordinates":[2.3522,48.8606]}},
+          {"type":"Feature","properties":{"id":"cud-bar","name":"CUD Bar","city":"Paris","country":"France","region":"europe","popularity":"high","scans":68,"activityLevel":"medium"},"geometry":{"type":"Point","coordinates":[2.3470,48.8584]}},
+          {"type":"Feature","properties":{"id":"metro-disco","name":"Metro Disco","city":"Barcelona","country":"Spain","region":"europe","popularity":"legendary","scans":109,"activityLevel":"high"},"geometry":{"type":"Point","coordinates":[2.1734,41.3851]}}
+        ]
+      }
+    }
+  },
+  "fog": {
+    "color": "#ff0080",
+    "high-color": "#ff0080",
+    "horizon-blend": 0.1,
+    "space-color": "#000000",
+    "star-intensity": 0.5
+  },
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#000000"
+      }
+    },
+    {
+      "id": "land",
+      "type": "fill",
+      "source": "composite",
+      "source-layer": "land",
+      "paint": {
+        "fill-color": "#1a1a1a"
+      }
+    },
+    {
+      "id": "water",
+      "type": "fill",
+      "source": "composite",
+      "source-layer": "water",
+      "paint": {
+        "fill-color": "#0a0a0a"
+      }
+    },
+    {
+      "id": "venue-glow",
+      "type": "circle",
+      "source": "hotmess-venues",
+      "paint": {
+        "circle-radius": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          1, 15,
+          5, 30,
+          10, 60
+        ],
+        "circle-color": [
+          "case",
+          [">=", ["get", "scans"], 100],
+          "#ff1694",
+          [">=", ["get", "scans"], 10],
+          "#ff0080",
+          "#e70f3c"
+        ],
+        "circle-opacity": 0.3,
+        "circle-blur": 1.5
+      }
+    },
+    {
+      "id": "venue-markers",
+      "type": "circle",
+      "source": "hotmess-venues",
+      "paint": {
+        "circle-radius": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          1, 8,
+          5, 20,
+          10, 40
+        ],
+        "circle-color": [
+          "case",
+          [">=", ["get", "scans"], 100],
+          "#ff1694",
+          [">=", ["get", "scans"], 10],
+          "#ff0080",
+          "#e70f3c"
+        ],
+        "circle-opacity": 0.9,
+        "circle-stroke-width": 2,
+        "circle-stroke-color": "#ffffff"
+      }
+    },
+    {
+      "id": "venue-labels",
+      "type": "symbol",
+      "source": "hotmess-venues",
+      "layout": {
+        "text-field": ["get", "name"],
+        "text-size": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          1, 0,
+          3, 10,
+          10, 16
+        ],
+        "text-offset": [0, -2],
+        "text-anchor": "bottom"
+      },
+      "paint": {
+        "text-color": "#ffffff",
+        "text-halo-color": "#000000",
+        "text-halo-width": 2,
+        "text-opacity": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          1, 0,
+          3, 1
+        ]
+      }
+    }
+  ]
+}

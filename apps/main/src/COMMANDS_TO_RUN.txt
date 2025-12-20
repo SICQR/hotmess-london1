@@ -1,0 +1,87 @@
+🚀 HOTMESS-LONDON2 - COMMANDS TO RUN
+=====================================
+
+📍 CURRENT LOCATION: Figma Make project folder
+
+
+STEP 1: PUSH TO GITHUB
+-----------------------
+
+Option A - Automated (EASIEST):
+    chmod +x PUSH_TO_GITHUB.sh
+    ./PUSH_TO_GITHUB.sh
+    # When prompted, enter: https://github.com/YOUR_USERNAME/HOTMESS-LONDON2.git
+
+Option B - Manual:
+    git init
+    git branch -M main
+    git add .
+    git commit -m "🎉 Initial commit: HOTMESS LONDON platform"
+    git remote add origin https://github.com/YOUR_USERNAME/HOTMESS-LONDON2.git
+    git push -u origin main
+
+
+AUTHENTICATION:
+---------------
+Get Personal Access Token: https://github.com/settings/tokens
+- Create token with "repo" scope
+- Use as password when pushing
+
+
+STEP 2: CLONE & DEPLOY
+-----------------------
+
+Clone from GitHub:
+    cd ~/Desktop
+    git clone https://github.com/YOUR_USERNAME/HOTMESS-LONDON2.git
+    cd HOTMESS-LONDON2
+
+Install dependencies:
+    npm install
+
+Set up environment:
+    cp .env.example .env.local
+    # Edit .env.local with your keys
+
+Link to Supabase:
+    supabase link --project-ref klbmalzhmxnelyuabawk
+
+Deploy Edge Functions:
+    supabase functions deploy market-checkout-create
+    supabase functions deploy stripe-webhook
+
+Set Stripe secrets:
+    supabase secrets set STRIPE_SECRET_KEY=sk_test_YOUR_KEY
+    supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_YOUR_SECRET
+
+Run locally:
+    npm run dev
+
+
+STEP 3: TEST CHECKOUT
+----------------------
+
+Open: http://localhost:5173?route=messmessMarketProduct&slug=neon-harness
+Click "Buy Now"
+Test card: 4242 4242 4242 4242
+Should work! 🎉
+
+
+KEYS YOU NEED:
+--------------
+
+Supabase: https://supabase.com/dashboard/project/klbmalzhmxnelyuabawk/settings/api
+Stripe: https://dashboard.stripe.com/test/apikeys
+Webhook: https://dashboard.stripe.com/test/webhooks
+
+
+QUICK REFERENCE:
+----------------
+
+Your repo: https://github.com/YOUR_USERNAME/HOTMESS-LONDON2
+Your Supabase: https://supabase.com/dashboard/project/klbmalzhmxnelyuabawk
+Your Stripe: https://dashboard.stripe.com/test/dashboard
+
+
+DONE! ✅
+--------

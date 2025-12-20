@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HOTMESS Debug Navigation</title>
+  <style>
+    body {
+      background: black;
+      color: white;
+      font-family: system-ui;
+      padding: 40px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #ff1694;
+      font-weight: 900;
+      font-size: 48px;
+      margin-bottom: 40px;
+    }
+    .nav-button {
+      display: block;
+      width: 100%;
+      padding: 20px;
+      margin: 10px 0;
+      background: linear-gradient(135deg, #ff1694, #ff0080);
+      color: white;
+      border: none;
+      font-size: 18px;
+      font-weight: 900;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      border-radius: 0;
+      transition: all 0.3s;
+      box-shadow: 0 0 30px rgba(255, 22, 148, 0.6);
+    }
+    .nav-button:hover {
+      background: white;
+      color: black;
+      box-shadow: 0 0 50px rgba(255, 22, 148, 0.9);
+      transform: scale(1.02);
+    }
+    .info {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 22, 148, 0.3);
+      padding: 20px;
+      margin: 20px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌍 HOTMESS NAVIGATION</h1>
+  
+  <div class="info">
+    <strong>Night Pulse Globe Status:</strong> Ready to launch<br>
+    <strong>Features:</strong> 3D rotating Earth, 31 gay venues, pulsing markers, click detection<br>
+    <strong>Tech:</strong> Pure Three.js with OrbitControls
+  </div>
+
+  <a href="/?route=nightPulse" class="nav-button">
+    🌍 LAUNCH NIGHT PULSE GLOBE
+  </a>
+
+  <a href="/?route=home" class="nav-button">
+    🏠 HOME
+  </a>
+
+  <a href="/?route=map" class="nav-button">
+    🗺️ MAP
+  </a>
+
+  <a href="/?route=beacons" class="nav-button">
+    📍 BEACONS
+  </a>
+
+  <a href="/?route=shop" class="nav-button">
+    🛍️ SHOP
+  </a>
+
+  <a href="/?route=radio" class="nav-button">
+    📻 RADIO
+  </a>
+
+  <div class="info" style="margin-top: 40px;">
+    <strong>🛠️ Debug Info:</strong><br>
+    - Click any button above to navigate<br>
+    - Night Pulse uses query param routing: <code>?route=nightPulse</code><br>
+    - Check browser console for Three.js logs<br>
+    - Press F12 to open DevTools
+  </div>
+
+  <script>
+    console.log('🌍 HOTMESS Debug Nav loaded');
+    console.log('📍 Navigate to Night Pulse: /?route=nightPulse');
+  </script>
+</body>
+</html>

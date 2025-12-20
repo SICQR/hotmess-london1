@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌍 Launch Night Pulse Globe</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: #000000;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .container {
+      max-width: 600px;
+      padding: 40px;
+    }
+
+    h1 {
+      font-size: 72px;
+      font-weight: 900;
+      color: #ff1694;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.02); }
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 40px;
+      font-weight: 400;
+    }
+
+    .globe-icon {
+      font-size: 120px;
+      margin: 30px 0;
+      animation: rotate 10s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .launch-button {
+      display: inline-block;
+      padding: 24px 48px;
+      background: linear-gradient(135deg, #ff1694 0%, #ff0080 100%);
+      color: white;
+      font-size: 24px;
+      font-weight: 900;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 
+        0 0 40px rgba(255, 22, 148, 0.6),
+        0 10px 40px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .launch-button:before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .launch-button:hover {
+      background: white;
+      color: black;
+      box-shadow: 
+        0 0 60px rgba(255, 22, 148, 0.9),
+        0 15px 50px rgba(0, 0, 0, 0.5);
+      transform: translateY(-4px) scale(1.05);
+    }
+
+    .launch-button:hover:before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .features {
+      margin-top: 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      text-align: left;
+    }
+
+    .feature {
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 22, 148, 0.2);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .feature strong {
+      color: #ff1694;
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 22, 148, 0.2) 0%, transparent 70%);
+      pointer-events: none;
+      animation: glow-float 8s ease-in-out infinite;
+    }
+
+    @keyframes glow-float {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.2); }
+    }
+
+    .glow-1 { top: 20%; left: 20%; }
+    .glow-2 { bottom: 20%; right: 20%; animation-delay: -4s; }
+  </style>
+</head>
+<body>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+
+  <div class="container">
+    <h1>Night Pulse</h1>
+    <p class="subtitle">Interactive 3D Globe • 31 Gay Venues Worldwide • Real-Time Heat Map</p>
+
+    <div class="globe-icon">🌍</div>
+
+    <a href="/?route=nightPulse" class="launch-button">
+      Launch Globe
+    </a>
+
+    <div class="features">
+      <div class="feature">
+        <strong>🎮 Full Controls</strong>
+        Drag to rotate, scroll to zoom, pan with right-click
+      </div>
+      <div class="feature">
+        <strong>📍 31 Venues</strong>
+        London, NYC, Berlin, SF, Sydney & more
+      </div>
+      <div class="feature">
+        <strong>⚡ Real-Time</strong>
+        Pulsing markers with live activity data
+      </div>
+      <div class="feature">
+        <strong>🎯 Interactive</strong>
+        Click any venue for detailed stats
+      </div>
+    </div>
+  </div>
+
+  <script>
+    console.log('🌍 Night Pulse Launcher Ready');
+    console.log('🎯 Click "Launch Globe" to navigate to /?route=nightPulse');
+    
+    // Auto-redirect after 3 seconds if user doesn't click
+    setTimeout(() => {
+      console.log('⏰ Auto-launching Night Pulse...');
+      window.location.href = '/?route=nightPulse';
+    }, 5000);
+
+    // Countdown display
+    let countdown = 5;
+    const interval = setInterval(() => {
+      countdown--;
+      if (countdown <= 0) {
+        clearInterval(interval);
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
