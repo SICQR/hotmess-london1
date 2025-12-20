@@ -5,7 +5,6 @@
 
 import type {
   AnalyticsEvent as AnalyticsEventType,
-  AnalyticsEventData,
   AnalyticsMetadata,
   UserProperties,
   CommerceEventData,

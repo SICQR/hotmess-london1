@@ -125,7 +125,7 @@ export function trackWebVitals() {
           });
         });
       });
-      inpObserver.observe({ type: 'event', buffered: true, durationThreshold: 40 });
+      inpObserver.observe({ type: 'event', buffered: true, durationThreshold: 40 } as PerformanceObserverInit);
     } catch (e) {
       // Observer not supported
     }
