@@ -65,9 +65,9 @@ export function LocationPickerOverlay({
 
       if (!map || !marker || !placePicker) return;
 
-      // @ts-ignore
+      // @ts-expect-error - Google Maps window extensions
       if (window.google?.maps?.InfoWindow) {
-        // @ts-ignore
+        // @ts-expect-error - Google Maps window extensions
         infoWindowRef.current = new google.maps.InfoWindow();
       }
 

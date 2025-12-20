@@ -181,7 +181,7 @@ app.post('/purchase-ticket', async (c) => {
       return c.json({ error: 'Event not found' }, 404);
     }
 
-    // @ts-ignore - clubs is joined data
+    // @ts-expect-error - clubs is joined data
     const club = event.clubs;
 
     if (!club.stripe_account_id || !club.onboarding_complete) {
@@ -320,12 +320,12 @@ app.post('/confirm-payment', async (c) => {
     const { error: clubStatsError } = await supabase
       .from('clubs')
       .update({
-        // @ts-ignore
+        // @ts-expect-error - Nested joined data types
         total_tickets_sold: (ticket.club_events.club_id.total_tickets_sold || 0) + 1,
-        // @ts-ignore
+        // @ts-expect-error - Nested joined data types
         total_revenue: (ticket.club_events.club_id.total_revenue || 0) + ticket.price,
       })
-      // @ts-ignore
+      // @ts-expect-error - Nested joined data types
       .eq('id', ticket.club_events.club_id);
 
     if (clubStatsError) {

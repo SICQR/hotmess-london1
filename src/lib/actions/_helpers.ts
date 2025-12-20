@@ -76,7 +76,7 @@ export async function callRpc<T>(
   try {
     const { sb } = await requireAuthedUser();
     
-    // @ts-ignore - Supabase RPC typing
+    // @ts-expect-error - Supabase RPC typing
     const { data, error } = await sb.rpc(rpc, args);
     
     if (error) {

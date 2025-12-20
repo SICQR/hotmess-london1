@@ -288,9 +288,9 @@ export class SoundCloudWidget {
 
   constructor(iframeElement: HTMLIFrameElement) {
     this.iframe = iframeElement;
-    // @ts-ignore - SC widget API is loaded via script tag
+    // @ts-expect-error - SC widget API is loaded via script tag
     if (typeof window !== 'undefined' && window.SC) {
-      // @ts-ignore
+      // @ts-expect-error - SC widget API is loaded via script tag
       this.widget = window.SC.Widget(iframeElement);
     }
   }
@@ -341,7 +341,7 @@ export function loadSoundCloudWidgetAPI(): Promise<void> {
       return;
     }
 
-    // @ts-ignore
+    // @ts-expect-error - SC widget API is loaded via script tag
     if (window.SC) {
       resolve();
       return;

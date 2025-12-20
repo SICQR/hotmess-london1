@@ -3693,11 +3693,11 @@ function Navigation25() {
 }
 
 function Container179() {
-  return <div className="absolute h-[668px] left-0 top-0 w-[1101px]" data-name="Container" style={{ backgroundImage: "url('data:image/svg+xml;utf8,<svg viewBox=\\\'0 0 1101 668\\\' xmlns=\\\'http://www.w3.org/2000/svg\\\' preserveAspectRatio=\\\'none\\\'><rect x=\\\'0\\\' y=\\\'0\\\' height=\\\'100%\\\' width=\\\'100%\\\' fill=\\\'url(%23grad)\\\' opacity=\\\'1\\\'/><defs><radialGradient id=\\\'grad\\\' gradientUnits=\\\'userSpaceOnUse\\\' cx=\\\'0\\\' cy=\\\'0\\\' r=\\\'10\\\' gradientTransform=\\\'matrix(0 -68.095 -68.095 0 550.5 267.2)\\\'><stop stop-color=\\\'rgba(255,255,255,0.06)\\\' offset=\\\'0\\\'/><stop stop-color=\\\'rgba(0,0,0,0)\\\' offset=\\\'0.55\\\'/></radialGradient></defs></svg>')" }} />;
+  return <div className="absolute h-[668px] left-0 top-0 w-[1101px]" data-name="Container" style={{ backgroundImage: "url('data:image/svg+xml;utf8,<svg viewBox='0 0 1101 668' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)' opacity='1'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(0 -68.095 -68.095 0 550.5 267.2)'><stop stop-color='rgba(255,255,255,0.06)' offset='0'/><stop stop-color='rgba(0,0,0,0)' offset='0.55'/></radialGradient></defs></svg>')" }} />;
 }
 
 function Container180() {
-  return <div className="absolute h-[668px] left-0 top-0 w-[1101px]" data-name="Container" style={{ backgroundImage: "url('data:image/svg+xml;utf8,<svg viewBox=\\\'0 0 1101 668\\\' xmlns=\\\'http://www.w3.org/2000/svg\\\' preserveAspectRatio=\\\'none\\\'><rect x=\\\'0\\\' y=\\\'0\\\' height=\\\'100%\\\' width=\\\'100%\\\' fill=\\\'url(%23grad)\\\' opacity=\\\'1\\\'/><defs><radialGradient id=\\\'grad\\\' gradientUnits=\\\'userSpaceOnUse\\\' cx=\\\'0\\\' cy=\\\'0\\\' r=\\\'10\\\' gradientTransform=\\\'matrix(0 -97.243 -97.243 0 550.5 801.6)\\\'><stop stop-color=\\\'rgba(255,23,68,0.1)\\\' offset=\\\'0\\\'/><stop stop-color=\\\'rgba(0,0,0,0)\\\' offset=\\\'0.6\\\'/></radialGradient></defs></svg>')" }} />;
+  return <div className="absolute h-[668px] left-0 top-0 w-[1101px]" data-name="Container" style={{ backgroundImage: "url('data:image/svg+xml;utf8,<svg viewBox='0 0 1101 668' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)' opacity='1'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(0 -97.243 -97.243 0 550.5 801.6)'><stop stop-color='rgba(255,23,68,0.1)' offset='0'/><stop stop-color='rgba(0,0,0,0)' offset='0.6'/></radialGradient></defs></svg>')" }} />;
 }
 
 function Container181() {
