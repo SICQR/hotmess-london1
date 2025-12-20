@@ -317,15 +317,13 @@ app.post('/confirm-payment', async (c) => {
     }
 
     // Update club stats
+    // @ts-expect-error - Nested joined data type not inferred correctly
     const { error: clubStatsError } = await supabase
       .from('clubs')
       .update({
-        // @ts-expect-error - Nested joined data type not inferred correctly
         total_tickets_sold: (ticket.club_events.club_id.total_tickets_sold || 0) + 1,
-        // @ts-expect-error - Nested joined data type not inferred correctly
         total_revenue: (ticket.club_events.club_id.total_revenue || 0) + ticket.price,
       })
-      // @ts-expect-error - Nested joined data type not inferred correctly
       .eq('id', ticket.club_events.club_id);
 
     if (clubStatsError) {
