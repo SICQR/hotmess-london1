@@ -1,37 +1,103 @@
 // HOTMESS LONDON - Environment Variables
-// Centralized access to env vars with fallbacks
+// Centralized access to env vars with runtime validation
 //
-// ⚠️ SECURITY WARNING: Production credentials are hardcoded as fallbacks below.
-// This is for development/testing convenience but is NOT recommended for production.
-// Always set proper environment variables in production deployments.
-//
-// Note: For production, environment variables should be properly configured
-// The hardcoded values below are fallbacks for development/testing
+// 🔒 SECURITY: All production credentials REQUIRE environment variables.
+// No hardcoded fallbacks are provided for sensitive keys.
+// Set these in your .env.local file (see .env.example for reference)
 
-// Shopify - Use env vars or fallback to hardcoded values
-export const SHOPIFY_DOMAIN = import.meta.env.VITE_SHOPIFY_DOMAIN || '1e0297-a4.myshopify.com';
-export const SHOPIFY_STOREFRONT_TOKEN = import.meta.env.VITE_SHOPIFY_STOREFRONT_TOKEN || '77c7860ecca2f00853d68ec0cfb67558';
+// Shopify - REQUIRED for store functionality
+// Add these to .env.local:
+//   VITE_SHOPIFY_DOMAIN=your-store.myshopify.com
+//   VITE_SHOPIFY_STOREFRONT_TOKEN=your_storefront_access_token
+export const SHOPIFY_DOMAIN = (() => {
+  const domain = import.meta.env.VITE_SHOPIFY_DOMAIN;
+  if (!domain) {
+    throw new Error(
+      'VITE_SHOPIFY_DOMAIN is required. Add it to .env.local\n' +
+      'Example: VITE_SHOPIFY_DOMAIN=your-store.myshopify.com'
+    );
+  }
+  return domain;
+})();
+
+export const SHOPIFY_STOREFRONT_TOKEN = (() => {
+  const token = import.meta.env.VITE_SHOPIFY_STOREFRONT_TOKEN;
+  if (!token) {
+    throw new Error(
+      'VITE_SHOPIFY_STOREFRONT_TOKEN is required. Add it to .env.local\n' +
+      'Get your token from: Shopify Admin > Apps > Develop apps > Create storefront access token'
+    );
+  }
+  return token;
+})();
 
 // RadioKing - Live listener data integration
-// Add these to Supabase Edge Function environment variables:
-// RADIOKING_STATION_ID=736103
-// RADIOKING_API_KEY=your_api_key_here
-export const RADIOKING_TOKEN = ''; // Not used in frontend
-export const RADIOKING_RADIO_ID = '736103'; // Station ID
+// 🔓 SAFE: This is a public station ID, not a secret
+export const RADIOKING_TOKEN = ''; // Not used in frontend, server-side only
+export const RADIOKING_RADIO_ID = '736103'; // Public station ID - safe to hardcode
 
-// SoundCloud - Optional (set in .env if needed)
-export const SOUNDCLOUD_CLIENT_ID = '';
-export const SOUNDCLOUD_USER_ID = '';
+// SoundCloud - Optional third-party integration
+// 🔓 SAFE: Empty defaults for optional features
+export const SOUNDCLOUD_CLIENT_ID = import.meta.env.VITE_SOUNDCLOUD_CLIENT_ID || '';
+export const SOUNDCLOUD_USER_ID = import.meta.env.VITE_SOUNDCLOUD_USER_ID || '';
 
-// Google Maps - Optional (set in .env if needed)
-export const GOOGLE_MAPS_API_KEY = '';
+// Google Maps - Optional feature
+// 🔓 SAFE: Empty default for optional feature
+export const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
 
-// Supabase - Use env vars or fallback to hardcoded values
-// ⚠️ Production credentials below - should be moved to environment variables
-export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://rfoftonnlwudilafhfkl.supabase.co';
-export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmb2Z0b25ubHd1ZGlsYWZoZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM2NTg4MTAsImV4cCI6MjA2OTIzNDgxMH0.W4g28oa8m-KkaLhgpkoyHW2fo5Jec1K-vfeRVxAhFdI';
+// Supabase - REQUIRED for database and authentication
+// 🔒 SECURITY: These credentials are required and must be set in .env.local
+// Add these to .env.local:
+//   VITE_SUPABASE_URL=https://your-project.supabase.co
+//   VITE_SUPABASE_ANON_KEY=your_anon_key
+export const SUPABASE_URL = (() => {
+  const url = import.meta.env.VITE_SUPABASE_URL;
+  if (!url) {
+    throw new Error(
+      'VITE_SUPABASE_URL is required. Add it to .env.local\n' +
+      'Example: VITE_SUPABASE_URL=https://your-project.supabase.co\n' +
+      'Get it from: Supabase Dashboard > Settings > API'
+    );
+  }
+  return url;
+})();
 
-// Stripe - Use env vars or fallback to hardcoded values
-// ⚠️ Production Stripe live key below - should be moved to environment variables
-export const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_live_51RrKkrRffzKIfelwQC3WOi7Fkadm9d6xjr32kU9aWEDJtyIqqCt2tKde1asYrosgUTJxPYQoxMMy26Qrnwzxj2cp00PpOLxuhj';
-export const STRIPE_SECRET_KEY = ''; // Server-side only
+export const SUPABASE_ANON_KEY = (() => {
+  const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  if (!key) {
+    throw new Error(
+      'VITE_SUPABASE_ANON_KEY is required. Add it to .env.local\n' +
+      'Get it from: Supabase Dashboard > Settings > API > Project API keys > anon public\n' +
+      '⚠️  SECURITY: After fixing this issue, rotate the exposed anon key in Supabase Dashboard'
+    );
+  }
+  return key;
+})();
+
+// Stripe - REQUIRED for payments
+// 🔒 SECURITY: Production Stripe key is required and must be set in .env.local
+// Add this to .env.local:
+//   VITE_STRIPE_PUBLISHABLE_KEY=pk_live_your_key (production) or pk_test_your_key (development)
+const STRIPE_KEY_PREFIXES = ['pk_test_', 'pk_live_'] as const;
+
+export const STRIPE_PUBLISHABLE_KEY = (() => {
+  const key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+  if (!key) {
+    throw new Error(
+      'VITE_STRIPE_PUBLISHABLE_KEY is required. Add it to .env.local\n' +
+      'Get it from: Stripe Dashboard > Developers > API keys > Publishable key\n' +
+      'Use pk_test_xxx for development or pk_live_xxx for production\n' +
+      '⚠️  SECURITY: After fixing this issue, rotate the exposed Stripe key in Stripe Dashboard'
+    );
+  }
+  const hasValidPrefix = STRIPE_KEY_PREFIXES.some(prefix => key.startsWith(prefix));
+  if (!hasValidPrefix) {
+    throw new Error(
+      `VITE_STRIPE_PUBLISHABLE_KEY must start with ${STRIPE_KEY_PREFIXES.join(' or ')}\n` +
+      'Current value does not appear to be a valid Stripe publishable key'
+    );
+  }
+  return key;
+})();
+
+export const STRIPE_SECRET_KEY = ''; // Server-side only, never exposed to frontend

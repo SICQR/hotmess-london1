@@ -15,6 +15,8 @@ import {
 import { Button } from '../components/design-system/Button';
 import { Card } from '../components/design-system/Card';
 import { RouteId } from '../lib/routes';
+import { supabase } from '../lib/supabase';
+import { toast } from 'sonner';
 
 interface TicketsBeaconProps {
   beaconId: string;
@@ -32,39 +34,53 @@ export function TicketsBeacon({ beaconId, onNavigate }: TicketsBeaconProps) {
 
   async function loadBeaconAndListings() {
     try {
-      // TODO: Replace with actual API calls
-      const mockBeacon = {
-        id: beaconId,
-        title: 'XXL @ Fire London',
-        city: 'London',
-        starts_at: new Date(Date.now() + 86400000 * 2).toISOString(),
-        venue: 'Fire London',
-        address: 'South Lambeth Rd, London SW8 1RT',
-      };
+      setLoading(true);
 
-      const mockListings = [
-        {
-          id: '1',
-          seller_name: 'John',
-          price: 15,
-          currency: 'GBP',
-          quantity: 2,
-          created_at: new Date().toISOString(),
-        },
-        {
-          id: '2',
-          seller_name: 'Mike',
-          price: 20,
-          currency: 'GBP',
-          quantity: 1,
-          created_at: new Date().toISOString(),
-        },
-      ];
+      // Fetch beacon data from beacons table
+      const { data: beaconData, error: beaconError } = await supabase
+        .from('beacons')
+        .select('*')
+        .eq('id', beaconId)
+        .single();
 
-      setBeacon(mockBeacon);
-      setListings(mockListings);
-    } catch (error) {
-      console.error('Failed to load beacon:', error);
+      if (beaconError) {
+        throw new Error(beaconError.message);
+      }
+
+      if (!beaconData) {
+        throw new Error('Beacon not found');
+      }
+
+      setBeacon(beaconData);
+
+      // Fetch ticket listings using RPC
+      const { data: listingsResponse, error: listingsError } = await supabase
+        .rpc('ticket_list_listings', { p_beacon_id: beaconId });
+
+      if (listingsError) {
+        throw new Error(listingsError.message);
+      }
+
+      // Extract items from the response object
+      const listingsData = listingsResponse?.items || [];
+      
+      // Transform the listings to match the expected format
+      const transformedListings = listingsData.map((listing: any) => ({
+        id: listing.listingId,
+        seller_name: 'Anonymous', // RPC doesn't expose seller info for privacy
+        price: listing.priceCents / 100, // Convert cents to currency units
+        currency: listing.currency || 'GBP',
+        quantity: listing.quantity,
+        created_at: new Date().toISOString(), // RPC doesn't return created_at
+        event_name: listing.eventName,
+        venue: listing.venue,
+        city: listing.city,
+      }));
+
+      setListings(transformedListings);
+    } catch (err: any) {
+      console.error('Failed to load beacon:', err);
+      toast.error(err.message || 'Failed to load beacon data');
     } finally {
       setLoading(false);
     }

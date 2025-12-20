@@ -1,15 +1,11 @@
 // components/auth/RegisterForm.tsx
 // Registration form with Supabase auth
 
-'use client';
-
 import { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
-import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
-export function RegisterForm() {
-  const router = useRouter();
+export function RegisterForm({ onSuccess }: { onSuccess?: () => void } = {}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -59,11 +55,12 @@ export function RegisterForm() {
       console.log('✅ Registration successful:', data.user?.email);
       setSuccess(true);
       
-      // Redirect after 2 seconds
-      setTimeout(() => {
-        router.push('/');
-        router.refresh();
-      }, 2000);
+      // Call success callback if provided
+      if (onSuccess) {
+        setTimeout(() => {
+          onSuccess();
+        }, 2000);
+      }
     } catch (err: any) {
       console.error('Registration exception:', err);
       setError(err.message || 'An error occurred');

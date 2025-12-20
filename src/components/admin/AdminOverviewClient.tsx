@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * Admin Dashboard Overview with real backend data
  */
@@ -11,7 +9,6 @@ import { StatCard } from '../StatCard';
 import { EmptyState } from '../EmptyState';
 import { StatCardSkeleton, CardSkeleton } from '../LoadingSkeleton';
 import { Users, ShoppingBag, Package, DollarSign, AlertCircle, FileText, Shield } from 'lucide-react';
-import Link from 'next/link';
 
 const supabase = createClient(
   `https://${projectId}.supabase.co`,
@@ -191,7 +188,7 @@ export function AdminOverviewClient() {
             Action Queues
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Link href="/admin/orders" className="block">
+            <a href="/admin/orders" className="block">
               <div className="rounded-3xl border border-hot/30 bg-hot/5 p-6 hover:bg-hot/10 transition-colors">
                 <div className="flex items-center justify-between mb-2">
                   <ShoppingBag size={24} className="text-hot" />
@@ -206,9 +203,9 @@ export function AdminOverviewClient() {
                   Requires review
                 </p>
               </div>
-            </Link>
+            </a>
 
-            <Link href="/admin/moderation" className="block">
+            <a href="/admin/moderation" className="block">
               <div className="rounded-3xl border border-heat/30 bg-heat/5 p-6 hover:bg-heat/10 transition-colors">
                 <div className="flex items-center justify-between mb-2">
                   <AlertCircle size={24} className="text-heat" />
@@ -223,9 +220,9 @@ export function AdminOverviewClient() {
                   Safety & moderation
                 </p>
               </div>
-            </Link>
+            </a>
 
-            <Link href="/admin/dsar" className="block">
+            <a href="/admin/dsar" className="block">
               <div className="rounded-3xl border border-cyan-static/30 bg-cyan-static/5 p-6 hover:bg-cyan-static/10 transition-colors">
                 <div className="flex items-center justify-between mb-2">
                   <FileText size={24} className="text-cyan-static" />
@@ -240,9 +237,9 @@ export function AdminOverviewClient() {
                   Data access requests
                 </p>
               </div>
-            </Link>
+            </a>
 
-            <Link href="/admin/vendors" className="block">
+            <a href="/admin/vendors" className="block">
               <div className="rounded-3xl border border-neon-lime/30 bg-neon-lime/5 p-6 hover:bg-neon-lime/10 transition-colors">
                 <div className="flex items-center justify-between mb-2">
                   <Users size={24} className="text-neon-lime" />
@@ -257,7 +254,7 @@ export function AdminOverviewClient() {
                   Awaiting approval
                 </p>
               </div>
-            </Link>
+            </a>
           </div>
         </div>
       )}
@@ -268,7 +265,7 @@ export function AdminOverviewClient() {
           Quick Actions
         </h2>
         <div className="grid md:grid-cols-3 gap-4">
-          <Link
+          <a
             href="/admin/moderation"
             className="rounded-3xl border p-6 hover:bg-white/5 transition-colors group"
           >
@@ -281,9 +278,9 @@ export function AdminOverviewClient() {
             <p className="text-white/60" style={{ fontSize: '14px' }}>
               Review reports & take action
             </p>
-          </Link>
+          </a>
 
-          <Link
+          <a
             href="/admin/beacons"
             className="rounded-3xl border p-6 hover:bg-white/5 transition-colors group"
           >
@@ -296,9 +293,9 @@ export function AdminOverviewClient() {
             <p className="text-white/60" style={{ fontSize: '14px' }}>
               Manage beacon network
             </p>
-          </Link>
+          </a>
 
-          <Link
+          <a
             href="/admin/records"
             className="rounded-3xl border p-6 hover:bg-white/5 transition-colors group"
           >
@@ -311,7 +308,7 @@ export function AdminOverviewClient() {
             <p className="text-white/60" style={{ fontSize: '14px' }}>
               RCR releases & catalog
             </p>
-          </Link>
+          </a>
         </div>
       </div>
     </div>

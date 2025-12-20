@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { Zap, Check, X, AlertCircle, QrCode, ArrowRight, Star, MapPin } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   type Beacon,
   type BeaconType,
@@ -13,7 +14,7 @@ import {
   routeBeacon,
   isValidBeaconCode,
 } from '../lib/beacon-system';
-import { scanBeacon, getBeacon } from '../lib/api/beacons';
+import { scanBeacon, getBeacon } from '../lib/beacons/beaconService';
 import { publicAnonKey } from '../utils/supabase/info';
 import { 
   CheckInSuccessModal,
@@ -38,7 +39,7 @@ type ScanState = 'input' | 'scanning' | 'success' | 'error' | 'routing' | 'modal
 export function BeaconScanFlow({ code: initialCode, onNavigate, onClose }: BeaconScanFlowProps) {
   const [state, setState] = useState<ScanState>(initialCode ? 'scanning' : 'input');
   const [code, setCode] = useState(initialCode || '');
-  const [beacon, setBeacon] = useState<Beacon | null>(null);
+  const [beacon, setBeacon] = useState<any | null>(null);
   const [xpAwarded, setXpAwarded] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [userMultiplier, setUserMultiplier] = useState(1);
@@ -55,38 +56,47 @@ export function BeaconScanFlow({ code: initialCode, onNavigate, onClose }: Beaco
     setState('scanning');
     setError(null);
 
-    // Validate code format
-    if (!isValidBeaconCode(scanCode)) {
-      setState('error');
-      setError('Invalid beacon code format. Use format like "GLO-001".');
-      return;
-    }
-
     try {
-      // Call real backend API
-      const result = await scanBeacon(scanCode, publicAnonKey);
+      // Call beaconService to scan the beacon
+      const result = await scanBeacon(scanCode);
       
-      // Extract data from API response
-      const beaconData = result.beacon;
-      const earnedXP = result.xpAwarded || 0;
-      const userXP = result.userXP;
-      
-      setBeacon(beaconData);
-      setXpAwarded(earnedXP);
-      setUserMultiplier(userXP?.currentMultiplier || 1);
-      setState('success');
+      if (result.ok) {
+        const beaconData = result.scan;
+        const earnedXP = result.xpAwarded || 0;
+        
+        // Fetch the beacon details
+        const beaconResult = await getBeacon(scanCode);
+        if (beaconResult.ok) {
+          setBeacon(beaconResult.beacon);
+          setXpAwarded(earnedXP);
+          setUserMultiplier(1); // Default multiplier
+          setState('success');
+          
+          toast.success(`+${earnedXP} XP earned!`);
 
-      // Auto-route after 3 seconds
-      setTimeout(() => {
-        handleRoute(beaconData);
-      }, 3000);
+          // Auto-route after 3 seconds
+          setTimeout(() => {
+            handleRoute(beaconResult.beacon);
+          }, 3000);
+        } else {
+          setState('error');
+          setError(beaconResult.error);
+          toast.error(beaconResult.error);
+        }
+      } else {
+        setState('error');
+        setError(result.error);
+        toast.error(result.error);
+      }
     } catch (err: any) {
       setState('error');
-      setError(err.message || 'Failed to scan beacon. Please try again.');
+      const errorMsg = err.message || 'Failed to scan beacon. Please try again.';
+      setError(errorMsg);
+      toast.error(errorMsg);
     }
   };
 
-  const handleRoute = (beaconToRoute: Beacon) => {
+  const handleRoute = (beaconToRoute: any) => {
     setState('routing');
     const route = routeBeacon(beaconToRoute);
 
@@ -229,20 +239,12 @@ export function BeaconScanFlow({ code: initialCode, onNavigate, onClose }: Beaco
 
             {/* Beacon Info */}
             <div className="bg-white/[0.02] border border-white/10 rounded-lg p-5 mb-6 text-left animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-              {beacon.imageUrl && (
-                <img
-                  src={beacon.imageUrl}
-                  alt={beacon.name}
-                  className="w-full h-32 object-cover rounded-lg mb-4"
-                />
-              )}
-
               <div className="flex items-start gap-3 mb-3">
-                <div className="text-[32px]">{BEACON_TYPE_META[beacon.type].icon}</div>
+                <div className="text-[32px]">{BEACON_TYPE_META[beacon.type as BeaconType]?.icon || '📍'}</div>
                 <div className="flex-1">
-                  <h3 className="text-[18px] font-bold text-white mb-1">{beacon.name}</h3>
+                  <h3 className="text-[18px] font-bold text-white mb-1">{beacon.title}</h3>
                   <p className="text-[13px] text-white/60 leading-[1.5]">
-                    {beacon.description || BEACON_TYPE_META[beacon.type].description}
+                    {beacon.description || BEACON_TYPE_META[beacon.type as BeaconType]?.description}
                   </p>
                 </div>
               </div>
@@ -252,30 +254,30 @@ export function BeaconScanFlow({ code: initialCode, onNavigate, onClose }: Beaco
                 <div className="flex items-center gap-1.5">
                   <span className="text-[11px] uppercase tracking-wider text-white/40">Type</span>
                   <span className="text-[13px] font-bold text-white">
-                    {BEACON_TYPE_META[beacon.type].label}
+                    {BEACON_TYPE_META[beacon.type as BeaconType]?.label || beacon.type}
                   </span>
                 </div>
 
-                {beacon.location && (
+                {beacon.city_id && (
                   <div className="flex items-center gap-1.5">
                     <MapPin className="size-3 text-white/40" />
-                    <span className="text-[13px] text-white/60">{beacon.location.city}</span>
+                    <span className="text-[13px] text-white/60">{beacon.city_id}</span>
                   </div>
                 )}
 
                 <div className="flex items-center gap-1.5 ml-auto">
-                  <span className="text-[11px] font-mono text-white/40">{beacon.code}</span>
+                  <span className="text-[11px] font-mono text-white/40">{beacon.slug}</span>
                 </div>
 
                 {/* Save Button */}
                 <SaveButton
                   contentType="beacon"
-                  contentId={beacon.code}
+                  contentId={beacon.slug}
                   metadata={{
-                    title: beacon.name,
+                    title: beacon.title,
                     description: beacon.description,
-                    image: beacon.imageUrl,
-                    location: beacon.location?.city
+                    image: null,
+                    location: beacon.city_id
                   }}
                   size="sm"
                 />

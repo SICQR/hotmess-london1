@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { ArrowLeft, MapPin, Zap, Ticket, ShoppingBag, Gem, Handshake, Home, ChevronRight } from 'lucide-react';
+import { toast } from 'sonner';
+import { createBeacon } from '../lib/beacons/beaconService';
 
 interface BeaconCreateProps {
   onNavigate: (route: string) => void;
@@ -68,7 +70,7 @@ export function BeaconCreate({ onNavigate }: BeaconCreateProps) {
 
   const handleCreate = async () => {
     if (!beaconName.trim()) {
-      alert('Please enter a beacon name');
+      toast.error('Please enter a beacon name');
       return;
     }
 
@@ -76,28 +78,40 @@ export function BeaconCreate({ onNavigate }: BeaconCreateProps) {
 
     const selectedOption = BEACON_TYPES.find(t => t.id === selectedType);
 
-    const beaconData = {
-      type: selectedOption?.masterType,
-      subtype: selectedOption?.subtype,
-      label: beaconName,
-      description: description || null,
-      status: 'draft',
-      // Will be filled in by backend:
-      // - code (generated)
-      // - geo_mode
-      // - xp_base
-      // - payload
+    // Map the beacon types to database schema types
+    const typeMapping: Record<string, 'event' | 'ticket' | 'venue' | 'experience' | 'community'> = {
+      'checkin': 'venue',
+      'event': 'event',
+      'ticket': 'ticket',
+      'product': 'community',
+      'drop': 'community',
+      'vendor': 'community',
     };
 
-    console.log('Creating beacon:', beaconData);
+    const beaconData = {
+      type: typeMapping[selectedType] || 'venue',
+      title: beaconName,
+      description: description || null,
+      city_id: 'london',
+      host_type: 'approved_host' as const,
+    };
 
-    // TODO: Call API to create beacon
-    // For now, simulate success
-    setTimeout(() => {
+    try {
+      const result = await createBeacon(beaconData);
+      
+      if (result.ok) {
+        toast.success(`Beacon "${beaconName}" created successfully!`);
+        // Navigate back to beacons page
+        onNavigate('beacons');
+      } else {
+        toast.error(result.error || 'Failed to create beacon');
+      }
+    } catch (error: any) {
+      console.error('Error creating beacon:', error);
+      toast.error(error?.message || 'Failed to create beacon');
+    } finally {
       setIsCreating(false);
-      alert(`Beacon "${beaconName}" created successfully!`);
-      onNavigate('beacons');
-    }, 1000);
+    }
   };
 
   return (

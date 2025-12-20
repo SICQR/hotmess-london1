@@ -106,10 +106,12 @@ export async function submitNotificationRequest(request: NotificationRequest): P
   if (error) {
     // If it's a duplicate, that's okay (unique constraint)
     if (error.code === '23505') {
-      console.log('User already subscribed to this product');
+      if (import.meta.env.DEV) {
+        console.log('[MessMarket] User already subscribed to this product');
+      }
       return true;
     }
-    console.error('Error submitting notification request:', error);
+    console.error('[MessMarket] Error submitting notification request:', error);
     return false;
   }
 
@@ -130,14 +132,16 @@ export async function submitVendorApplication(application: VendorApplication): P
 
     if (!response.ok) {
       const error = await response.json();
-      console.error('Error submitting vendor application:', error);
+      console.error('[MessMarket] Error submitting vendor application:', error);
       return false;
     }
 
-    console.log('✅ Vendor application submitted successfully');
+    if (import.meta.env.DEV) {
+      console.log('[MessMarket] ✅ Vendor application submitted successfully');
+    }
     return true;
   } catch (error) {
-    console.error('Error submitting vendor application:', error);
+    console.error('[MessMarket] Error submitting vendor application:', error);
     return false;
   }
 }

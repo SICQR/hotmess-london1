@@ -86,7 +86,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
           setItems(cartItems);
         } else {
           // Cart expired or not found, create new one
-          console.log('Cart expired, creating new cart');
+          if (import.meta.env.DEV) {
+            console.log('[Cart] Cart expired, creating new cart');
+          }
           localStorage.removeItem(CART_ID_KEY);
           setCartId(null);
           setCheckoutUrl(null);
@@ -98,7 +100,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setCheckoutUrl(null);
       }
     } catch (error) {
-      console.error('Error refreshing cart:', error);
+      console.error('[Cart] Error refreshing cart:', error);
       setItems([]);
     } finally {
       setLoading(false);
@@ -132,7 +134,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       
       toast.success('Added to cart');
     } catch (error) {
-      console.error('Error adding to cart:', error);
+      console.error('[Cart] Error adding to cart:', error);
       toast.error('Failed to add to cart');
     } finally {
       setLoading(false);
@@ -158,7 +160,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       
       toast.success('Removed from cart');
     } catch (error) {
-      console.error('Error removing from cart:', error);
+      console.error('[Cart] Error removing from cart:', error);
       toast.error('Failed to remove from cart');
     } finally {
       setLoading(false);
@@ -187,7 +189,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const cartItems = transformShopifyCartToItems(updatedCart);
       setItems(cartItems);
     } catch (error) {
-      console.error('Error updating quantity:', error);
+      console.error('[Cart] Error updating quantity:', error);
       toast.error('Failed to update quantity');
     } finally {
       setLoading(false);
@@ -206,7 +208,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       
       toast.success('Cart cleared');
     } catch (error) {
-      console.error('Error clearing cart:', error);
+      console.error('[Cart] Error clearing cart:', error);
       toast.error('Failed to clear cart');
     }
   };

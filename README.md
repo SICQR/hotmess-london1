@@ -42,9 +42,12 @@ A real-time platform connecting queer nightlife through a 3D globe, XP economy, 
 
 3. **Configure environment variables**
    ```bash
-   cp .env.example .env
-   # Edit .env and fill in your API keys and configuration
+   # Copy the example file to create your local environment file
+   cp .env.example .env.local
+   # Edit .env.local and fill in your API keys and configuration
    ```
+   
+   **Note:** The project uses `.env.local` (which is gitignored). Never commit `.env.local` to version control.
 
 4. **Start development server**
    ```bash
