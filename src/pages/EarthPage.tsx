@@ -577,7 +577,7 @@ export function EarthPage({ onNavigate }: EarthPageProps) {
             ]}
             onBeaconClick={(beacon) => {
               if ('code' in beacon) {
-                // @ts-ignore
+                // @ts-expect-error - Beacon type union not narrowed correctly
                 toast.info(`Beacon: ${beacon.title} (/l/${beacon.code})`);
               } else {
                 toast.info(`Location: ${beacon.title || beacon.id}`);

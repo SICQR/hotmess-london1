@@ -65,9 +65,9 @@ export function LocationPickerOverlay({
 
       if (!map || !marker || !placePicker) return;
 
-      // @ts-ignore
+      // @ts-expect-error - Google Maps types not available in window
       if (window.google?.maps?.InfoWindow) {
-        // @ts-ignore
+        // @ts-expect-error - Google Maps InfoWindow constructor type
         infoWindowRef.current = new google.maps.InfoWindow();
       }
 
