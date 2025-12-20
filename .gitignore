@@ -137,3 +137,4 @@ docs/.vitepress/cache
 src/index.css
 src/styles/globals-old.css
 test-cart.js
+.vercel
