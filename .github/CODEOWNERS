@@ -1,0 +1,30 @@
+# CODEOWNERS - Automatically request reviews from code owners
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repo
+* @SICQR
+
+# CI/CD workflows and configurations
+/.github/workflows/ @SICQR
+/.github/ @SICQR
+/package.json @SICQR
+/package-lock.json @SICQR
+/tsconfig.json @SICQR
+/vite.config.ts @SICQR
+/vitest.config.ts @SICQR
+
+# Security and dependency files
+/GITHUB_SECRETS_SETUP.md @SICQR
+/.gitignore @SICQR
+
+# Documentation
+/README.md @SICQR
+/CONTRIBUTING.md @SICQR
+/*.md @SICQR
+
+# Supabase configurations
+/supabase/ @SICQR
+
+# Critical application files
+/src/lib/supabase/ @SICQR
+/src/lib/auth/ @SICQR
