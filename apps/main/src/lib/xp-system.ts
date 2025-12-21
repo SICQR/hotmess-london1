@@ -3,6 +3,8 @@
  * Blockchain-inspired ledger tracking all user actions across the platform
  */
 
+import type { AnalyticsMetadata } from '@/types/analytics';
+
 export type XPSource =
   | 'beacon-scan'
   | 'purchase-shop'
@@ -39,7 +41,7 @@ export interface XPEntry {
   multiplier: number;
   membershipTier: MembershipTier;
   timestamp: Date;
-  metadata?: Record<string, any>;
+  metadata?: AnalyticsMetadata;
 }
 
 export interface XPReward {
