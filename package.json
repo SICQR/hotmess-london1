@@ -54,7 +54,7 @@
     "embla-carousel-react": "^8.6.0",
     "hono": "^4.10.6",
     "input-otp": "^1.4.2",
-    "lucide-react": "^0.469.0",
+    "lucide-react": "^0.562.0",
     "maplibre-gl": "^3.6.2",
     "motion": "^11.18.0",
     "qrcode": "^1.5.4",
