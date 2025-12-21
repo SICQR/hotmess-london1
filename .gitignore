@@ -6,6 +6,9 @@ yarn-error.log*
 .pnp
 .pnp.js
 
+# Turbo
+.turbo/
+
 # Environment Variables
 .env
 .env.local

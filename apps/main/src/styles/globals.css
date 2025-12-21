@@ -1,0 +1,330 @@
+/* Tailwind Directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* HOTMESS LONDON — Brutalist-Luxury Editorial Design System */
+@theme {
+  /* Monochrome Palette */
+  --color-mono-black: #000000;
+  --color-mono-950: #0a0a0a;
+  --color-mono-900: #171717;
+  --color-mono-800: #262626;
+  --color-mono-700: #404040;
+  --color-mono-600: #525252;
+  --color-mono-500: #737373;
+  --color-mono-400: #a3a3a3;
+  --color-mono-300: #d4d4d4;
+  --color-mono-200: #e5e5e5;
+  --color-mono-100: #f5f5f5;
+  --color-mono-white: #ffffff;
+  
+  /* Single Accent */
+  --color-hotmess-red: #E70F3C;
+  
+  /* Semantic Aliases */
+  --color-brutal: #ffffff;
+  --color-brutal-border: rgba(255, 255, 255, 0.1);
+}
+
+/* Global Resets */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: #000000;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
+  }
+
+  /* Editorial Typography Hierarchy */
+  h1 {
+    font-size: 4.5rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-size: 3rem;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  h3 {
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  h4 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+
+  h5 {
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  h6 {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+  }
+
+  *:focus-visible {
+    outline: 1px solid #E70F3C;
+    outline-offset: 2px;
+  }
+}
+
+/* Editorial Design Utilities */
+@layer utilities {
+  /* Glass Morphism */
+  .glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  /* Brutal Borders */
+  .border-brutal {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .border-brutal-strong {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Editorial Spacing */
+  .editorial-section {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
+  @media (min-width: 768px) {
+    .editorial-section {
+      padding-left: 6rem;
+      padding-right: 6rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .editorial-section {
+      padding-left: 8rem;
+      padding-right: 8rem;
+    }
+  }
+
+  /* Typography Styles */
+  .text-editorial {
+    letter-spacing: -0.015em;
+    font-weight: 400;
+  }
+
+  .text-label {
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .text-display {
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+  }
+
+  /* Red Accent */
+  .accent-red {
+    color: #E70F3C;
+  }
+
+  .bg-accent-red {
+    background-color: #E70F3C;
+  }
+
+  .border-accent-red {
+    border-color: #E70F3C;
+  }
+
+  /* Hover States */
+  .hover-lift {
+    transition: transform 0.2s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Minimal Animations */
+  .fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* HOTMESS City Stamps (CSS2D labels) - Minimalist Style */
+@layer base {
+  .hm-city-stamp {
+    position: relative;
+    pointer-events: auto;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    will-change: transform, opacity;
+  }
+
+  .hm-city-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.90);
+    backdrop-filter: blur(10px);
+  }
+
+  .hm-city-dot {
+    width: 4px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.8);
+  }
+
+  .hm-city-name {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    line-height: 1;
+    font-weight: 500;
+  }
+
+  .hm-city-stamp:hover .hm-city-pill {
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.02);
+    transition: all 200ms ease;
+  }
+
+  .hm-city-badges {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .hm-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.85);
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+  }
+
+  .hm-badge--active {
+    background: #E70F3C;
+    border-color: #E70F3C;
+    color: #ffffff;
+  }
+
+  .hm-badge--sponsored {
+    background: #ffffff;
+    border-color: #ffffff;
+    color: #000000;
+  }
+
+  .hm-city-stamp[data-tier="1"] {
+    opacity: 1;
+  }
+
+  .hm-city-stamp[data-tier="2"] {
+    opacity: 0.7;
+  }
+
+  .hm-city-stamp[data-tier="3"] {
+    opacity: 0.5;
+  }
+
+  .hm-globe-wrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+    overflow: hidden;
+  }
+
+  .hm-city-pill--active {
+    border-color: #E70F3C;
+  }
+
+  .hm-city-dot--active {
+    background: #E70F3C;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Extended Component Library theme tokens */
+:root {
+  --hotmess-red: #E70F3C;
+  
+  --gmpx-color-surface: rgba(0,0,0,.92);
+  --gmpx-color-on-surface: rgba(255,255,255,.95);
+  --gmpx-color-on-surface-variant: rgba(255,255,255,.60);
+  --gmpx-color-primary: #E70F3C;
+  --gmpx-font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+  --gmpx-border-radius: 0px;
+}

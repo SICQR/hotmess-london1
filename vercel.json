@@ -1,4 +1,5 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist"
+  "buildCommand": "pnpm install && pnpm --filter @hotmess/main build",
+  "installCommand": "pnpm install",
+  "outputDirectory": "apps/main/dist"
 }
