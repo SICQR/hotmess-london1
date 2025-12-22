@@ -79,7 +79,7 @@
     "@hotmess/cross-promotions": "workspace:*"
   },
   "devDependencies": {
-    "@eslint/js": "^9.18.0",
+    "@eslint/js": "^9.39.2",
     "@types/maplibre-gl": "^1.13.2",
     "@types/node": "^22.10.2",
     "@types/react": "^18.3.18",
