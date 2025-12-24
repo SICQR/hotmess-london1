@@ -186,6 +186,11 @@ const PRODUCT_BY_HANDLE_QUERY = `
 `;
 
 async function shopifyFetch<T>(query: string, variables: ShopifyVariables = {}): Promise<T> {
+  if (!SHOPIFY_DOMAIN || !SHOPIFY_STOREFRONT_TOKEN) {
+    throw new Error(
+      'Shopify is not configured. Set VITE_SHOPIFY_DOMAIN and VITE_SHOPIFY_STOREFRONT_TOKEN in your environment (Vercel Project Settings → Environment Variables, or local .env.local).'
+    );
+  }
   const endpoint = `https://${SHOPIFY_DOMAIN}/api/2024-01/graphql.json`;
 
   const response = await fetch(endpoint, {

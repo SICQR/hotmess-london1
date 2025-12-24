@@ -9,27 +9,18 @@
 // Add these to .env.local:
 //   VITE_SHOPIFY_DOMAIN=your-store.myshopify.com
 //   VITE_SHOPIFY_STOREFRONT_TOKEN=your_storefront_access_token
-export const SHOPIFY_DOMAIN = (() => {
-  const domain = import.meta.env.VITE_SHOPIFY_DOMAIN;
-  if (!domain) {
-    throw new Error(
-      'VITE_SHOPIFY_DOMAIN is required. Add it to .env.local\n' +
-      'Example: VITE_SHOPIFY_DOMAIN=your-store.myshopify.com'
-    );
-  }
-  return domain;
-})();
+export const SHOPIFY_DOMAIN = (import.meta.env.VITE_SHOPIFY_DOMAIN as string | undefined) ?? '';
 
-export const SHOPIFY_STOREFRONT_TOKEN = (() => {
-  const token = import.meta.env.VITE_SHOPIFY_STOREFRONT_TOKEN;
-  if (!token) {
-    throw new Error(
-      'VITE_SHOPIFY_STOREFRONT_TOKEN is required. Add it to .env.local\n' +
-      'Get your token from: Shopify Admin > Apps > Develop apps > Create storefront access token'
-    );
-  }
-  return token;
-})();
+export const SHOPIFY_STOREFRONT_TOKEN =
+  (import.meta.env.VITE_SHOPIFY_STOREFRONT_TOKEN as string | undefined) ?? '';
+
+export const SHOPIFY_CONFIGURED = Boolean(SHOPIFY_DOMAIN && SHOPIFY_STOREFRONT_TOKEN);
+
+if (!SHOPIFY_CONFIGURED) {
+  console.warn(
+    '[hotmess] Shopify is not configured. Store features will be unavailable until you set VITE_SHOPIFY_DOMAIN and VITE_SHOPIFY_STOREFRONT_TOKEN.'
+  );
+}
 
 // RadioKing - Live listener data integration
 // 🔓 SAFE: This is a public station ID, not a secret

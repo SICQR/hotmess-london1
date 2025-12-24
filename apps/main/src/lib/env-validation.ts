@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 const envSchema = z.object({
-  VITE_SHOPIFY_DOMAIN: z.string().min(1, 'Shopify domain is required'),
-  VITE_SHOPIFY_STOREFRONT_TOKEN: z.string().min(1, 'Shopify token is required'),
+  VITE_SHOPIFY_DOMAIN: z.string().min(1, 'Shopify domain is required').optional(),
+  VITE_SHOPIFY_STOREFRONT_TOKEN: z.string().min(1, 'Shopify token is required').optional(),
   VITE_SUPABASE_URL: z.string().url('Invalid Supabase URL'),
   VITE_SUPABASE_ANON_KEY: z.string().min(1, 'Supabase anon key is required'),
   VITE_STRIPE_PUBLISHABLE_KEY: z
