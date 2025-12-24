@@ -22,7 +22,7 @@ interface Track {
   duration: string;
 }
 
-interface Record {
+interface RcrRecord {
   slug: string;
   title: string;
   artist: string;
@@ -125,7 +125,7 @@ const latestReleases = [
 export function Records({ onNavigate }: RecordsProps) {
   const [playingSlug, setPlayingSlug] = useState<string | null>(null);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
-  const [records, setRecords] = useState<Record[]>([]);
+  const [records, setRecords] = useState<RcrRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch records from API
