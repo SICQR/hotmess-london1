@@ -576,11 +576,12 @@ export function EarthPage({ onNavigate }: EarthPageProps) {
               })) : []),
             ]}
             onBeaconClick={(beacon) => {
-              if ('code' in beacon) {
-                // @ts-ignore
-                toast.info(`Beacon: ${beacon.title} (/l/${beacon.code})`);
-              } else {
-                toast.info(`Location: ${beacon.title || beacon.id}`);
+              if ('code' in beacon && 'title' in beacon) {
+                const typedBeacon = beacon as { code: string; title: string };
+                toast.info(`Beacon: ${typedBeacon.title} (/l/${typedBeacon.code})`);
+              } else if ('title' in beacon || 'id' in beacon) {
+                const typedBeacon = beacon as { title?: string; id: string };
+                toast.info(`Location: ${typedBeacon.title || typedBeacon.id}`);
               }
             }}
           />

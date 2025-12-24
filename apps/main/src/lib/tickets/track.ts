@@ -2,7 +2,9 @@
 // Client-side tracking helper for ticket events
 // Fire and forget - never blocks user interactions
 
-export function trackTicketEvent(event: string, payload: Record<string, any> = {}) {
+import type { AnalyticsMetadata } from '@/types/analytics';
+
+export function trackTicketEvent(event: string, payload: AnalyticsMetadata = {}) {
   try {
     fetch("/api/tickets/event", {
       method: "POST",

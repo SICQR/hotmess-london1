@@ -3,6 +3,7 @@
  */
 
 import { projectId, publicAnonKey } from '../utils/supabase/info';
+import type { SearchMetadata } from '@/types/api';
 
 export type SearchResultType = 'beacon' | 'release' | 'product' | 'event' | 'venue' | 'show' | 'vendor';
 
@@ -15,7 +16,7 @@ export interface SearchResult {
   tags?: string[];
   route: string;
   routeParams?: Record<string, string>;
-  metadata?: Record<string, any>;
+  metadata?: SearchMetadata;
   relevanceScore?: number;
 }
 

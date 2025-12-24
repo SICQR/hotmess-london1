@@ -3,6 +3,7 @@
  */
 
 import { projectId, publicAnonKey } from '../utils/supabase/info';
+import type { NotificationMetadata } from '@/types/api';
 
 export type NotificationType = 
   | 'beacon_scan'
@@ -27,7 +28,7 @@ export interface Notification {
   actionParams?: Record<string, string>;
   read: boolean;
   createdAt: string;
-  metadata?: Record<string, any>;
+  metadata?: NotificationMetadata;
 }
 
 const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/api/notifications`;
@@ -153,7 +154,7 @@ export async function createNotification(
     icon?: string;
     actionUrl?: string;
     actionParams?: Record<string, string>;
-    metadata?: Record<string, any>;
+    metadata?: NotificationMetadata;
   }
 ): Promise<Notification> {
   const response = await fetch(API_BASE, {

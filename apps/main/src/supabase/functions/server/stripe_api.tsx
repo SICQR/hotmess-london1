@@ -181,10 +181,18 @@ app.post('/purchase-ticket', async (c) => {
       return c.json({ error: 'Event not found' }, 404);
     }
 
-    // @ts-ignore - clubs is joined data
-    const club = event.clubs;
-
-    if (!club.stripe_account_id || !club.onboarding_complete) {
+    // Type the joined data properly
+    interface EventWithClub {
+      clubs: {
+        stripe_account_id: string | null;
+        onboarding_complete: boolean;
+      } | null;
+    }
+    
+    const eventWithClub = event as unknown as EventWithClub;
+    const club = eventWithClub.clubs;
+    
+    if (!club || !club.stripe_account_id || !club.onboarding_complete) {
       return c.json({ error: 'Venue payment setup incomplete' }, 400);
     }
 
@@ -294,7 +302,7 @@ app.post('/confirm-payment', async (c) => {
       return c.json({ error: 'Payment not completed' }, 400);
     }
 
-    // Get ticket
+    // Get ticket with event data
     const { data: ticket, error: ticketError } = await supabase
       .from('club_tickets')
       .select('*, club_events(*)')
@@ -305,28 +313,48 @@ app.post('/confirm-payment', async (c) => {
       return c.json({ error: 'Ticket not found' }, 404);
     }
 
+    // Type the joined data properly
+    interface TicketWithEvent {
+      event_id: string;
+      tier: string;
+      price: number;
+      club_events: {
+        club_id: string;
+      } | null;
+    }
+    
+    const typedTicket = ticket as unknown as TicketWithEvent;
+    
+    if (!typedTicket.club_events) {
+      return c.json({ error: 'Event data not found' }, 404);
+    }
+
     // Update event stats using helper function
     const { error: statsError } = await supabase.rpc('increment_event_ticket_sales', {
-      event_id: ticket.event_id,
-      tier: ticket.tier,
-      amount: ticket.price,
+      event_id: typedTicket.event_id,
+      tier: typedTicket.tier,
+      amount: typedTicket.price,
     });
 
     if (statsError) {
       console.error('Error updating event stats:', statsError);
     }
 
+    // Get current club stats to update them
+    const { data: clubData } = await supabase
+      .from('clubs')
+      .select('total_tickets_sold, total_revenue')
+      .eq('id', typedTicket.club_events.club_id)
+      .single();
+
     // Update club stats
     const { error: clubStatsError } = await supabase
       .from('clubs')
       .update({
-        // @ts-ignore
-        total_tickets_sold: (ticket.club_events.club_id.total_tickets_sold || 0) + 1,
-        // @ts-ignore
-        total_revenue: (ticket.club_events.club_id.total_revenue || 0) + ticket.price,
+        total_tickets_sold: (clubData?.total_tickets_sold || 0) + 1,
+        total_revenue: (clubData?.total_revenue || 0) + typedTicket.price,
       })
-      // @ts-ignore
-      .eq('id', ticket.club_events.club_id);
+      .eq('id', typedTicket.club_events.club_id);
 
     if (clubStatsError) {
       console.error('Error updating club stats:', clubStatsError);

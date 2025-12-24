@@ -71,13 +71,13 @@ export async function requireAuthedUser() {
  */
 export async function callRpc<T>(
   rpc: string,
-  args: Record<string, any>
+  args: Record<string, string | number | boolean | null>
 ): Promise<ActionResult<T>> {
   try {
     const { sb } = await requireAuthedUser();
     
-    // @ts-ignore - Supabase RPC typing
-    const { data, error } = await sb.rpc(rpc, args);
+    // Type assertion is safe - Supabase RPC accepts Record<string, unknown>
+    const { data, error } = await sb.rpc(rpc, args as Record<string, unknown>);
     
     if (error) {
       console.error(`RPC ${rpc} error:`, error);
@@ -85,9 +85,10 @@ export async function callRpc<T>(
     }
     
     return { ok: true, data: data as T };
-  } catch (e: any) {
-    console.error(`RPC ${rpc} exception:`, e);
-    return { ok: false, error: mapError(String(e?.message ?? e)) };
+  } catch (e) {
+    const err = e as Error;
+    console.error(`RPC ${rpc} exception:`, err);
+    return { ok: false, error: mapError(err.message || String(e)) };
   }
 }
 

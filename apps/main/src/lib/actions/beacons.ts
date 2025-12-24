@@ -4,6 +4,7 @@
 "use server";
 
 import { callRpc, ActionResult } from "./_helpers";
+import type { Json } from '@/types/database.types';
 
 // ============================================================================
 // Types
@@ -36,7 +37,7 @@ export type BeaconScanResult = {
       action: number;
     };
     actionRoute: string;
-    actionConfig: Record<string, any>;
+    actionConfig: Record<string, Json>;
   };
 };
 
@@ -131,7 +132,7 @@ export async function createBeacon(input: {
   sponsorName?: string;
   sponsorDisclosure?: string;
   actionRoute?: string;
-  actionConfig?: Record<string, any>;
+  actionConfig?: Record<string, Json>;
   xpScan?: number;
   xpAction?: number;
   publishNow?: boolean;

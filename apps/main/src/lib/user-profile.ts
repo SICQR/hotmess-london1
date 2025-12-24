@@ -3,8 +3,10 @@
  * Real user profiles backed by Supabase Auth + KV storage
  */
 
+import type { User } from '@supabase/supabase-js';
 import { createClient } from './supabase';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
+import type { UserProfileMetadata } from '@/types/api';
 
 const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/api`;
 
@@ -42,21 +44,19 @@ export interface UserProfile {
   };
   
   // Metadata
-  metadata?: Record<string, any>;
+  metadata?: UserProfileMetadata;
 }
 
 /**
  * Get current authenticated user
  */
-export async function getCurrentUser(): Promise<{ user: any; profile: UserProfile | null } | null> {
+export async function getCurrentUser(): Promise<{ user: User; profile: UserProfile | null } | null> {
   try {
     const supabase = createClient();
     const { data: { user }, error } = await supabase.auth.getUser();
     
     if (error || !user) {
-      if (import.meta.env.DEV) {
-        console.log('[UserProfile] No authenticated user');
-      }
+      console.log('No authenticated user');
       return null;
     }
 
@@ -65,7 +65,7 @@ export async function getCurrentUser(): Promise<{ user: any; profile: UserProfil
     
     return { user, profile };
   } catch (error) {
-    console.error('[UserProfile] Error getting current user:', error);
+    console.error('Error getting current user:', error);
     return null;
   }
 }
@@ -99,7 +99,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
     const data = await response.json();
     return data.profile;
   } catch (error) {
-    console.error('[UserProfile] Error fetching user profile:', error);
+    console.error('Error fetching user profile:', error);
     return null;
   }
 }
@@ -183,7 +183,7 @@ export async function updateUserProfile(
     const data = await response.json();
     return data.profile;
   } catch (error) {
-    console.error('[UserProfile] Error updating user profile:', error);
+    console.error('Error updating user profile:', error);
     throw error;
   }
 }
@@ -220,7 +220,7 @@ export async function awardXP(amount: number, reason: string): Promise<{ newXP: 
       leveledUp: data.leveledUp,
     };
   } catch (error) {
-    console.error('[UserProfile] Error awarding XP:', error);
+    console.error('Error awarding XP:', error);
     throw error;
   }
 }
