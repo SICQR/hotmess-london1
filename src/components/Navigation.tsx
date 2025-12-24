@@ -1,4 +1,4 @@
-import { Home, Radio, ShoppingBag, Heart, Map, Gift, User, Users, Menu, X, Zap, Package, Shield, TrendingUp, Sparkles, Settings, LogIn, Disc3, Globe, Ticket, Building2, Search, Bell, Play, Pause, LogOut } from 'lucide-react';
+import { Home, Radio, ShoppingBag, ShoppingCart, Heart, Map, Gift, User, Users, Menu, X, Zap, Package, Shield, TrendingUp, Sparkles, Settings, LogIn, Disc3, Globe, Ticket, Building2, Search, Pause, LogOut } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { RouteId } from '../lib/routes';
@@ -13,10 +13,23 @@ interface NavigationProps {
   onNavigate: (route: RouteId, params?: Record<string, string>) => void;
 }
 
+type NavItem = {
+  id: RouteId;
+  label: string;
+  icon: any;
+  badge?: string;
+};
+
+type NavSection = {
+  title: string;
+  items: NavItem[];
+};
+
 // Icon mapping for routes
 const ROUTE_ICONS: Record<string, any> = {
   home: Home,
   shop: ShoppingBag,
+  shopCart: ShoppingCart,
   messmarket: Package,
   radio: Radio,
   records: Disc3,
@@ -63,7 +76,7 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
   const { isPlaying, isLoading, togglePlay } = useRadio();
 
   // Build nav sections dynamically from registry
-  const navSections = useMemo(() => {
+  const navSections = useMemo<NavSection[]>(() => {
     const nav = buildNav({
       isAuthed: !!user,
       isAdmin: user?.role === 'admin',
@@ -92,16 +105,24 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
       },
       {
         title: 'Commerce',
-        items: nav.primary
-          .filter(r => ['shop', 'messmarket'].includes(r.id))
-          .map(route => ({
-            id: route.id,
-            label: route.label,
-            icon: ROUTE_ICONS[route.id] || ShoppingBag,
-            badge: route.id === 'shop' && itemCount > 0 
-              ? itemCount.toString() 
-              : ROUTE_BADGES[route.id],
-          })),
+        items: [
+          ...nav.primary
+            .filter(r => ['shop', 'messmarket'].includes(r.id))
+            .map(route => ({
+              id: route.id,
+              label: route.label,
+              icon: ROUTE_ICONS[route.id] || ShoppingBag,
+              badge: route.id === 'shop' && itemCount > 0 
+                ? itemCount.toString() 
+                : ROUTE_BADGES[route.id],
+            })),
+          {
+            id: 'shopCart' as RouteId,
+            label: 'Cart',
+            icon: ShoppingCart,
+            badge: itemCount > 0 ? itemCount.toString() : undefined,
+          },
+        ],
       },
       {
         title: 'Music',
@@ -170,8 +191,8 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
               },
             ]
           : [
-              { id: 'login' as RouteId, label: 'Login', icon: LogIn },
-              { id: 'register' as RouteId, label: 'Register', icon: User },
+              { id: 'login' as RouteId, label: 'Login', icon: LogIn, badge: undefined },
+              { id: 'register' as RouteId, label: 'Register', icon: User, badge: undefined },
             ],
       },
       {
@@ -198,8 +219,6 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
       },
     ].filter(section => section.items.length > 0); // Remove empty sections
   }, [user, itemCount]);
-
-  const allItems = navSections.flatMap(section => section.items);
 
   return (
     <>
@@ -245,6 +264,23 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
               aria-label="Search"
             >
               <Search className="w-5 h-5" />
+            </button>
+
+            {/* Cart */}
+            <button
+              onClick={() => onNavigate('shopCart')}
+              className="relative p-2 hover:bg-white/5 transition-colors"
+              aria-label="Cart"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {itemCount > 0 && (
+                <span
+                  className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-hotmess-red text-white text-[11px] leading-[18px] text-center"
+                  style={{ fontWeight: 700 }}
+                >
+                  {itemCount}
+                </span>
+              )}
             </button>
             
             <NotificationBadge onClick={() => onNavigate('notifications')} />

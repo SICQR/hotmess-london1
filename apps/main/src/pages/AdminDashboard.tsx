@@ -158,43 +158,6 @@ export function AdminDashboard({ onNavigate }: AdminDashboardProps) {
         </div>
       </section>
 
-      {/* DEV TOOL: Make yourself admin */}
-      {user && user.role !== 'admin' && (
-        <section className="px-4 md:px-8 lg:px-12 py-8">
-          <div className="bg-yellow-500/10 border-2 border-yellow-500 p-6">
-            <div className="flex items-start gap-4">
-              <AlertCircle className="text-yellow-500 flex-shrink-0" size={32} />
-              <div className="flex-1">
-                <h3 className="text-yellow-500 uppercase tracking-wider mb-2" style={{ fontWeight: 900, fontSize: '16px' }}>
-                  DEV TOOL: Set Admin Role
-                </h3>
-                <p className="text-white/80 mb-4" style={{ fontWeight: 400, fontSize: '14px' }}>
-                  Your current role: <strong>{user.role || 'user'}</strong>
-                </p>
-                <p className="text-white/60 mb-4" style={{ fontWeight: 400, fontSize: '13px' }}>
-                  To access admin features, you need to set your role to "admin" in your user metadata.
-                  Run this in the browser console:
-                </p>
-                <pre className="bg-black p-4 text-green-400 overflow-x-auto text-xs mb-4">
-{`// Open browser console (F12) and run:
-localStorage.setItem('hotmess_admin_override', 'true');
-window.location.reload();`}
-                </pre>
-                <button
-                  onClick={() => {
-                    localStorage.setItem('hotmess_admin_override', 'true');
-                    window.location.reload();
-                  }}
-                  className="bg-yellow-500 text-black px-6 py-3 uppercase tracking-wider hover:bg-yellow-400 transition-all"
-                  style={{ fontWeight: 900, fontSize: '13px' }}
-                >
-                  Enable Admin Mode (DEV)
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
     </div>
   );
 }

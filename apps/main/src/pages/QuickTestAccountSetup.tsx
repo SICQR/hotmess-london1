@@ -19,39 +19,33 @@ export default function QuickTestAccountSetup() {
     setLoading(true);
     setError(null);
 
-    const testEmail = `test${Date.now()}@hotmess.test`;
-    const testPassword = 'TestPass123!';
+    const email = (document.getElementById('login-email') as HTMLInputElement)?.value?.trim();
+    const password = (document.getElementById('login-password') as HTMLInputElement)?.value;
+
+    if (!email || !password) {
+      setLoading(false);
+      setError('Enter an email + password first.');
+      return;
+    }
 
     try {
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email: testEmail,
-        password: testPassword,
+      const emailRedirectTo = `${window.location.origin}/?route=login&confirmed=1`;
+
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
         options: {
           data: {
             displayName: 'Test User'
           },
-          emailRedirectTo: undefined, // Skip email verification
+          emailRedirectTo,
         }
       });
 
       if (signUpError) throw signUpError;
 
-      // Auto-login
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: testEmail,
-        password: testPassword,
-      });
-
-      if (signInError) throw signInError;
-
-      setCredentials({ email: testEmail, password: testPassword });
+      setCredentials({ email, password });
       setSuccess(true);
-      
-      // Redirect to purchase page after 2 seconds
-      setTimeout(() => {
-        window.location.href = '/tickets/purchase?event=955b675f-e135-41af-8d90-ee69da127800&tier=ga';
-      }, 2000);
-
     } catch (err: any) {
       console.error('Error creating test account:', err);
       setError(err.message || 'Failed to create account');
@@ -125,9 +119,16 @@ export default function QuickTestAccountSetup() {
               <p className="font-mono text-sm">{credentials.password}</p>
             </div>
             <p className="text-gray-400 text-sm mb-4">
-              Redirecting to purchase page...
+              Check your email to confirm the account, then log in.
             </p>
-            <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto" />
+            <HMButton
+              onClick={() => {
+                window.location.href = '/?route=login';
+              }}
+              className="w-full"
+            >
+              Go to Login
+            </HMButton>
           </div>
         ) : (
           <>
@@ -135,14 +136,14 @@ export default function QuickTestAccountSetup() {
             <div className="mb-6 pb-6 border-b border-white/10">
               <h3 className="text-lg mb-3">Option 1: Quick Create</h3>
               <p className="text-sm text-gray-400 mb-4">
-                Creates a test account with random email and logs you in automatically.
+                Creates an account and sends a confirmation email.
               </p>
               <HMButton
                 onClick={createTestAccount}
                 disabled={loading}
                 className="w-full"
               >
-                {loading ? 'Creating Account...' : '🚀 Create Test Account & Login'}
+                {loading ? 'Creating Account...' : 'Create Account (send confirmation email)'}
               </HMButton>
             </div>
 
@@ -159,7 +160,7 @@ export default function QuickTestAccountSetup() {
                   <input
                     id="login-email"
                     type="email"
-                    placeholder="test@hotmess.test"
+                    placeholder="you@real-email.com"
                     className="w-full bg-gray-900 border border-white/10 rounded-lg px-4 py-2 text-white"
                   />
                 </div>
@@ -168,7 +169,7 @@ export default function QuickTestAccountSetup() {
                   <input
                     id="login-password"
                     type="password"
-                    placeholder="TestPass123!"
+                    placeholder="Your password"
                     className="w-full bg-gray-900 border border-white/10 rounded-lg px-4 py-2 text-white"
                   />
                 </div>
@@ -193,8 +194,8 @@ export default function QuickTestAccountSetup() {
             <div className="mt-6 pt-6 border-t border-white/10">
               <p className="text-xs text-gray-500 text-center">
                 Or go to{' '}
-                <a href="/register" className="text-red-500 hover:underline">
-                  /register
+                <a href="/?route=register" className="text-red-500 hover:underline">
+                  /?route=register
                 </a>{' '}
                 to create account manually
               </p>

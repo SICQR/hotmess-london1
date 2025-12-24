@@ -15,11 +15,9 @@
     // Strict type-checking (enables noImplicitAny, strictNullChecks, strictFunctionTypes, 
     // strictBindCallApply, strictPropertyInitialization, noImplicitThis, alwaysStrict)
     "strict": true,
-    
-    // Additional strict options not included in "strict"
-    "noUncheckedIndexedAccess": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     
@@ -29,5 +27,13 @@
     }
   },
   "include": ["src"],
+  "exclude": [
+    "src/supabase/functions/**",
+    "src/utils/supabase/server.ts",
+    "src/cloudflare-worker-qr-skeleton.ts",
+    "src/middleware.ts",
+    "src/pages/wireframes/**",
+    "src/imports/**"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

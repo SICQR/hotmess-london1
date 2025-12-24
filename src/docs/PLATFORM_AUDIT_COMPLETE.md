@@ -124,7 +124,7 @@ export const MASCULINE_IMAGES = {
 ### ❌ CRITICAL: NO EMAIL SERVICE CONFIGURED
 
 **Current State:**
-- Auth signup uses `email_confirm: true` to BYPASS email verification
+- Auth signup uses Supabase email confirmation (confirmation email required)
 - No actual email server configured
 - No transactional emails sent
 
@@ -476,7 +476,7 @@ Then add to empty pages:
 ### Flow 1: ✅ New User Signup → Onboarding
 
 ```
-Visit / → Click "Sign Up" → Enter email/password → Account created (auto-confirmed)
+Visit / → Click "Sign Up" → Enter email/password → Confirmation email sent
     ↓
 ❌ NO WELCOME EMAIL (needs fix)
     ↓
@@ -623,8 +623,8 @@ Vendor completes Stripe onboarding manually
 ### ✅ FULLY IMPLEMENTED ENDPOINTS
 
 **Auth:**
-- ✅ POST `/auth/signup` - Create user (auto-confirm)
-- ✅ POST `/auth/confirm-email` - Manual email confirm
+- ✅ Supabase Auth `signUp` - Sends confirmation email
+- ✅ Supabase Auth `resend` - Resend confirmation email
 - ✅ POST `/auth/check-user` - User status debug
 - ✅ POST `/auth/qr-verify` - QR code login
 

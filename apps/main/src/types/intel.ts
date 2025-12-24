@@ -219,23 +219,3 @@ export interface AutomationScenario {
   last_run?: string;
   next_run?: string;
 }
-
-export default {
-  EventRaw,
-  Event,
-  SetTime,
-  Festival,
-  PrideEvent,
-  SexPositiveEvent,
-  QueerMarket,
-  RawConvictRelease,
-  TikTokTrend,
-  SentimentLog,
-  CrossPostLog,
-  EventPoster,
-  CityData,
-  CityIntel,
-  TonightDigest,
-  ScraperConfig,
-  AutomationScenario,
-};

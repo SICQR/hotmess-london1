@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.26.1",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -14,7 +18,9 @@
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "e2e": "playwright test",
+    "e2e:install": "playwright install --with-deps chromium"
   },
   "dependencies": {
     "@googlemaps/extended-component-library": "^0.6.12",
@@ -32,6 +38,8 @@
     "@radix-ui/react-menubar": "^1.1.6",
     "@radix-ui/react-navigation-menu": "^1.2.5",
     "@radix-ui/react-popover": "^1.1.6",
+    "@radix-ui/react-portal": "^1.1.10",
+    "@radix-ui/react-presence": "^1.1.5",
     "@radix-ui/react-progress": "^1.1.2",
     "@radix-ui/react-radio-group": "^1.2.3",
     "@radix-ui/react-scroll-area": "^1.2.3",
@@ -75,6 +83,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.51.0",
     "@eslint/js": "^9.18.0",
     "@types/maplibre-gl": "^1.13.2",
     "@types/node": "^22.10.2",

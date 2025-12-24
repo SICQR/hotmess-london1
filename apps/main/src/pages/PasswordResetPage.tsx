@@ -29,7 +29,7 @@ export function PasswordResetPage({ onNavigate }: PasswordResetPageProps) {
     
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: `${window.location.origin}/?route=setNewPassword`,
       });
 
       if (error) throw error;
@@ -75,6 +75,16 @@ export function PasswordResetPage({ onNavigate }: PasswordResetPageProps) {
             <p className="text-gray-300 mb-8 text-lg">
               We've sent a password reset link to <strong className="text-white">{email}</strong>
             </p>
+
+            <div className="mb-8 p-4 border border-yellow-500/30 text-left" style={{ backgroundColor: 'rgba(255, 235, 59, 0.1)' }}>
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-gray-300">
+                  <p className="font-bold text-white mb-1">Didn’t get it?</p>
+                  <p>Check your spam folder, and make sure you typed the right email address.</p>
+                </div>
+              </div>
+            </div>
 
             {/* Info Box */}
             <div className="bg-zinc-900 border-2 p-6 mb-8 text-left" style={{ borderColor: '#00E676' }}>
@@ -149,16 +159,12 @@ export function PasswordResetPage({ onNavigate }: PasswordResetPageProps) {
           </p>
         </div>
 
-        {/* Info Banner */}
         <div className="mb-6 p-4 border border-yellow-500/30" style={{ backgroundColor: 'rgba(255, 235, 59, 0.1)' }}>
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-gray-300">
-              <p className="font-bold text-white mb-1">Email Server Status</p>
-              <p>
-                Since this is a demo environment, password reset emails might not be sent. 
-                In production, you'd receive a secure link to reset your password.
-              </p>
+              <p className="font-bold text-white mb-1">Password reset email</p>
+              <p>We’ll send a secure link. If it doesn’t arrive, check spam or try again.</p>
             </div>
           </div>
         </div>

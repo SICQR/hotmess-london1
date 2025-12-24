@@ -225,6 +225,10 @@ export function Router({ currentRoute, routeParams, onNavigate }: RouterProps) {
       console.warn(`🔒 Route "${currentRoute}" requires authentication. Redirecting to login.`);
       onNavigate('login');
     }
+    if (currentRouteConfig?.admin && user && user.role !== 'admin') {
+      console.warn(`⛔ Route "${currentRoute}" requires admin. Redirecting to home.`);
+      onNavigate('home');
+    }
   }, [currentRoute, currentRouteConfig?.auth, user, onNavigate]);
 
   // Route to component mapping
@@ -434,6 +438,16 @@ export function Router({ currentRoute, routeParams, onNavigate }: RouterProps) {
 
   // If route requires auth and user not logged in, show login page
   if (currentRouteConfig?.auth && !user) {
+    return <LoginPage onNavigate={navigate} />;
+  }
+
+  // If route requires admin and user is not admin, block access.
+  if (currentRouteConfig?.admin && user && user.role !== 'admin') {
+    return <NotFound onNavigate={navigate} />;
+  }
+
+  // If route requires admin and user is not logged in, show login page.
+  if (currentRouteConfig?.admin && !user) {
     return <LoginPage onNavigate={navigate} />;
   }
 

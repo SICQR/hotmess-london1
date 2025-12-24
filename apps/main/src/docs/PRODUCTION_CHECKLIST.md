@@ -17,7 +17,7 @@
 - [x] **Auto-Intel Engine** - Make.com scenarios pulling events/drops
 - [x] **Membership Tiers** - FREE/PRO/ELITE system complete
 - [x] **Real-time Chat** - Supabase subscriptions working
-- [x] **Authentication** - Signup/login with auto-confirm
+- [x] **Authentication** - Signup/login with email confirmation
 
 ### Components & UI
 - [x] **Design System** - Complete HOTMESS aesthetic
@@ -49,7 +49,7 @@
 4. Add to Supabase environment variables:
    - RESEND_API_KEY=re_xxxxxxxxxxxxx
    - HOTMESS_FROM_EMAIL=HOTMESS <notifications@hotmess.london>
-5. Test with: POST /auth/signup (should send welcome email)
+5. Test with: Supabase Auth signup + confirmation email
 ```
 
 **What Gets Enabled:**

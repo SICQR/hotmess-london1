@@ -196,7 +196,7 @@ export function WelcomePage({ onNavigate, userName = 'mate' }: WelcomePageProps)
               </button>
 
               <button
-                onClick={() => onNavigate('events')}
+                onClick={() => onNavigate('tickets')}
                 className="p-6 bg-zinc-900 border border-zinc-800 hover:border-white transition-colors text-left"
               >
                 <div className="text-white font-bold text-xl mb-2">Browse Events</div>
@@ -204,7 +204,7 @@ export function WelcomePage({ onNavigate, userName = 'mate' }: WelcomePageProps)
               </button>
 
               <button
-                onClick={() => onNavigate('marketplace')}
+                onClick={() => onNavigate('messmarket')}
                 className="p-6 bg-zinc-900 border border-zinc-800 hover:border-white transition-colors text-left"
               >
                 <div className="text-white font-bold text-xl mb-2">Shop Marketplace</div>

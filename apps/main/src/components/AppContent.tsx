@@ -9,7 +9,6 @@ import { MiniPlayerBar } from './player/MiniPlayerBar';
 import { QueueDrawer } from './player/QueueDrawer';
 import { PersistentRadioPlayer } from './radio/PersistentRadioPlayer';
 import { ExpandedRadioPlayer } from './radio/ExpandedRadioPlayer';
-import { AdminQuickAccess } from './AdminQuickAccess';
 import { FirstRunOnboarding } from './FirstRunOnboarding';
 import { RouteId } from '../lib/routes';
 import { useAuth } from '../contexts/AuthContext';
@@ -117,9 +116,6 @@ export function AppContent({ currentRoute, routeParams, onNavigate }: AppContent
       {/* Radio Player UI - Persistent across navigation */}
       <PersistentRadioPlayer />
       <ExpandedRadioPlayer />
-      
-      {/* Admin Quick Access - Floating button */}
-      <AdminQuickAccess onNavigate={onNavigate} />
       
       {/* First Run Onboarding - Shows for new users */}
       <FirstRunOnboarding />

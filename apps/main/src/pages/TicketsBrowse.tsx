@@ -159,7 +159,7 @@ export function TicketsBrowse({ onNavigate }: TicketsBrowseProps) {
                 placeholder="Search events..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                icon={<Search className="w-4 h-4" />}
+                iconLeft={<Search className="w-4 h-4" />}
               />
             </div>
             <div className="md:col-span-1">
@@ -167,7 +167,7 @@ export function TicketsBrowse({ onNavigate }: TicketsBrowseProps) {
                 placeholder="Filter by city..."
                 value={cityFilter}
                 onChange={(e) => setCityFilter(e.target.value)}
-                icon={<MapPin className="w-4 h-4" />}
+                iconLeft={<MapPin className="w-4 h-4" />}
               />
             </div>
           </div>

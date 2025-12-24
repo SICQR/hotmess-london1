@@ -3,60 +3,15 @@
  * Includes dev bypass toggles for testing
  */
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Settings, Upload, X, Lock, Unlock, LogOut, UserX } from 'lucide-react';
 import { RouteId } from '../lib/routes';
-import { useAuth } from '../contexts/AuthContext';
-import { toast } from 'sonner';
 
 interface AdminQuickAccessProps {
   onNavigate: (route: RouteId) => void;
 }
 
 export function AdminQuickAccess({ onNavigate }: AdminQuickAccessProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [authBypass, setAuthBypass] = useState(false);
-  const { user, signOut } = useAuth();
-
-  useEffect(() => {
-    // Check current bypass status
-    const bypass = localStorage.getItem('hotmess_dev_auth_bypass') === 'true';
-    setAuthBypass(bypass);
-  }, [isOpen]); // Refresh when panel opens
-
-  // ALWAYS show the button now (even when not logged in) for dev bypass access
-  // Previously: if (!user) return null;
-
-  const enableAdminMode = () => {
-    localStorage.setItem('hotmess_admin_override', 'true');
-    alert('Admin mode enabled! Reloading...');
-    window.location.reload();
-  };
-
-  function toggleAuthBypass() {
-    const newValue = !authBypass;
-    setAuthBypass(newValue);
-    localStorage.setItem('hotmess_dev_auth_bypass', String(newValue));
-    
-    if (newValue) {
-      alert('🔓 Auth bypass enabled! Reload the page to auto-login as dev user.');
-    } else {
-      alert('🔒 Auth bypass disabled! Reload the page to require real login.');
-    }
-  }
-
-  async function handleLogout() {
-    try {
-      await signOut();
-      toast.success('Logged out successfully!');
-      setIsOpen(false);
-      onNavigate('home');
-    } catch (error: any) {
-      console.error('Logout error:', error);
-      toast.error('Failed to log out');
-    }
-  }
+  void onNavigate;
+  return null;
 
   async function handleSwitchUser() {
     try {

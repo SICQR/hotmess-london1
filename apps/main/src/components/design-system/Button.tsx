@@ -15,10 +15,10 @@ import { colors, radius, animation } from './tokens';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Visual style variant */
-  variant?: 'primary' | 'secondary' | 'tertiary' | 'danger' | 'ghost' | 'link';
+  variant?: 'primary' | 'secondary' | 'tertiary' | 'danger' | 'ghost' | 'link' | 'outline';
   
   /** Size variant */
-  size?: 'large' | 'medium' | 'small';
+  size?: 'large' | 'medium' | 'small' | 'lg' | 'md' | 'sm';
   
   /** Icon position */
   iconLeft?: ReactNode;
@@ -64,6 +64,7 @@ const getVariantStyles = (variant: ButtonProps['variant']) => {
         },
       };
 
+    case 'outline':
     case 'tertiary':
       return {
         backgroundColor: 'transparent',
@@ -126,6 +127,7 @@ const getVariantStyles = (variant: ButtonProps['variant']) => {
 
 const getSizeStyles = (size: ButtonProps['size']) => {
   switch (size) {
+    case 'lg':
     case 'large':
       return {
         height: '56px',
@@ -134,6 +136,7 @@ const getSizeStyles = (size: ButtonProps['size']) => {
         fontWeight: 700,
       };
 
+    case 'md':
     case 'medium':
       return {
         height: '48px',
@@ -142,6 +145,7 @@ const getSizeStyles = (size: ButtonProps['size']) => {
         fontWeight: 600,
       };
 
+    case 'sm':
     case 'small':
       return {
         height: '40px',
