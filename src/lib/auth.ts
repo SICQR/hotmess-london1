@@ -106,14 +106,11 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       return null;
     }
     
-    // Check for dev admin override
-    const adminOverride = localStorage.getItem('hotmess_admin_override') === 'true';
-    
     return {
       id: session.user.id,
       email: session.user.email || '',
       displayName: session.user.user_metadata?.displayName || session.user.user_metadata?.name || session.user.email,
-      role: adminOverride ? 'admin' : (session.user.user_metadata?.role || session.user.role || 'user')
+      role: (session.user.user_metadata?.role || session.user.role || 'user')
     };
   } catch (err) {
     console.error('[Auth] Failed to get current user:', err);
@@ -161,30 +158,31 @@ export async function signIn(email: string, password: string): Promise<void> {
  * Sign up with email and password
  */
 export async function signUp(email: string, password: string, displayName?: string): Promise<void> {
-  // Use server-side signup to auto-confirm email (since we have no email server configured)
-  const { projectId, publicAnonKey } = await import('../utils/supabase/info');
-  
-  const response = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-a670c824/auth/signup`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${publicAnonKey}`,
+  const emailRedirectTo =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/?route=login&confirmed=1`
+      : undefined;
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo,
+      data: displayName ? { displayName } : undefined,
     },
-    body: JSON.stringify({ email, password, displayName }),
   });
 
-  const data = await response.json();
+  if (error) {
+    throw new Error(`Sign up failed: ${error.message}`);
+  }
 
-  if (!response.ok || data.error) {
-    throw new Error(`Sign up failed: ${data.error || 'Unknown error'}`);
+  if (!data?.user) {
+    throw new Error('Sign up failed: No user created');
   }
 
   if (import.meta.env.DEV) {
-    debug.log('[Auth] ✅ User created successfully, now signing in...');
+    debug.log('[Auth] ✅ Sign up succeeded (email confirmation may be required).');
   }
-
-  // Now sign in with the newly created account
-  await signIn(email, password);
 }
 
 /**
@@ -208,14 +206,11 @@ export function onAuthStateChange(callback: (user: AuthUser | null) => void) {
     }
     
     if (session?.user) {
-      // Check for dev admin override
-      const adminOverride = localStorage.getItem('hotmess_admin_override') === 'true';
-      
       callback({
         id: session.user.id,
         email: session.user.email || '',
         displayName: session.user.user_metadata?.displayName || session.user.user_metadata?.name || session.user.email,
-        role: adminOverride ? 'admin' : (session.user.user_metadata?.role || session.user.role || 'user')
+        role: (session.user.user_metadata?.role || session.user.role || 'user')
       });
     } else {
       callback(null);

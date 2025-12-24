@@ -10,18 +10,14 @@ interface CartProps {
 }
 
 export function Cart({ onNavigate }: CartProps) {
-  const { items, subtotal, removeItem, updateQuantity, checkoutUrl, loading } = useCart();
+  const { items, subtotal, removeItem, updateQuantity, loading } = useCart();
 
   const shipping = subtotal >= 5000 ? 0 : 495; // Free shipping over £50
   const total = subtotal + shipping;
 
   const handleCheckout = () => {
-    if (checkoutUrl) {
-      // Redirect to Shopify checkout
-      window.location.href = checkoutUrl;
-    } else {
-      console.error('No checkout URL available');
-    }
+    if (items.length === 0) return;
+    onNavigate('shopCheckout');
   };
 
   return (
@@ -189,11 +185,11 @@ export function Cart({ onNavigate }: CartProps) {
 
                 <button
                   onClick={handleCheckout}
-                  disabled={!checkoutUrl || items.length === 0}
+                  disabled={loading || items.length === 0}
                   className="w-full bg-hot hover:bg-white text-white hover:text-black h-14 uppercase tracking-wider transition-all mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ fontWeight: 900 }}
                 >
-                  Checkout with Shopify
+                  Continue to Checkout
                 </button>
 
                 <p className="text-xs text-white/40 text-center">

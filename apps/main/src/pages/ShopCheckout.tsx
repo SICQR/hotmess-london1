@@ -8,7 +8,6 @@ import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ShoppingBag, ArrowLeft, Loader2 } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
-import { createCheckout } from '../lib/shopify-api';
 import { Card } from '../components/design-system/Card';
 import { HMButton } from '../components/library/HMButton';
 import { RouteId } from '../lib/routes';
@@ -18,7 +17,7 @@ interface ShopCheckoutProps {
 }
 
 export function ShopCheckout({ onNavigate }: ShopCheckoutProps) {
-  const { items, subtotal, clearCart } = useCart();
+  const { items, subtotal, checkoutUrl, loading: cartLoading } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,33 +37,18 @@ export function ShopCheckout({ onNavigate }: ShopCheckoutProps) {
       return;
     }
 
+    if (!checkoutUrl) {
+      setError('Checkout is not ready yet. Please try again in a moment.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      // Validate that all items have variant IDs
-      const itemsWithoutVariantId = items.filter(item => !item.variantId);
-      if (itemsWithoutVariantId.length > 0) {
-        setError('Some items in your cart are missing product information. Please remove them and try again.');
-        setLoading(false);
-        return;
-      }
-
-      // Map cart items to Shopify line items
-      const lineItems = items.map(item => ({
-        variantId: item.variantId!,
-        quantity: item.qty,
-      }));
-
-      console.log('Creating Shopify checkout with items:', lineItems);
-
-      // Create real Shopify checkout session
-      const checkout = await createCheckout(lineItems);
-
-      console.log('Checkout created successfully:', checkout);
-
-      // Redirect to Shopify hosted checkout page
-      window.location.href = checkout.webUrl;
+      // Redirect to Shopify hosted checkout page.
+      // We use the Cart API checkoutUrl because Shopify has deprecated older checkoutCreate mutations.
+      window.location.href = checkoutUrl;
 
     } catch (err: any) {
       console.error('Checkout error:', err);
@@ -173,6 +157,17 @@ export function ShopCheckout({ onNavigate }: ShopCheckoutProps) {
             <Card className="p-6">
               <h2 className="text-xl mb-6">Payment</h2>
 
+              {/* Checkout Status */}
+              <div className="mb-6 p-4 border border-yellow-500/30" style={{ backgroundColor: 'rgba(255, 235, 59, 0.1)' }}>
+                <p className="font-bold text-white mb-1">Checkout Status</p>
+                <p className="text-sm text-white/70">
+                  If Shopify checkout shows a 401 on <span className="text-white">/private_access_tokens</span>, your store is likely
+                  configured to require customer authentication or is password-protected.
+                  In Shopify Admin set Customer accounts to <span className="text-white">Optional</span> and disable storefront password protection,
+                  then retry.
+                </p>
+              </div>
+
               {error && (
                 <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
                   <p className="text-red-400">{error}</p>
@@ -219,7 +214,7 @@ export function ShopCheckout({ onNavigate }: ShopCheckoutProps) {
                 {/* Checkout Button */}
                 <HMButton
                   onClick={handleCheckout}
-                  disabled={loading}
+                  disabled={loading || cartLoading || !checkoutUrl}
                   className="w-full"
                   size="lg"
                 >
@@ -233,6 +228,12 @@ export function ShopCheckout({ onNavigate }: ShopCheckoutProps) {
                   )}
                 </HMButton>
 
+                {!checkoutUrl && !cartLoading && (
+                  <p className="text-xs text-white/40 text-center">
+                    Checkout link not available yet. Add/remove an item or wait a moment.
+                  </p>
+                )}
+
                 {/* Trust Signals */}
                 <div className="pt-4 border-t border-white/10">
                   <p className="text-xs text-white/40 text-center">
@@ -240,6 +241,48 @@ export function ShopCheckout({ onNavigate }: ShopCheckoutProps) {
                     This is an 18+ only platform.
                   </p>
                 </div>
+              </div>
+            </Card>
+
+            {/* Cross-sell */}
+            <Card className="p-6 mt-6">
+              <h3 className="text-lg mb-4">Add one more thing?</h3>
+              <p className="text-sm text-white/60 mb-4">
+                Keep browsing—your cart stays saved.
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => onNavigate('shopRaw')}
+                  disabled={loading}
+                  className="h-11 border border-white/10 hover:border-hot text-white/80 hover:text-white uppercase tracking-wider transition-all"
+                  style={{ fontWeight: 800, fontSize: '12px' }}
+                >
+                  RAW
+                </button>
+                <button
+                  onClick={() => onNavigate('shopHung')}
+                  disabled={loading}
+                  className="h-11 border border-white/10 hover:border-hot text-white/80 hover:text-white uppercase tracking-wider transition-all"
+                  style={{ fontWeight: 800, fontSize: '12px' }}
+                >
+                  HUNG
+                </button>
+                <button
+                  onClick={() => onNavigate('shopHigh')}
+                  disabled={loading}
+                  className="h-11 border border-white/10 hover:border-hot text-white/80 hover:text-white uppercase tracking-wider transition-all"
+                  style={{ fontWeight: 800, fontSize: '12px' }}
+                >
+                  HIGH
+                </button>
+                <button
+                  onClick={() => onNavigate('shopSuper')}
+                  disabled={loading}
+                  className="h-11 border border-white/10 hover:border-hot text-white/80 hover:text-white uppercase tracking-wider transition-all"
+                  style={{ fontWeight: 800, fontSize: '12px' }}
+                >
+                  SUPER
+                </button>
               </div>
             </Card>
 

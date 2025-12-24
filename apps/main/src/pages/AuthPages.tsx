@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { LogIn, UserPlus, Mail, Lock, User, ArrowLeft, QrCode } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { RouteId } from '../lib/routes';
 import { toast } from 'sonner';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { supabase } from '../lib/supabase';
 
 interface AuthPageProps {
   onNavigate: (route: RouteId) => void;
@@ -17,6 +18,13 @@ export function LoginPage({ onNavigate }: AuthPageProps) {
   const [confirmingEmail, setConfirmingEmail] = useState(false);
   const [checkingUser, setCheckingUser] = useState(false);
   const [userStatus, setUserStatus] = useState<{exists: boolean; emailConfirmed: boolean} | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('confirmed') === '1') {
+      toast.success('Email confirmed. You can log in now.');
+    }
+  }, []);
 
   const handleCheckUser = async (emailToCheck: string) => {
     if (!emailToCheck) return;
@@ -41,7 +49,7 @@ export function LoginPage({ onNavigate }: AuthPageProps) {
         });
         
         if (!data.user.emailConfirmed) {
-          toast.error('⚠️ Your email is not confirmed. Click "CONFIRM EMAIL" below.');
+          toast.error('⚠️ Your email is not confirmed. Click "RESEND CONFIRMATION EMAIL" below.');
         }
       } else {
         setUserStatus({ exists: false, emailConfirmed: false });
@@ -62,32 +70,19 @@ export function LoginPage({ onNavigate }: AuthPageProps) {
     setConfirmingEmail(true);
     
     try {
-      const response = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-a670c824/auth/confirm-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${publicAnonKey}`,
-        },
-        body: JSON.stringify({ email }),
+      const emailRedirectTo = `${window.location.origin}/?route=login&confirmed=1`;
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: { emailRedirectTo },
       });
 
-      const data = await response.json();
+      if (error) throw error;
 
-      if (!response.ok || data.error) {
-        throw new Error(data.error || 'Failed to confirm email');
-      }
-
-      toast.success('✅ Email confirmed! You can now log in with your password.');
-      
-      // Re-check user status
-      await handleCheckUser(email);
+      toast.success('Confirmation email sent. Check your inbox (and spam).');
     } catch (error: any) {
-      console.error('Email confirm error:', error);
-      if (error.message.includes('not found')) {
-        toast.error('No account found with this email. Please register first.');
-      } else {
-        toast.error(error.message || 'Failed to confirm email');
-      }
+      console.error('Resend confirmation error:', error);
+      toast.error(error.message || 'Failed to resend confirmation email');
     } finally {
       setConfirmingEmail(false);
     }
@@ -112,11 +107,11 @@ export function LoginPage({ onNavigate }: AuthPageProps) {
       const errorMsg = error.message || '';
       if (errorMsg.includes('Invalid login credentials')) {
         toast.error(
-          'Invalid email or password. If you just registered, try clicking "Confirm Email" below.',
+          'Invalid email or password. If you just registered, confirm your email (or resend the confirmation email below).',
           { duration: 5000 }
         );
       } else if (errorMsg.includes('Email not confirmed')) {
-        toast.error('Please confirm your email address');
+        toast.error('Please confirm your email address (or resend the confirmation email below).');
       } else {
         toast.error(errorMsg || 'Login failed. Please try again.');
       }
@@ -181,7 +176,7 @@ export function LoginPage({ onNavigate }: AuthPageProps) {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-hotmess-gray-900 border-2 border-hotmess-gray-700 text-white px-12 py-3 focus:border-hotmess-red focus:outline-none transition-colors"
+                className="w-full bg-white border-2 border-hotmess-gray-700 text-black placeholder:text-gray-500 px-12 py-3 focus:border-hotmess-red focus:outline-none transition-colors"
                 placeholder="your@email.com"
                 required
               />
@@ -200,7 +195,7 @@ export function LoginPage({ onNavigate }: AuthPageProps) {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-hotmess-gray-900 border-2 border-hotmess-gray-700 text-white px-12 py-3 focus:border-hotmess-red focus:outline-none transition-colors"
+                className="w-full bg-white border-2 border-hotmess-gray-700 text-black placeholder:text-gray-500 px-12 py-3 focus:border-hotmess-red focus:outline-none transition-colors"
                 placeholder="••••••••"
                 required
               />
@@ -246,7 +241,7 @@ export function LoginPage({ onNavigate }: AuthPageProps) {
             className="w-full px-4 py-3 bg-yellow-500/20 border-2 border-yellow-500 text-yellow-200 hover:bg-yellow-500 hover:text-black transition-colors uppercase tracking-wider text-sm disabled:opacity-50"
             style={{ fontWeight: 700 }}
           >
-            {confirmingEmail ? 'Confirming...' : 'Confirm Email (Demo Fix)'}
+            {confirmingEmail ? 'Sending...' : 'Resend confirmation email'}
           </button>
         </div>
 
@@ -267,7 +262,7 @@ export function LoginPage({ onNavigate }: AuthPageProps) {
         {/* Demo account info */}
         <div className="mt-8 p-4 bg-hotmess-purple/10 border border-hotmess-purple/30 mb-8">
           <p className="text-hotmess-gray-400 text-sm">
-            <strong className="text-white">Demo:</strong> Create an account to test the full experience with real data persistence.
+            <strong className="text-white">Note:</strong> Create an account to use the full experience with real data persistence.
           </p>
         </div>
       </div>
@@ -323,9 +318,8 @@ export function RegisterPage({ onNavigate }: AuthPageProps) {
 
     try {
       await signUp(email, password, displayName);
-      toast.success('Account created successfully!');
-      // Navigate to home after successful registration
-      onNavigate('home');
+      toast.success('Account created. Check your email to confirm, then log in.');
+      onNavigate('login');
     } catch (error: any) {
       console.error('❌ Registration error:', error);
       

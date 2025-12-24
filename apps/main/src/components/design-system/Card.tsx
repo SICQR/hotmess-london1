@@ -15,7 +15,7 @@ import { colors, radius, shadows } from './tokens';
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   /** Visual style variant */
-  variant?: 'default' | 'elevated' | 'frosted' | 'neonBorder' | 'product' | 'ticket' | 'beacon' | 'seller';
+  variant?: 'default' | 'flat' | 'elevated' | 'frosted' | 'neonBorder' | 'product' | 'ticket' | 'beacon' | 'seller';
   
   /** Media (image/video) at top */
   media?: ReactNode;
@@ -33,6 +33,7 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 const getVariantStyles = (variant: CardProps['variant']) => {
   switch (variant) {
+    case 'flat':
     case 'default':
       return {
         backgroundColor: colors.grey[200],

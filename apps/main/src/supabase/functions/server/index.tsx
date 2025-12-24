@@ -40,6 +40,7 @@ import mapApiApp from "./map_api.tsx"; // NEW: Map heat/trail data API
 import * as makeIntegrations from "./make-integrations.ts"; // NEW: Make.com webhooks
 import adminApiApp from "./admin_api.tsx"; // NEW: Admin Console API
 import heatApiApp from "./heat_api.tsx"; // NEW: Night Pulse Heat Map API
+import privacyApiApp from "./privacy_api.tsx"; // NEW: GDPR / DSAR Privacy API
 import qrRoutesApp from "./routes/qr.ts"; // NEW: QR Code Generation
 import lRoutesApp from "./routes/l.ts"; // NEW: Beacon Resolve (/l/:code)
 import xRoutesApp from "./routes/x.ts"; // NEW: Signed Beacon Resolve (/x/:payload.:sig)
@@ -107,138 +108,25 @@ app.get("/make-server-a670c824/health", (c) => {
 // Mount QR auth routes
 app.route("/make-server-a670c824/auth", qrAuthApp);
 
-// NEW: Auth signup with auto-confirm (since we have no email server)
+// Privacy / DSAR routes
+app.route("/make-server-a670c824/privacy", privacyApiApp);
+
 app.post("/make-server-a670c824/auth/signup", async (c) => {
-  try {
-    const body = await c.req.json();
-    const { email, password, displayName } = body;
-
-    if (!email || !password) {
-      return c.json({ error: 'Email and password required' }, 400);
-    }
-
-    // Create Supabase admin client (uses SERVICE_ROLE_KEY)
-    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.39.0');
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') || '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '', // Admin key
-    );
-
-    // Create user with auto-confirm (bypasses email verification)
-    const { data, error } = await supabase.auth.admin.createUser({
-      email,
-      password,
-      user_metadata: { 
-        displayName: displayName || email 
-      },
-      // IMPORTANT: Auto-confirm since we don't have email server configured
-      email_confirm: true
-    });
-
-    if (error) {
-      console.error('Signup error:', error);
-      return c.json({ error: error.message }, 400);
-    }
-
-    console.log('✅ User created and auto-confirmed:', data.user.email);
-
-    // Send welcome email (async, don't block response)
-    sendWelcomeEmail(email, displayName || email.split('@')[0]).then(result => {
-      if (result.success) {
-        console.log('✅ Welcome email sent to:', email);
-      } else {
-        console.warn('⚠️ Welcome email failed:', result.error);
-      }
-    }).catch(err => {
-      console.error('❌ Welcome email error:', err);
-    });
-
-    // Trigger Make.com webhook for user signup
-    const makeWebhook = Deno.env.get('MAKE_WEBHOOK_USER_SIGNUP');
-    if (makeWebhook) {
-      fetch(makeWebhook, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          eventType: 'user.signup',
-          timestamp: new Date().toISOString(),
-          userId: data.user.id,
-          email: data.user.email,
-          displayName: displayName || email.split('@')[0],
-          signupMethod: 'email'
-        })
-      }).catch(err => console.error('Make.com webhook error:', err));
-    }
-
-    return c.json({ 
-      success: true,
-      user: {
-        id: data.user.id,
-        email: data.user.email,
-      }
-    });
-  } catch (error: any) {
-    console.error('Signup error:', error);
-    return c.json({ error: error.message || 'Failed to sign up' }, 500);
-  }
+  return c.json(
+    {
+      error: 'This endpoint is deprecated. Use Supabase Auth client signUp + email confirmation.',
+    },
+    410,
+  );
 });
 
-// NEW: Manual email confirmation for existing users (no email server workaround)
 app.post("/make-server-a670c824/auth/confirm-email", async (c) => {
-  try {
-    const body = await c.req.json();
-    const { email } = body;
-
-    if (!email) {
-      return c.json({ error: 'Email required' }, 400);
-    }
-
-    // Create Supabase admin client
-    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.39.0');
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') || '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '',
-    );
-
-    // Get user by email
-    const { data: users, error: listError } = await supabase.auth.admin.listUsers();
-    
-    if (listError) {
-      console.error('List users error:', listError);
-      return c.json({ error: 'Failed to find user' }, 500);
-    }
-
-    const user = users.users.find(u => u.email === email);
-    
-    if (!user) {
-      return c.json({ error: 'User not found' }, 404);
-    }
-
-    // Update user to confirm email
-    const { data, error } = await supabase.auth.admin.updateUserById(
-      user.id,
-      { email_confirm: true }
-    );
-
-    if (error) {
-      console.error('Confirm email error:', error);
-      return c.json({ error: error.message }, 400);
-    }
-
-    console.log('✅ Email confirmed for user:', email);
-
-    return c.json({ 
-      success: true,
-      message: 'Email confirmed! You can now log in.',
-      user: {
-        id: data.user.id,
-        email: data.user.email,
-      }
-    });
-  } catch (error: any) {
-    console.error('Confirm email error:', error);
-    return c.json({ error: error.message || 'Failed to confirm email' }, 500);
-  }
+  return c.json(
+    {
+      error: 'This endpoint is deprecated. Use Supabase Auth email confirmation + resend confirmation email.',
+    },
+    410,
+  );
 });
 
 // DEBUG: Check user status endpoint

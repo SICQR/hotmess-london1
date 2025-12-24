@@ -11,11 +11,11 @@ import {
   Trash2,
   Clock,
   CheckCircle,
-  AlertTriangle,
-  Eye,
-  Send
+  AlertTriangle
 } from 'lucide-react';
 import { LoadingState } from '../../components/LoadingState';
+import { SUPABASE_URL } from '../../lib/env';
+import { getAccessTokenAsync } from '../../lib/auth';
 
 interface AdminDsarProps {
   onNavigate: (route: RouteId, params?: Record<string, string>) => void;
@@ -24,12 +24,12 @@ interface AdminDsarProps {
 interface DsarRequest {
   id: string;
   userId: string;
-  userEmail: string;
   type: 'export' | 'delete' | 'rectify';
   status: 'pending' | 'processing' | 'completed' | 'rejected';
   createdAt: string;
   completedAt?: string;
   notes: string;
+  userEmail?: string;
 }
 
 export function AdminDsar({ onNavigate }: AdminDsarProps) {
@@ -37,6 +37,8 @@ export function AdminDsar({ onNavigate }: AdminDsarProps) {
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   useEffect(() => {
     loadRequests();
@@ -44,50 +46,38 @@ export function AdminDsar({ onNavigate }: AdminDsarProps) {
 
   const loadRequests = async () => {
     setLoading(true);
-    // TODO: Replace with real API call
-    setTimeout(() => {
-      setRequests([
+    setActionError(null);
+
+    try {
+      const token = await getAccessTokenAsync();
+      if (!token) {
+        setRequests([]);
+        setActionError('You must be signed in as an admin to view DSAR requests.');
+        return;
+      }
+
+      const res = await fetch(
+        `${SUPABASE_URL}/functions/v1/make-server-a670c824/privacy/admin/dsar`,
         {
-          id: '1',
-          userId: 'user-123',
-          userEmail: 'user123@gmail.com',
-          type: 'export',
-          status: 'pending',
-          createdAt: '2024-12-01 10:30:00',
-          notes: 'User requested full data export'
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-        {
-          id: '2',
-          userId: 'user-456',
-          userEmail: 'deleteme@example.com',
-          type: 'delete',
-          status: 'processing',
-          createdAt: '2024-11-28 14:15:00',
-          notes: 'Account deletion requested - processing'
-        },
-        {
-          id: '3',
-          userId: 'user-789',
-          userEmail: 'user789@hotmail.com',
-          type: 'export',
-          status: 'completed',
-          createdAt: '2024-11-25 09:00:00',
-          completedAt: '2024-11-25 11:30:00',
-          notes: 'Data export sent via email'
-        },
-        {
-          id: '4',
-          userId: 'user-234',
-          userEmail: 'test@example.com',
-          type: 'rectify',
-          status: 'completed',
-          createdAt: '2024-11-20 16:45:00',
-          completedAt: '2024-11-21 10:00:00',
-          notes: 'Incorrect email address corrected'
-        }
-      ]);
+      );
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.error) {
+        throw new Error(data?.error || 'Failed to load DSAR requests');
+      }
+
+      const list = Array.isArray(data?.requests) ? (data.requests as DsarRequest[]) : [];
+      setRequests(list);
+    } catch (err: any) {
+      setRequests([]);
+      setActionError(err?.message || 'Failed to load DSAR requests');
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   const filteredRequests = requests.filter(req => {
@@ -124,16 +114,75 @@ export function AdminDsar({ onNavigate }: AdminDsarProps) {
     }
   };
 
-  const handleProcess = (requestId: string) => {
-    setRequests(requests.map(r => 
-      r.id === requestId ? { ...r, status: 'processing' as const } : r
-    ));
+  const updateStatus = async (requestId: string, status: 'processing' | 'completed' | 'rejected') => {
+    setActionError(null);
+    setActionLoading(requestId);
+    try {
+      const token = await getAccessTokenAsync();
+      if (!token) {
+        setActionError('You must be signed in as an admin to perform this action.');
+        return;
+      }
+
+      const res = await fetch(
+        `${SUPABASE_URL}/functions/v1/make-server-a670c824/privacy/admin/dsar/${encodeURIComponent(requestId)}/status`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status }),
+        },
+      );
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.error) {
+        throw new Error(data?.error || 'Failed to update status');
+      }
+
+      await loadRequests();
+    } catch (err: any) {
+      setActionError(err?.message || 'Failed to update status');
+    } finally {
+      setActionLoading(null);
+    }
   };
 
-  const handleComplete = (requestId: string) => {
-    setRequests(requests.map(r => 
-      r.id === requestId ? { ...r, status: 'completed' as const, completedAt: new Date().toISOString() } : r
-    ));
+  const handleProcess = (requestId: string) => updateStatus(requestId, 'processing');
+  const handleComplete = (requestId: string) => updateStatus(requestId, 'completed');
+
+  const handleExecuteDelete = async (requestId: string) => {
+    setActionError(null);
+    setActionLoading(requestId);
+    try {
+      const token = await getAccessTokenAsync();
+      if (!token) {
+        setActionError('You must be signed in as an admin to perform this action.');
+        return;
+      }
+
+      const res = await fetch(
+        `${SUPABASE_URL}/functions/v1/make-server-a670c824/privacy/admin/dsar/${encodeURIComponent(requestId)}/execute-delete`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.error) {
+        throw new Error(data?.error || 'Failed to execute deletion');
+      }
+
+      await loadRequests();
+    } catch (err: any) {
+      setActionError(err?.message || 'Failed to execute deletion');
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   if (loading) {
@@ -179,6 +228,12 @@ export function AdminDsar({ onNavigate }: AdminDsarProps) {
             </div>
           </div>
         </div>
+
+        {actionError ? (
+          <div className="bg-hot/10 border border-hot/30 p-4 mb-6">
+            <p className="text-white/80 text-sm">{actionError}</p>
+          </div>
+        ) : null}
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -282,7 +337,7 @@ export function AdminDsar({ onNavigate }: AdminDsarProps) {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-white uppercase tracking-wider" style={{ fontWeight: 900, fontSize: '16px' }}>
-                        {request.userEmail}
+                        {request.userEmail || request.userId}
                       </h3>
                       <span className={`px-3 py-1 border uppercase tracking-wider ${getTypeColor(request.type)}`} style={{ fontWeight: 700, fontSize: '10px' }}>
                         {request.type}
@@ -304,53 +359,38 @@ export function AdminDsar({ onNavigate }: AdminDsarProps) {
 
               {request.status !== 'completed' && request.status !== 'rejected' && (
                 <div className="flex items-center gap-2 pt-4 border-t border-white/10">
-                  <button
-                    onClick={() => alert('View user data for request: ' + request.id)}
-                    className="bg-white/10 hover:bg-hot/20 border border-white/20 hover:border-hot text-white px-4 py-2 uppercase tracking-wider transition-all flex items-center gap-2"
-                    style={{ fontWeight: 700, fontSize: '12px' }}
-                  >
-                    <Eye size={14} />
-                    View User Data
-                  </button>
                   {request.status === 'pending' && (
                     <button
                       onClick={() => handleProcess(request.id)}
-                      className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 hover:border-blue-500 text-blue-400 px-4 py-2 uppercase tracking-wider transition-all flex items-center gap-2"
+                      disabled={actionLoading === request.id}
+                      className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 hover:border-blue-500 text-blue-400 px-4 py-2 uppercase tracking-wider transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       style={{ fontWeight: 700, fontSize: '12px' }}
                     >
                       <Clock size={14} />
-                      Start Processing
+                      {actionLoading === request.id ? 'Working…' : 'Start Processing'}
                     </button>
                   )}
                   {request.status === 'processing' && (
                     <>
-                      {request.type === 'export' && (
-                        <button
-                          onClick={() => alert('Generate data export for user')}
-                          className="bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 hover:border-green-500 text-green-400 px-4 py-2 uppercase tracking-wider transition-all flex items-center gap-2"
-                          style={{ fontWeight: 700, fontSize: '12px' }}
-                        >
-                          <Download size={14} />
-                          Generate Export
-                        </button>
-                      )}
                       {request.type === 'delete' && (
                         <button
-                          onClick={() => alert('Confirm account deletion')}
-                          className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 hover:border-red-500 text-red-400 px-4 py-2 uppercase tracking-wider transition-all flex items-center gap-2"
+                          onClick={() => handleExecuteDelete(request.id)}
+                          disabled={actionLoading === request.id}
+                          className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 hover:border-red-500 text-red-400 px-4 py-2 uppercase tracking-wider transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                           style={{ fontWeight: 700, fontSize: '12px' }}
                         >
                           <Trash2 size={14} />
-                          Delete Account
+                          {actionLoading === request.id ? 'Working…' : 'Execute Deletion'}
                         </button>
                       )}
                       <button
                         onClick={() => handleComplete(request.id)}
-                        className="bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 hover:border-green-500 text-green-400 px-4 py-2 uppercase tracking-wider transition-all flex items-center gap-2"
+                        disabled={actionLoading === request.id}
+                        className="bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 hover:border-green-500 text-green-400 px-4 py-2 uppercase tracking-wider transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         style={{ fontWeight: 700, fontSize: '12px' }}
                       >
                         <CheckCircle size={14} />
-                        Mark Complete
+                        {actionLoading === request.id ? 'Working…' : 'Mark Complete'}
                       </button>
                     </>
                   )}

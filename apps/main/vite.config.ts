@@ -4,6 +4,9 @@
   import path from 'path';
 
   export default defineConfig({
+    // Monorepo: load .env files from the repo root so `apps/main` sees root `.env.local`.
+    // Without this, Vite only loads env from `apps/main`, causing white-screen throws.
+    envDir: path.resolve(__dirname, '../..'),
     define: {
       'process.env': {},
     },
@@ -75,7 +78,9 @@
       outDir: 'dist',
     },
     server: {
-      port: 3000,
+      host: '127.0.0.1',
+      port: 3010,
+      strictPort: true,
       open: true,
     },
   });

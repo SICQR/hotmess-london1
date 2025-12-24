@@ -16,15 +16,6 @@ import { analytics } from './lib/analytics';
 import { initMonitoring } from './lib/monitoring';
 import './styles/globals.css';
 
-// 🔓 DEV MODE: Force auth bypass to 'true' for development
-if (typeof localStorage !== 'undefined') {
-  const currentValue = localStorage.getItem('hotmess_dev_auth_bypass');
-  if (currentValue !== 'true') {
-    console.log('🔧 Auto-enabling dev bypass for testing... (was:', currentValue, ')');
-    localStorage.setItem('hotmess_dev_auth_bypass', 'true');
-  }
-}
-
 export default function App() {
   const [splashComplete, setSplashComplete] = useState(false);
   const [ageVerified, setAgeVerified] = useState(false);

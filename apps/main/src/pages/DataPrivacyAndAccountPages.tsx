@@ -5,7 +5,9 @@ import { RouteId } from '../lib/routes';
 import { Shield, Download, Trash, FileCheck, Flag, Users, Package, Settings, Bookmark, Bell } from 'lucide-react';
 import { motion } from 'motion/react';
 import { mockUser, mockOrders, formatPrice, formatDate } from '../lib/mockData';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { SUPABASE_URL } from '../lib/env';
+import { getAccessTokenAsync, getCurrentUser } from '../lib/auth';
 
 type NavFunction = (route: RouteId, params?: Record<string, string>) => void;
 
@@ -87,10 +89,54 @@ export function DataPrivacyHub({ onNavigate }: { onNavigate: NavFunction }) {
 // DSAR
 export function DSAR({ onNavigate }: { onNavigate: NavFunction }) {
   const [submitted, setSubmitted] = useState(false);
+  const [userEmail, setUserEmail] = useState<string>('');
+  const [details, setDetails] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const user = await getCurrentUser();
+      if (!cancelled) setUserEmail(user?.email || '');
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+
+    setError(null);
+    setLoading(true);
+    try {
+      const token = await getAccessTokenAsync();
+      if (!token) {
+        setError('Please sign in to submit a DSAR request.');
+        return;
+      }
+
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/make-server-a670c824/privacy/dsar`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ type: 'export', details }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.error) {
+        throw new Error(data?.error || 'Failed to submit request');
+      }
+
+      setSubmitted(true);
+    } catch (err: any) {
+      setError(err?.message || 'Failed to submit request');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -98,13 +144,18 @@ export function DSAR({ onNavigate }: { onNavigate: NavFunction }) {
       title="Data Subject Access Request" 
       subtitle="Request a copy of your personal data" 
       icon={FileCheck}
-      backRoute="data-privacy"
+      backRoute="dataPrivacy"
       backLabel="Data & Privacy Hub"
       onNavigate={onNavigate}
     >
       <div className="max-w-2xl">
         {!submitted ? (
           <form onSubmit={handleSubmit} className="bg-white/5 border border-white/20 p-8 space-y-6">
+            {error ? (
+              <div className="bg-hot/10 border border-hot/30 p-4">
+                <p className="text-white/80 text-sm">{error}</p>
+              </div>
+            ) : null}
             <div>
               <label className="text-white uppercase tracking-wider text-sm block mb-2" style={{ fontWeight: 700 }}>
                 Email Address
@@ -112,7 +163,8 @@ export function DSAR({ onNavigate }: { onNavigate: NavFunction }) {
               <input
                 type="email"
                 required
-                defaultValue={mockUser.email}
+                value={userEmail}
+                readOnly
                 className="w-full bg-black border border-white/20 text-white px-4 py-3 focus:border-hot outline-none"
               />
             </div>
@@ -124,21 +176,24 @@ export function DSAR({ onNavigate }: { onNavigate: NavFunction }) {
               <textarea
                 className="w-full bg-black border border-white/20 text-white px-4 py-3 focus:border-hot outline-none h-32"
                 placeholder="Specify what data you're requesting..."
+                value={details}
+                onChange={(e) => setDetails(e.target.value)}
               />
             </div>
 
             <div className="bg-hot/10 border border-hot/30 p-4">
               <p className="text-white/80 text-sm">
-                We'll send a complete export of your personal data to your email within 30 days.
+                We'll process this request within 30 days (UK GDPR). In this demo environment, you can also use “Export My Data” for an immediate JSON download.
               </p>
             </div>
 
             <button
               type="submit"
+              disabled={loading}
               className="w-full bg-hot hover:bg-white text-white hover:text-black h-14 uppercase tracking-wider transition-all"
               style={{ fontWeight: 900 }}
             >
-              Submit Request
+              {loading ? 'Submitting…' : 'Submit Request'}
             </button>
           </form>
         ) : (
@@ -148,14 +203,14 @@ export function DSAR({ onNavigate }: { onNavigate: NavFunction }) {
               Request Submitted
             </h3>
             <p className="text-white/60 mb-6">
-              We'll send your data export to {mockUser.email} within 30 days.
+              Your DSAR request has been recorded. You can download an immediate export via “Export My Data”.
             </p>
             <button
-              onClick={() => onNavigate('account')}
+              onClick={() => onNavigate('dataPrivacyExport')}
               className="bg-white/10 border border-white/20 hover:border-hot px-6 py-3 text-white uppercase tracking-wider transition-all"
               style={{ fontWeight: 700 }}
             >
-              Go to Account
+              Go to Export
             </button>
           </div>
         )}
@@ -166,18 +221,44 @@ export function DSAR({ onNavigate }: { onNavigate: NavFunction }) {
 
 // DATA EXPORT
 export function DataExport({ onNavigate }: { onNavigate: NavFunction }) {
-  const handleExport = () => {
-    const data = {
-      user: mockUser,
-      orders: mockOrders,
-      exportedAt: new Date().toISOString(),
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `hotmess-data-export-${Date.now()}.json`;
-    a.click();
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleExport = async () => {
+    setError(null);
+    setLoading(true);
+
+    try {
+      const token = await getAccessTokenAsync();
+      if (!token) {
+        setError('Please sign in to export your data.');
+        return;
+      }
+
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/make-server-a670c824/privacy/export`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || 'Failed to export data');
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `hotmess-data-export-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err: any) {
+      setError(err?.message || 'Failed to export data');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -185,7 +266,7 @@ export function DataExport({ onNavigate }: { onNavigate: NavFunction }) {
       title="Export My Data" 
       subtitle="Download all your data in JSON format" 
       icon={Download}
-      backRoute="data-privacy"
+      backRoute="dataPrivacy"
       backLabel="Data & Privacy Hub"
       onNavigate={onNavigate}
     >
@@ -200,13 +281,20 @@ export function DataExport({ onNavigate }: { onNavigate: NavFunction }) {
             <li>• Account metadata</li>
           </ul>
 
+          {error ? (
+            <div className="bg-hot/10 border border-hot/30 p-4 mb-6">
+              <p className="text-white/80 text-sm">{error}</p>
+            </div>
+          ) : null}
+
           <button
             onClick={handleExport}
+            disabled={loading}
             className="w-full bg-hot hover:bg-white text-white hover:text-black h-14 uppercase tracking-wider flex items-center justify-center gap-3 transition-all"
             style={{ fontWeight: 900 }}
           >
             <Download size={24} />
-            <span>Download JSON Export</span>
+            <span>{loading ? 'Preparing Export…' : 'Download JSON Export'}</span>
           </button>
 
           <p className="text-white/40 text-sm mt-4 text-center">
@@ -222,24 +310,58 @@ export function DataExport({ onNavigate }: { onNavigate: NavFunction }) {
 export function DataDelete({ onNavigate }: { onNavigate: NavFunction }) {
   const [confirmed, setConfirmed] = useState(false);
   const [deleted, setDeleted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleDelete = () => {
-    setDeleted(true);
-    // In production: call DELETE /api/account endpoint
+  const handleDelete = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const token = await getAccessTokenAsync();
+      if (!token) {
+        setError('Please sign in to request deletion.');
+        return;
+      }
+
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/make-server-a670c824/privacy/dsar`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ type: 'delete' }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.error) {
+        throw new Error(data?.error || 'Failed to submit deletion request');
+      }
+
+      setDeleted(true);
+    } catch (err: any) {
+      setError(err?.message || 'Failed to submit deletion request');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <PageTemplate 
       title="Delete My Data" 
-      subtitle="Permanently delete your account" 
+      subtitle="Request deletion of your account and personal data" 
       icon={Trash}
-      backRoute="data-privacy"
+      backRoute="dataPrivacy"
       backLabel="Data & Privacy Hub"
       onNavigate={onNavigate}
     >
       <div className="max-w-2xl">
         {!deleted ? (
           <div className="bg-hot/10 border border-hot/30 p-8 space-y-6">
+            {error ? (
+              <div className="bg-black/30 p-4 border border-hot/30">
+                <p className="text-white/80 text-sm">{error}</p>
+              </div>
+            ) : null}
             <div>
               <h3 className="text-hot uppercase tracking-wider mb-4" style={{ fontWeight: 900 }}>⚠️ Warning</h3>
               <p className="text-white/80 leading-relaxed mb-4">
@@ -291,13 +413,10 @@ export function DataDelete({ onNavigate }: { onNavigate: NavFunction }) {
           <div className="bg-white/5 border border-white/20 p-12 text-center">
             <Trash size={64} className="text-hot mx-auto mb-6" />
             <h3 className="text-white uppercase tracking-wider mb-4" style={{ fontWeight: 900, fontSize: '24px' }}>
-              Account Deleted
+              Request Submitted
             </h3>
             <p className="text-white/60 mb-6">
-              Your account and all associated data have been permanently deleted.
-            </p>
-            <p className="text-white/40 text-sm">
-              You'll be redirected to the homepage in a moment.
+              Your deletion request has been recorded. We will process it within 30 days (UK GDPR).
             </p>
           </div>
         )}
@@ -365,10 +484,10 @@ export function AbuseReporting({ onNavigate }: { onNavigate: NavFunction }) {
 
   return (
     <PageTemplate 
-      title="Report Abuse" 
+      title="Abuse Reporting" 
       subtitle="Report content that violates our policies" 
       icon={Flag}
-      backRoute="ugc-moderation"
+      backRoute="ugcModeration"
       backLabel="UGC Moderation Policy"
       onNavigate={onNavigate}
     >

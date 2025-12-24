@@ -75,31 +75,6 @@ export function AuthDebug() {
           </div>
         </div>
 
-        <div className="mt-6 space-y-2">
-          <button
-            onClick={() => {
-              localStorage.setItem('hotmess_dev_auth_bypass', 'true');
-              localStorage.setItem('hotmess_admin_override', 'true');
-              window.location.reload();
-            }}
-            className="w-full bg-hot hover:bg-white text-white hover:text-black px-4 py-3 uppercase tracking-wider transition-all"
-            style={{ fontWeight: 900, fontSize: '13px' }}
-          >
-            Enable Auth Bypass & Reload
-          </button>
-
-          <button
-            onClick={() => {
-              localStorage.removeItem('hotmess_dev_auth_bypass');
-              localStorage.removeItem('hotmess_admin_override');
-              window.location.reload();
-            }}
-            className="w-full bg-white/10 hover:bg-white/20 text-white px-4 py-3 uppercase tracking-wider transition-all"
-            style={{ fontWeight: 700, fontSize: '13px' }}
-          >
-            Disable Auth Bypass & Reload
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -1,25 +1,16 @@
 /**
- * MessMarket Checkout with Stripe Payment Element
- * Custom branded checkout experience using Stripe's Payment Element
+ * MessMarket Checkout
+ *
+ * Uses Supabase Edge Function `market-checkout-create` which returns a Stripe Checkout
+ * Session URL (`checkout_url`). We collect shipping details in-app, then redirect the
+ * buyer to Stripe-hosted Checkout.
  */
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { AlertCircle, Loader2, Lock, Mail, MapPin, Phone, ShoppingCart, User } from 'lucide-react';
+
 import { supabase } from '../lib/supabase';
-import { projectId } from '../utils/supabase/info';
-import { loadStripe } from '../lib/stripe-loader';
 import { RouteId } from '../lib/routes';
-import { StripeTestCardHelper } from '../components/StripeTestCardHelper';
-import { 
-  ShoppingCart, 
-  Lock, 
-  AlertCircle, 
-  Loader2,
-  CheckCircle,
-  MapPin,
-  User,
-  Mail,
-  Phone
-} from 'lucide-react';
 
 interface MessMarketCheckoutProps {
   listingId: string;
@@ -44,11 +35,7 @@ export function MessMarketCheckout({ listingId, onNavigate }: MessMarketCheckout
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [stripe, setStripe] = useState<any>(null);
-  const [elements, setElements] = useState<any>(null);
-  
-  // Shipping details
+
   const [shippingName, setShippingName] = useState('');
   const [shippingEmail, setShippingEmail] = useState('');
   const [shippingPhone, setShippingPhone] = useState('');
@@ -57,137 +44,56 @@ export function MessMarketCheckout({ listingId, onNavigate }: MessMarketCheckout
   const [shippingPostcode, setShippingPostcode] = useState('');
 
   useEffect(() => {
-    loadListingAndInitialize();
-  }, [listingId]);
+    let cancelled = false;
 
-  const loadListingAndInitialize = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    async function load() {
+      try {
+        setLoading(true);
+        setError(null);
 
-      // Load listing
-      const { data: listingData, error: listingError } = await supabase
-        .from('market_listings')
-        .select(`
-          *,
-          seller:market_sellers!inner(display_name)
-        `)
-        .eq('id', listingId)
-        .single();
+        const { data: listingData, error: listingError } = await supabase
+          .from('market_listings')
+          .select(
+            `
+            id,
+            title,
+            price_pence,
+            media,
+            seller:market_sellers(display_name)
+          `
+          )
+          .eq('id', listingId)
+          .single();
 
-      if (listingError) {
-        console.error('Error loading listing:', listingError);
-        setError('Failed to load listing');
-        setLoading(false);
-        return;
-      }
+        if (listingError) throw listingError;
+        if (cancelled) return;
 
-      setListing(listingData);
+        setListing(listingData as any);
 
-      // Load user details to pre-fill form
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setShippingEmail(user.email || '');
-      }
-
-      // Initialize Stripe
-      const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-      if (!publishableKey) {
-        setError('Stripe not configured');
-        setLoading(false);
-        return;
-      }
-
-      const stripeInstance = await loadStripe(publishableKey);
-      setStripe(stripeInstance);
-
-      // Create payment intent
-      await createPaymentIntent(listingData);
-
-      setLoading(false);
-    } catch (err) {
-      console.error('Initialize error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to initialize checkout');
-      setLoading(false);
-    }
-  };
-
-  const createPaymentIntent = async (listingData: Listing) => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        setError('Please log in to checkout');
-        return;
-      }
-
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/api/market/create-checkout`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            listing_id: listingData.id,
-          }),
+        const { data: userData } = await supabase.auth.getUser();
+        if (!cancelled && userData?.user?.email) {
+          setShippingEmail(userData.user.email);
         }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Payment intent error:', errorData);
-        setError(errorData.error || 'Failed to create payment');
-        return;
+      } catch (e: any) {
+        console.error('Checkout init error:', e);
+        if (!cancelled) setError(e?.message || 'Failed to initialize checkout');
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-
-      const data = await response.json();
-      if (data?.client_secret) {
-        setClientSecret(data.client_secret);
-      } else {
-        setError('No client secret returned');
-      }
-    } catch (err) {
-      console.error('Create payment error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to create payment');
     }
-  };
 
-  useEffect(() => {
-    if (stripe && clientSecret) {
-      const elementsInstance = stripe.elements({
-        clientSecret,
-        appearance: {
-          theme: 'night',
-          variables: {
-            colorPrimary: '#ef4444',
-            colorBackground: '#18181b',
-            colorText: '#fafafa',
-            colorDanger: '#dc2626',
-            fontFamily: 'system-ui, sans-serif',
-            borderRadius: '0.5rem',
-          },
-        },
-      });
-
-      const paymentElement = elementsInstance.create('payment');
-      paymentElement.mount('#payment-element');
-
-      setElements(elementsInstance);
-    }
-  }, [stripe, clientSecret]);
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [listingId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!listing) return;
 
-    if (!stripe || !elements) {
-      setError('Payment system not ready');
-      return;
-    }
-
-    // Validate shipping info
-    if (!shippingName || !shippingAddress || !shippingCity || !shippingPostcode) {
-      setError('Please fill in all shipping details');
+    if (!shippingName || !shippingEmail || !shippingAddress || !shippingCity || !shippingPostcode) {
+      setError('Please fill in all required shipping details');
       return;
     }
 
@@ -195,31 +101,44 @@ export function MessMarketCheckout({ listingId, onNavigate }: MessMarketCheckout
       setProcessing(true);
       setError(null);
 
-      const { error: submitError } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}?route=messmarketOrder&payment_intent={PAYMENT_INTENT_ID}`,
-          shipping: {
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+      const session = sessionData.session;
+
+      if (!session) {
+        setError('Please log in to checkout');
+        setProcessing(false);
+        return;
+      }
+
+      const { data, error: fnError } = await supabase.functions.invoke('market-checkout-create', {
+        body: {
+          listing_id: listing.id,
+          quantity: 1,
+          buyer_shipping: {
             name: shippingName,
+            line1: shippingAddress,
+            city: shippingCity,
+            postcode: shippingPostcode,
+            country: 'GB',
             phone: shippingPhone || undefined,
-            address: {
-              line1: shippingAddress,
-              city: shippingCity,
-              postal_code: shippingPostcode,
-              country: 'GB',
-            },
           },
-          receipt_email: shippingEmail,
+          notes: null,
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
         },
       });
 
-      if (submitError) {
-        setError(submitError.message || 'Payment failed');
-        setProcessing(false);
-      }
-    } catch (err) {
-      console.error('Payment error:', err);
-      setError(err instanceof Error ? err.message : 'Payment failed');
+      if (fnError) throw fnError;
+
+      const checkoutUrl = (data as any)?.checkout_url as string | undefined;
+      if (!checkoutUrl) throw new Error('Checkout URL not returned');
+
+      window.location.assign(checkoutUrl);
+    } catch (e: any) {
+      console.error('Checkout error:', e);
+      setError(e?.message || 'Checkout failed');
       setProcessing(false);
     }
   };
@@ -249,11 +168,11 @@ export function MessMarketCheckout({ listingId, onNavigate }: MessMarketCheckout
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => onNavigate('messmessMarketProduct', { slug: listingId })}
             className="text-zinc-400 hover:text-zinc-300 mb-4"
+            type="button"
           >
             ← Back to listing
           </button>
@@ -270,10 +189,8 @@ export function MessMarketCheckout({ listingId, onNavigate }: MessMarketCheckout
           </div>
         )}
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Form */}
+        <form onSubmit={handleSubmit} className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            {/* Shipping Information */}
             <div className="bg-zinc-900 border border-red-900/20 rounded-lg p-6">
               <div className="flex items-center gap-3 mb-6">
                 <MapPin className="w-5 h-5 text-hotmess-red" />
@@ -367,49 +284,37 @@ export function MessMarketCheckout({ listingId, onNavigate }: MessMarketCheckout
               </div>
             </div>
 
-            {/* Payment Information */}
             <div className="bg-zinc-900 border border-red-900/20 rounded-lg p-6">
               <div className="flex items-center gap-3 mb-6">
                 <Lock className="w-5 h-5 text-hotmess-red" />
-                <h2 className="text-xl">PAYMENT INFORMATION</h2>
+                <h2 className="text-xl">PAYMENT DETAILS</h2>
               </div>
 
-              {/* Test Card Helper (only shows in test mode) */}
-              <div className="mb-4">
-                <StripeTestCardHelper />
-              </div>
-
-              <div id="payment-element" className="mb-4"></div>
-
-              <div className="flex items-start gap-2 text-sm text-zinc-400 mb-6">
-                <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                <p>
-                  Your payment information is encrypted and secure. HOTMESS never stores
-                  your card details.
-                </p>
+              <div className="mb-4 rounded-lg border border-white/10 bg-white/5 p-4">
+                <p className="text-sm text-zinc-300">Payments are handled on a secure Stripe Checkout page.</p>
+                <p className="text-xs text-zinc-500 mt-2">You’ll be redirected after you click Pay.</p>
               </div>
 
               <button
-                onClick={handleSubmit}
-                disabled={processing || !stripe || !elements}
-                className="w-full py-4 bg-gradient-to-r from-hotmess-red to-hotmess-pink hover:opacity-90 rounded transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                type="submit"
+                disabled={processing}
+                className="w-full bg-hotmess-red hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white py-4 rounded-lg font-bold transition-colors flex items-center justify-center gap-2"
               >
                 {processing ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>PROCESSING...</span>
+                    Redirecting...
                   </>
                 ) : (
                   <>
                     <Lock className="w-5 h-5" />
-                    <span>PAY £{listing.price_pence / 100}</span>
+                    PAY £{(listing.price_pence / 100).toFixed(2)}
                   </>
                 )}
               </button>
             </div>
           </div>
 
-          {/* Order Summary */}
           <div className="lg:col-span-1">
             <div className="bg-zinc-900 border border-red-900/20 rounded-lg p-6 sticky top-4">
               <div className="flex items-center gap-3 mb-4">
@@ -422,38 +327,26 @@ export function MessMarketCheckout({ listingId, onNavigate }: MessMarketCheckout
                   {listing.media?.[0]?.storage_path && (
                     <img
                       src={listing.media[0].storage_path}
-                      alt={listing.title}
+                      alt={listing.media?.[0]?.alt || listing.title}
                       className="w-20 h-20 object-cover rounded"
                     />
                   )}
                   <div className="flex-1">
                     <p className="font-bold">{listing.title}</p>
-                    <p className="text-sm text-zinc-400">
-                      by {listing.seller?.display_name || 'Unknown Seller'}
-                    </p>
+                    <p className="text-sm text-zinc-400">by {listing.seller?.display_name || 'Unknown Seller'}</p>
                   </div>
                 </div>
 
                 <div className="border-t border-zinc-800 pt-4 space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-zinc-400">Subtotal</span>
-                    <span>£{listing.price_pence / 100}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-zinc-400">Platform Fee (12%)</span>
-                    <span>£{(listing.price_pence * 0.12) / 100}</span>
-                  </div>
-                  <div className="flex justify-between text-lg pt-2 border-t border-zinc-800">
-                    <span>Total</span>
-                    <span className="text-hotmess-red">
-                      £{(listing.price_pence * 1.12) / 100}
-                    </span>
+                    <span className="text-zinc-400">Total</span>
+                    <span className="text-hotmess-red">£{(listing.price_pence / 100).toFixed(2)}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
