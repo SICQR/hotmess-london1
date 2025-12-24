@@ -12,6 +12,7 @@ jobs:
   deploy-preview:
     name: Deploy Preview to Vercel
     runs-on: ubuntu-latest
+    if: ${{ secrets.VERCEL_TOKEN != '' && secrets.VERCEL_ORG_ID != '' && secrets.VERCEL_PROJECT_ID != '' }}
     timeout-minutes: 20
     permissions:
       contents: read
