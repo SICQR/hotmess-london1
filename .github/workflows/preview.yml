@@ -34,10 +34,13 @@ jobs:
         run: pnpm install --frozen-lockfile
       
       - name: Build
-        run: pnpm run build
+        run: pnpm --filter @hotmess/main build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL_STAGING }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY_STAGING }}
+          VITE_SHOPIFY_DOMAIN: ${{ secrets.VITE_SHOPIFY_DOMAIN }}
+          VITE_SHOPIFY_STOREFRONT_TOKEN: ${{ secrets.VITE_SHOPIFY_STOREFRONT_TOKEN }}
+          VITE_STRIPE_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
       
       - name: Deploy to Vercel (Preview)
         uses: amondnet/vercel-action@v25
