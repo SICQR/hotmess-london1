@@ -6,12 +6,13 @@
 import * as React from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@supabase/supabase-js";
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from "../env";
 
 // Client-side Supabase instance (needs to be created)
 // This should match your existing client setup
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
 );
 
 export type PendingState = "pending" | "sent" | "failed";

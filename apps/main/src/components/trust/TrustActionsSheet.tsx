@@ -25,10 +25,11 @@ import {
 } from "@/components/ui/select";
 import { ShieldAlert, Ban, BellOff, AlertTriangle } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from "@/lib/env";
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
 );
 
 type ReportTargetType = "beacon" | "ticket_listing" | "connect_thread" | "ticket_thread" | "message";

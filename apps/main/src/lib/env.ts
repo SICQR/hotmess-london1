@@ -41,25 +41,36 @@ export const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '
 // Add these to .env.local:
 //   VITE_SUPABASE_URL=https://your-project.supabase.co
 //   VITE_SUPABASE_ANON_KEY=your_anon_key
+function normalizeEnvValue(value: unknown): string {
+  if (typeof value !== 'string') return '';
+  return value.trim().replace(/^['"]|['"]$/g, '');
+}
+
+function normalizeUrl(value: unknown): string {
+  return normalizeEnvValue(value).replace(/\/+$/g, '');
+}
+
 export const SUPABASE_URL = (() => {
-  const url = import.meta.env.VITE_SUPABASE_URL;
+  const url = normalizeUrl(import.meta.env.VITE_SUPABASE_URL);
   if (!url) {
     throw new Error(
       'VITE_SUPABASE_URL is required. Add it to .env.local\n' +
       'Example: VITE_SUPABASE_URL=https://your-project.supabase.co\n' +
-      'Get it from: Supabase Dashboard > Settings > API'
+      'Get it from: Supabase Dashboard > Settings > API\n' +
+      'If this is a Vercel deploy, set it in Vercel Project Settings → Environment Variables (Preview/Production) and redeploy.'
     );
   }
   return url;
 })();
 
 export const SUPABASE_ANON_KEY = (() => {
-  const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const key = normalizeEnvValue(import.meta.env.VITE_SUPABASE_ANON_KEY);
   if (!key) {
     throw new Error(
       'VITE_SUPABASE_ANON_KEY is required. Add it to .env.local\n' +
       'Get it from: Supabase Dashboard > Settings > API > Project API keys > anon public\n' +
-      '⚠️  SECURITY: After fixing this issue, rotate the exposed anon key in Supabase Dashboard'
+      '⚠️  SECURITY: After fixing this issue, rotate the exposed anon key in Supabase Dashboard\n' +
+      'If this is a Vercel deploy, set it in Vercel Project Settings → Environment Variables (Preview/Production) and redeploy.'
     );
   }
   return key;
@@ -72,13 +83,14 @@ export const SUPABASE_ANON_KEY = (() => {
 const STRIPE_KEY_PREFIXES = ['pk_test_', 'pk_live_'] as const;
 
 const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined;
+const stripeKeyNormalized = normalizeEnvValue(stripeKey);
 const stripeHasValidPrefix = Boolean(
-  stripeKey && STRIPE_KEY_PREFIXES.some(prefix => stripeKey.startsWith(prefix))
+  stripeKeyNormalized && STRIPE_KEY_PREFIXES.some((prefix) => stripeKeyNormalized.startsWith(prefix))
 );
 
 export const STRIPE_CONFIGURED = stripeHasValidPrefix;
 
-if (!stripeKey) {
+if (!stripeKeyNormalized) {
   console.warn(
     '[hotmess] Stripe is not configured. Payment features will be unavailable until you set VITE_STRIPE_PUBLISHABLE_KEY.'
   );
@@ -89,7 +101,7 @@ if (!stripeKey) {
   );
 }
 
-export const STRIPE_PUBLISHABLE_KEY = stripeHasValidPrefix ? stripeKey! : '';
+export const STRIPE_PUBLISHABLE_KEY = stripeHasValidPrefix ? stripeKeyNormalized : '';
 
 export function requireStripeConfigured(featureLabel = 'Payments') {
   if (STRIPE_CONFIGURED) return;
