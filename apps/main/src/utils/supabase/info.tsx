@@ -5,15 +5,32 @@
 // Expected format: https://{projectId}.supabase.co
 // Note: This pattern assumes standard Supabase URLs. Custom domains are not currently supported.
 function getProjectIdFromUrl(url: string): string {
-  // Try standard Supabase URL pattern first
-  const supabaseMatch = url.match(/https:\/\/([^.]+)\.supabase\.co/);
-  if (supabaseMatch && supabaseMatch[1]) {
-    return supabaseMatch[1];
+  const normalized = url.trim().replace(/^['"]|['"]$/g, '').replace(/\/+$/g, '');
+
+  // Prefer URL parsing (handles custom domains reliably)
+  try {
+    const parsed = new URL(normalized);
+    const host = parsed.hostname;
+    if (host.endsWith('.supabase.co')) {
+      return host.split('.')[0] || '';
+    }
+
+    // Custom domains: best-effort extraction (subdomain), may not equal Supabase project ref.
+    const firstLabel = host.split('.')[0];
+    if (firstLabel) {
+      console.warn('Using custom Supabase domain. Project ID extraction may not be accurate.');
+      return firstLabel;
+    }
+  } catch {
+    // Fall back to regex below
   }
-  
-  // For custom domains, extract the subdomain or use a fallback approach
-  // This is a basic implementation - you may need to adjust based on your setup
-  const customMatch = url.match(/https:\/\/([^.]+)\./);
+
+  // Try standard Supabase URL pattern (supports http/https)
+  const supabaseMatch = normalized.match(/https?:\/\/([^.]+)\.supabase\.co/i);
+  if (supabaseMatch && supabaseMatch[1]) return supabaseMatch[1];
+
+  // Custom domain fallback (supports http/https)
+  const customMatch = normalized.match(/https?:\/\/([^.]+)\./i);
   if (customMatch && customMatch[1]) {
     console.warn('Using custom Supabase domain. Project ID extraction may not be accurate.');
     return customMatch[1];
@@ -26,8 +43,8 @@ function getProjectIdFromUrl(url: string): string {
 }
 
 // Get credentials from environment variables with validation
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim();
+const anonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined)?.trim();
 
 if (!supabaseUrl) {
   throw new Error(

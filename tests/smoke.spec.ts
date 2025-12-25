@@ -1,6 +1,13 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('HOTMESS smoke', () => {
+  test.beforeEach(async ({ page }) => {
+    // Bypass splash + age gate for smoke tests.
+    await page.addInitScript(() => {
+      localStorage.setItem('hotmess_age_verified', 'true');
+    });
+  });
+
   test('auth routes render', async ({ page }) => {
     await page.goto('/?route=login');
     await expect(page.getByText(/welcome back/i)).toBeVisible();

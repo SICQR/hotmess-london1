@@ -7,7 +7,14 @@ const envSchema = z.object({
   VITE_SUPABASE_ANON_KEY: z.string().min(1, 'Supabase anon key is required'),
   VITE_STRIPE_PUBLISHABLE_KEY: z
     .string()
-    .startsWith('pk_', 'Invalid Stripe publishable key'),
+    .optional()
+    .refine(
+      (value) => {
+        if (!value) return true;
+        return value.startsWith('pk_test_') || value.startsWith('pk_live_');
+      },
+      { message: 'VITE_STRIPE_PUBLISHABLE_KEY must start with pk_test_ or pk_live_' }
+    ),
 });
 
 export function validateEnv() {

@@ -71,24 +71,31 @@ export const SUPABASE_ANON_KEY = (() => {
 //   VITE_STRIPE_PUBLISHABLE_KEY=pk_live_your_key (production) or pk_test_your_key (development)
 const STRIPE_KEY_PREFIXES = ['pk_test_', 'pk_live_'] as const;
 
-export const STRIPE_PUBLISHABLE_KEY = (() => {
-  const key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-  if (!key) {
-    throw new Error(
-      'VITE_STRIPE_PUBLISHABLE_KEY is required. Add it to .env.local\n' +
-      'Get it from: Stripe Dashboard > Developers > API keys > Publishable key\n' +
-      'Use pk_test_xxx for development or pk_live_xxx for production\n' +
-      '⚠️  SECURITY: After fixing this issue, rotate the exposed Stripe key in Stripe Dashboard'
-    );
-  }
-  const hasValidPrefix = STRIPE_KEY_PREFIXES.some(prefix => key.startsWith(prefix));
-  if (!hasValidPrefix) {
-    throw new Error(
-      `VITE_STRIPE_PUBLISHABLE_KEY must start with ${STRIPE_KEY_PREFIXES.join(' or ')}\n` +
-      'Current value does not appear to be a valid Stripe publishable key'
-    );
-  }
-  return key;
-})();
+const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined;
+const stripeHasValidPrefix = Boolean(
+  stripeKey && STRIPE_KEY_PREFIXES.some(prefix => stripeKey.startsWith(prefix))
+);
+
+export const STRIPE_CONFIGURED = stripeHasValidPrefix;
+
+if (!stripeKey) {
+  console.warn(
+    '[hotmess] Stripe is not configured. Payment features will be unavailable until you set VITE_STRIPE_PUBLISHABLE_KEY.'
+  );
+} else if (!stripeHasValidPrefix) {
+  // Do not log the key value.
+  console.warn(
+    `[hotmess] Stripe is misconfigured. VITE_STRIPE_PUBLISHABLE_KEY must start with ${STRIPE_KEY_PREFIXES.join(' or ')}.`
+  );
+}
+
+export const STRIPE_PUBLISHABLE_KEY = stripeHasValidPrefix ? stripeKey! : '';
+
+export function requireStripeConfigured(featureLabel = 'Payments') {
+  if (STRIPE_CONFIGURED) return;
+  throw new Error(
+    `${featureLabel} are not configured. Set VITE_STRIPE_PUBLISHABLE_KEY (pk_test_... or pk_live_...) to enable Stripe.`
+  );
+}
 
 export const STRIPE_SECRET_KEY = ''; // Server-side only, never exposed to frontend

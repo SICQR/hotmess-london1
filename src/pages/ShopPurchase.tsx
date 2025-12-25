@@ -14,11 +14,11 @@ import { HMButton } from '../components/library/HMButton';
 import { useCart } from '../contexts/CartContext';
 import { supabase } from '../lib/supabase';
 import { purchaseShop } from '../lib/stripe/stripeService';
-import { STRIPE_PUBLISHABLE_KEY } from '../lib/env';
+import { STRIPE_CONFIGURED, STRIPE_PUBLISHABLE_KEY } from '../lib/env';
 import { RouteId } from '../lib/routes';
 
 // Initialize Stripe
-const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
+const stripePromise = STRIPE_CONFIGURED ? loadStripe(STRIPE_PUBLISHABLE_KEY) : null;
 
 interface ShopPurchaseProps {
   onNavigate: (route: RouteId, params?: Record<string, string>) => void;
@@ -125,6 +125,23 @@ export function ShopPurchase({ onNavigate }: ShopPurchaseProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
+
+  if (!STRIPE_CONFIGURED) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+        <Card className="max-w-md w-full p-6 text-center">
+          <div className="text-red-500 text-4xl mb-4">⚠️</div>
+          <h2 className="text-xl mb-2">Payments not configured</h2>
+          <p className="text-white/60 mb-6">
+            Stripe is not configured. Set VITE_STRIPE_PUBLISHABLE_KEY (pk_test_… or pk_live_…) to enable checkout.
+          </p>
+          <HMButton onClick={() => onNavigate('shopCart')} variant="ghost">
+            Back to Cart
+          </HMButton>
+        </Card>
+      </div>
+    );
+  }
 
   const shipping = subtotal >= 5000 ? 0 : 495; // Free shipping over £50
   const total = subtotal + shipping;
