@@ -61,7 +61,8 @@ export function Shop({ onNavigate }: ShopProps) {
         }
       } catch (err) {
         console.error('Error loading products:', err);
-        setError('Failed to load products. Please try again.');
+        const message = err instanceof Error ? err.message : 'Failed to load products. Please try again.';
+        setError(message);
       } finally {
         setLoading(false);
       }
