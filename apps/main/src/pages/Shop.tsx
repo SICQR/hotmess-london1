@@ -35,8 +35,10 @@ export function Shop({ onNavigate }: ShopProps) {
 
   const collections = [
     { id: 'all', label: 'All Products' },
-    { id: 'superhung', label: 'SUPERHUNG', tagline: 'Limited capsule collection' },
-    { id: 'hnh-mess', label: 'HNH MESS', tagline: 'Essential gear for the night' },
+    { id: 'raw', label: 'RAW', tagline: "Vests. Tees. Cuts that don't ask permission." },
+    { id: 'hung', label: 'HUNG', tagline: 'Body-conscious. Kink-adjacent. Confidence-first.' },
+    { id: 'high', label: 'HIGH', tagline: 'Statement pieces. Festival armor. No pretending.' },
+    { id: 'super', label: 'SUPER', tagline: 'Extreme designs. Informed consent required.' },
   ];
 
   // Fetch products on mount and when collection changes
@@ -48,12 +50,19 @@ export function Shop({ onNavigate }: ShopProps) {
       try {
         if (selectedCollection === 'all') {
           // Fetch all collections
-          const [superhungProducts, hnhMessProducts] = await Promise.all([
-            getProductsByCollection('superhung', 20),
-            getProductsByCollection('hnh-mess', 20),
+          const [rawProducts, hungProducts, highProducts, superProducts] = await Promise.all([
+            getProductsByCollection('raw', 20),
+            getProductsByCollection('hung', 20),
+            getProductsByCollection('high', 20),
+            getProductsByCollection('super', 20),
           ]);
-          
-          setProducts([...superhungProducts, ...hnhMessProducts] as Product[]);
+
+          setProducts([
+            ...(rawProducts as Product[]),
+            ...(hungProducts as Product[]),
+            ...(highProducts as Product[]),
+            ...(superProducts as Product[]),
+          ]);
         } else {
           // Fetch single collection
           const collectionProducts = await getProductsByCollection(selectedCollection, 20);
