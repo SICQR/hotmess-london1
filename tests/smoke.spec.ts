@@ -9,7 +9,7 @@ test.describe('HOTMESS smoke', () => {
     await expect(page.getByText(/join hotmess/i)).toBeVisible();
 
     await page.goto('/?route=passwordReset');
-    await expect(page.getByText(/reset/i)).toBeVisible();
+    await expect(page.getByRole('heading', { name: /reset/i })).toBeVisible();
 
     // Set-new-password page may show an expired-link message without a real token; either is acceptable.
     await page.goto('/?route=setNewPassword');
@@ -20,7 +20,7 @@ test.describe('HOTMESS smoke', () => {
 
   test('privacy hub routes render', async ({ page }) => {
     await page.goto('/?route=dataPrivacy');
-    await expect(page.getByText(/privacy|data/i)).toBeVisible();
+    await expect(page.getByRole('heading', { name: /data.*privacy hub/i })).toBeVisible();
 
     await page.goto('/?route=dataPrivacyDsar');
     await expect(page.getByText(/data subject access|dsar|request/i)).toBeVisible();
