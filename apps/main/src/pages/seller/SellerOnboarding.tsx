@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { SellerLayout } from '../../components/layouts/SellerLayout';
 import { RouteId } from '../../lib/routes';
-import { supabase } from '../../lib/supabase';
+import { supabase as supabaseClient } from '../../lib/supabase';
+import type { Stripe } from '@stripe/stripe-js';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 import { loadStripeConnect } from '../../lib/stripe-loader';
 import { StripeConnectOnboarding } from '../../components/seller/StripeConnectOnboarding';
@@ -20,6 +21,7 @@ interface SellerStatus {
 }
 
 export function SellerOnboarding({ onNavigate }: SellerOnboardingProps) {
+  const supabase: any = supabaseClient;
   const [sellerStatus, setSellerStatus] = useState<SellerStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [onboarding, setOnboarding] = useState(false);

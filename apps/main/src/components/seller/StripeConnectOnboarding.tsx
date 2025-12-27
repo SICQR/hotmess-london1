@@ -9,7 +9,7 @@ import { loadStripeConnect } from '../../lib/stripe-loader';
 
 interface StripeConnectOnboardingProps {
   /** Client secret from account session API */
-  clientSecret: string;
+  clientSecret?: string;
   /** Callback when onboarding completes */
   onComplete?: () => void;
   /** Callback when onboarding fails */
@@ -27,8 +27,13 @@ export function StripeConnectOnboarding({
   const [stripeConnect, setStripeConnect] = useState<any>(null);
 
   useEffect(() => {
+    if (!clientSecret) return;
     initializeStripeConnect();
   }, [clientSecret]);
+
+  if (!clientSecret) {
+    return null;
+  }
 
   const initializeStripeConnect = async () => {
     try {

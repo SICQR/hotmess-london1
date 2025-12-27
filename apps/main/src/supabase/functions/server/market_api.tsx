@@ -285,23 +285,122 @@ app.post('/stripe-webhook', async (c) => {
   }
 });
 
+function purchaseXpFromTotalPence(totalPence: number) {
+  // 10 XP per £ => total_pence / 10
+  return Math.max(0, Math.floor(Number(totalPence || 0) / 10));
+}
+
+async function markOrderPaid(orderId: string, session: Stripe.Checkout.Session) {
+  const patch: Record<string, unknown> = {
+    status: 'paid',
+    paid_at: new Date().toISOString(),
+    stripe_checkout_session_id: session.id,
+    stripe_payment_intent_id: session.payment_intent as string,
+  };
+
+  const attempt = await supabase.from('market_orders').update(patch).eq('id', orderId);
+  if (!attempt.error) return { ok: true as const };
+
+  const msg = String(attempt.error.message || '');
+  if (msg.includes("Could not find the 'paid_at'") || (msg.includes('paid_at') && msg.includes('schema cache'))) {
+    const { paid_at: _paidAt, ...rest } = patch as any;
+    const retry = await supabase.from('market_orders').update(rest).eq('id', orderId);
+    if (!retry.error) return { ok: true as const };
+    return { ok: false as const, error: retry.error };
+  }
+
+  return { ok: false as const, error: attempt.error };
+}
+
+async function awardPurchaseXp(params: {
+  orderId: string;
+  userId: string;
+  totalPence: number;
+  currency: string;
+  stripeEventId?: string;
+}) {
+  const xp = purchaseXpFromTotalPence(params.totalPence);
+  if (xp <= 0) return;
+
+  const existing = await supabase
+    .from('xp_ledger')
+    .select('id')
+    .eq('user_id', params.userId)
+    .eq('kind', 'purchase')
+    .eq('ref_id', params.orderId)
+    .limit(1)
+    .maybeSingle();
+
+  if (existing.data?.id) return;
+
+  const ins = await supabase.from('xp_ledger').insert({
+    user_id: params.userId,
+    kind: 'purchase',
+    amount: xp,
+    ref_id: params.orderId,
+    metadata: {
+      currency: params.currency,
+      total_pence: params.totalPence,
+      stripe_event_id: params.stripeEventId,
+    },
+  });
+
+  if (ins.error) {
+    await supabase.from('audit_log').insert({
+      action: 'xp_award_error',
+      entity_type: 'xp_ledger',
+      entity_id: params.orderId,
+      meta: { stripe_event_id: params.stripeEventId, message: String(ins.error.message || ins.error) },
+    });
+  }
+}
+
+async function activateBeaconFromMetadata(metadata: Stripe.Metadata | null | undefined, stripeEventId?: string) {
+  const beaconId = String((metadata as any)?.beacon_id || (metadata as any)?.spawn_beacon_id || (metadata as any)?.globe_beacon_id || '').trim();
+  if (!beaconId) return;
+
+  const patch: Record<string, unknown> = {
+    status: 'active',
+    starts_at: new Date().toISOString(),
+  };
+
+  const lat = (metadata as any)?.geo_lat ? Number((metadata as any).geo_lat) : NaN;
+  const lng = (metadata as any)?.geo_lng ? Number((metadata as any).geo_lng) : NaN;
+  if (Number.isFinite(lat) && Number.isFinite(lng)) {
+    patch.geo_lat = lat;
+    patch.geo_lng = lng;
+  }
+  if ((metadata as any)?.city_slug) patch.city_slug = String((metadata as any).city_slug).slice(0, 100);
+
+  const up = await supabase.from('beacons').update(patch).eq('id', beaconId);
+  if (up.error) {
+    await supabase.from('audit_log').insert({
+      action: 'beacon_activate_error',
+      entity_type: 'beacons',
+      entity_id: beaconId,
+      meta: { stripe_event_id: stripeEventId, message: String(up.error.message || up.error) },
+    });
+  }
+}
+
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const orderId = session.metadata?.order_id;
   if (!orderId) return;
 
   console.log('✅ Checkout completed for order:', orderId);
 
-  // Mark order as paid
-  const { error } = await supabase
+  const { data: before } = await supabase
     .from('market_orders')
-    .update({
-      status: 'paid',
-      stripe_payment_intent_id: session.payment_intent as string,
-    })
-    .eq('id', orderId);
+    .select('id,status')
+    .eq('id', orderId)
+    .maybeSingle();
 
-  if (error) {
-    console.error('Failed to update order status:', error);
+  const wasCreated = before?.status === 'created';
+
+  // Mark order as paid
+  const paidRes = await markOrderPaid(orderId, session);
+  if (!paidRes.ok) {
+    console.error('Failed to update order status:', paidRes.error);
     return;
   }
 
@@ -319,6 +418,27 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   if (!order) return;
 
   const seller = order.seller as any;
+
+  // XP awarding + optional beacon activation (idempotent)
+  try {
+    await awardPurchaseXp({
+      orderId,
+      userId: String(order.buyer_id),
+      totalPence: Number((order as any).total_pence || 0),
+      currency: String((order as any).currency || 'GBP'),
+      stripeEventId: undefined,
+    });
+  } catch (xpErr: any) {
+    console.error('Failed to award purchase XP (non-critical):', xpErr);
+  }
+
+  try {
+    await activateBeaconFromMetadata(session.metadata, undefined);
+  } catch (beaconErr: any) {
+    console.error('Failed to activate beacon (non-critical):', beaconErr);
+  }
+
+  if (!wasCreated) return;
 
   // Notify seller
   await supabase.from('notifications').insert({

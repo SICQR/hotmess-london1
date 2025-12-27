@@ -48,8 +48,13 @@ export interface CityData {
 /**
  * Shopify GraphQL variables (recursive type for nested objects/arrays)
  */
-export type ShopifyVariables = Record<string, string | number | boolean | null | ShopifyVariablesNested | ShopifyVariablesNested[]>;
-type ShopifyVariablesNested = Record<string, string | number | boolean | null | ShopifyVariablesNested | ShopifyVariablesNested[]>;
+export type ShopifyVariables = Record<string, ShopifyVariableValue>;
+
+export type ShopifyVariablePrimitive = string | number | boolean | null;
+export type ShopifyVariableValue = ShopifyVariablePrimitive | ShopifyVariableObject | ShopifyVariableValue[];
+export interface ShopifyVariableObject {
+  [key: string]: ShopifyVariableValue;
+}
 
 /**
  * Generic API fetch options

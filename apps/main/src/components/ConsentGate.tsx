@@ -7,21 +7,63 @@ import { Shield, MapPin, Lock, AlertCircle } from 'lucide-react';
 import { LocationConsentModal } from '@/components/LocationConsentModal';
 import { useLocationConsent } from '@/hooks/useLocationConsent';
 
-interface ConsentGateProps {
+type LocationConsentGateProps = {
   children: ReactNode;
   feature: string; // Feature name (e.g., "Beacons", "Discovery Grid", "Heat Map")
   requiredMode?: 'approximate' | 'precise'; // Minimum consent level required
   fallback?: ReactNode; // Custom fallback UI
   bypassCheck?: boolean; // For admin/testing
-}
+};
 
-export function ConsentGate({
-  children,
-  feature,
-  requiredMode = 'approximate',
-  fallback,
-  bypassCheck = false
-}: ConsentGateProps) {
+type ModalConsentGateProps = {
+  type: string;
+  isOpen: boolean;
+  onAccept: () => void;
+  onDecline: () => void;
+};
+
+type ConsentGateProps = LocationConsentGateProps | ModalConsentGateProps;
+
+export function ConsentGate(props: ConsentGateProps) {
+  // Legacy/modal-style consent gate (used by some pages)
+  if ('isOpen' in props) {
+    if (!props.isOpen) return null;
+
+    return (
+      <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+        <Card className="bg-white/5 border-2 border-[#FF0080]/20 max-w-lg w-full">
+          <CardHeader>
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 rounded-full bg-[#FF0080]/10 border-2 border-[#FF0080] flex items-center justify-center">
+                <Shield className="w-8 h-8 text-[#FF0080]" />
+              </div>
+            </div>
+            <CardTitle className="text-center uppercase tracking-tight" style={{ fontWeight: 900, fontSize: '1.5rem' }}>
+              CONSENT REQUIRED
+            </CardTitle>
+            <CardDescription className="text-center text-white/60" style={{ fontWeight: 400, fontSize: '1rem' }}>
+              Please accept to continue.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex gap-3 justify-center">
+            <Button variant="outline" onClick={props.onDecline}>
+              Decline
+            </Button>
+            <Button onClick={props.onAccept}>Accept</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const {
+    children,
+    feature,
+    requiredMode = 'approximate',
+    fallback,
+    bypassCheck = false,
+  } = props;
+
   const locationConsent = useLocationConsent();
   const [showModal, setShowModal] = useState(false);
   const [hasChecked, setHasChecked] = useState(false);

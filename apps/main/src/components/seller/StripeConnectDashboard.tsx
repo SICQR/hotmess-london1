@@ -9,7 +9,7 @@ import { loadStripeConnect } from '../../lib/stripe-loader';
 
 interface StripeConnectDashboardProps {
   /** Client secret from account session API */
-  clientSecret: string;
+  clientSecret?: string;
   /** Callback when dashboard encounters an error */
   onError?: (error: string) => void;
 }
@@ -23,8 +23,13 @@ export function StripeConnectDashboard({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!clientSecret) return;
     initializeStripeDashboard();
   }, [clientSecret]);
+
+  if (!clientSecret) {
+    return null;
+  }
 
   const initializeStripeDashboard = async () => {
     try {

@@ -103,7 +103,7 @@ export function Drops({ onNavigate }: DropsProps) {
         {/* Drops Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {mockDrops.map((drop) => {
-            const isLive = drop.status === 'live';
+            const isLive = (drop as any).status === 'live';
             const isSoldOut = drop.status === 'sold-out';
 
             return (

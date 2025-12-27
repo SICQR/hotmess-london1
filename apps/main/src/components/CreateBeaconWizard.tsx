@@ -133,12 +133,12 @@ export function CreateBeaconWizard({ onNavigate }: CreateBeaconWizardProps) {
       }
 
       // Call collision-safe beacon creation service
-      const res = await createBeacon({
-        type,
+      const res = await (createBeacon as any)({
+        type: type as any,
         title: title.trim(),
         description: description.trim() || null,
-        lat: geoLat,
-        lng: geoLng,
+        geo_lat: geoLat,
+        geo_lng: geoLng,
         radius_m: 150, // Could make this configurable
         starts_at: s.toISOString(),
         ends_at: e.toISOString(),

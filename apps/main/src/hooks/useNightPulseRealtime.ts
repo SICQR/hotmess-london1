@@ -10,6 +10,72 @@ import type { NightPulseCity, NightPulseEvent } from '../types/night-pulse';
 
 const supabase = createClient();
 
+function getOfflineFallbackCities(now = new Date()): NightPulseCity[] {
+  const iso = now.toISOString();
+  return [
+    {
+      city_id: 'offline-london',
+      city_name: 'London',
+      country_code: 'GB',
+      latitude: 51.5074,
+      longitude: -0.1278,
+      active_beacons: null,
+      scans_last_hour: 22,
+      heat_intensity: 64,
+      last_activity_at: iso,
+      refreshed_at: iso,
+    },
+    {
+      city_id: 'offline-berlin',
+      city_name: 'Berlin',
+      country_code: 'DE',
+      latitude: 52.52,
+      longitude: 13.405,
+      active_beacons: null,
+      scans_last_hour: 17,
+      heat_intensity: 52,
+      last_activity_at: iso,
+      refreshed_at: iso,
+    },
+    {
+      city_id: 'offline-paris',
+      city_name: 'Paris',
+      country_code: 'FR',
+      latitude: 48.8566,
+      longitude: 2.3522,
+      active_beacons: null,
+      scans_last_hour: 14,
+      heat_intensity: 45,
+      last_activity_at: iso,
+      refreshed_at: iso,
+    },
+    {
+      city_id: 'offline-nyc',
+      city_name: 'New York',
+      country_code: 'US',
+      latitude: 40.7128,
+      longitude: -74.006,
+      active_beacons: null,
+      scans_last_hour: 19,
+      heat_intensity: 58,
+      last_activity_at: iso,
+      refreshed_at: iso,
+    },
+    {
+      city_id: 'offline-sao-paulo',
+      city_name: 'São Paulo',
+      country_code: 'BR',
+      latitude: -23.5505,
+      longitude: -46.6333,
+      active_beacons: null,
+      scans_last_hour: 11,
+      heat_intensity: 36,
+      last_activity_at: iso,
+      refreshed_at: iso,
+    },
+  ];
+}
+
 export function useNightPulseRealtime() {
   const [cities, setCities] = useState<NightPulseCity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,21 +93,34 @@ export function useNightPulseRealtime() {
       if (fetchError) {
         console.error('❌ Error loading Night Pulse data:', fetchError);
         setError(fetchError.message);
+        // Provide a visible/interactive fallback so the globe isn't empty.
+        if (cities.length === 0) {
+          const now = new Date();
+          setCities(getOfflineFallbackCities(now));
+          setLastUpdate(now);
+        }
+        setLoading(false);
         return;
       }
 
-      if (data) {
-        console.log('✅ Night Pulse initial data loaded:', data.length, 'cities');
-        setCities(data);
-        setLastUpdate(new Date());
-        setLoading(false);
-      }
+      const resolved = data ?? [];
+      console.log('✅ Night Pulse initial data loaded:', resolved.length, 'cities');
+      setCities(resolved);
+      setLastUpdate(new Date());
+      setLoading(false);
     } catch (err: any) {
       console.error('❌ Exception loading Night Pulse data:', err);
-      setError(err.message);
+      setError(err?.message || 'Night Pulse fetch failed');
+
+      // Network/DNS/CORS issues should still render a useful globe.
+      if (cities.length === 0) {
+        const now = new Date();
+        setCities(getOfflineFallbackCities(now));
+        setLastUpdate(now);
+      }
       setLoading(false);
     }
-  }, []);
+  }, [cities.length]);
 
   // Calculate heat intensity from scan count
   const calculateHeat = useCallback((scans: number): number => {
@@ -102,6 +181,12 @@ export function useNightPulseRealtime() {
         } else if (status === 'CHANNEL_ERROR') {
           console.error('❌ Night Pulse subscription error');
           setError('Real-time connection failed');
+          if (cities.length === 0) {
+            const now = new Date();
+            setCities(getOfflineFallbackCities(now));
+            setLastUpdate(now);
+          }
+          setLoading(false);
         }
       });
 

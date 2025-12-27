@@ -2,7 +2,7 @@
  * Frontend API for Notifications System
  */
 
-import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { getFunctionsBaseUrl } from './supabase-functions-base';
 import type { NotificationMetadata } from '@/types/api';
 
 export type NotificationType = 
@@ -31,7 +31,7 @@ export interface Notification {
   metadata?: NotificationMetadata;
 }
 
-const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/api/notifications`;
+const API_BASE = `${getFunctionsBaseUrl()}/api/notifications`;
 
 /**
  * Get user's notifications

@@ -17,14 +17,14 @@ import {
   Radio,
   Flame
 } from 'lucide-react';
-import LiveGlobe3D, { type Beacon as GlobeBeacon, type GlobeLayers } from '../components/LiveGlobe3D';
+import BeaconsGlobeControlRoom from '../components/BeaconsGlobeControlRoom';
 import { LocationSearchInput } from '../components/LocationSearchInput';
 import { LocationPickerOverlay } from '../components/LocationPickerOverlay';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from 'sonner';
 
 interface EarthPageProps {
-  onNavigate: (route: string) => void;
+  onNavigate: (route: any, params?: any) => void;
 }
 
 export interface CustomLocation {
@@ -545,45 +545,32 @@ export function EarthPage({ onNavigate }: EarthPageProps) {
 
         {/* MAIN - 3D Globe View */}
         <div className="relative h-screen bg-black overflow-hidden">
-          <LiveGlobe3D
+          <BeaconsGlobeControlRoom
             className="w-full h-full absolute inset-0"
-            layers={{
-              pins: showBeacons || showLocations,
-              heat: showHeatmap,
-              trails: false,
-              cities: true,
-            }}
             beacons={[
-              // Map beacons from backend
-              ...beacons.map((b) => ({
-                id: b.id,
-                title: b.title,
-                kind: b.kind as 'drop' | 'event' | 'product' | 'sponsor' | 'checkin' | 'other',
-                lat: b.lat,
-                lng: b.lng,
-                city: b.city,
-                intensity: b.intensity || (b.scans ? Math.min(b.scans / 100, 1) : 0.5),
-              })),
-              // Add custom locations as beacons if layer is on
-              ...(showLocations ? locations.map((loc) => ({
-                id: loc.id,
-                title: loc.name,
-                kind: 'other' as const,
-                lat: loc.lat,
-                lng: loc.lng,
-                city: loc.address.split(',')[0],
-                intensity: 0.3,
-              })) : []),
+              ...beacons
+                .filter(() => showBeacons)
+                .map((b) => ({
+                  id: b.id,
+                  title: b.title,
+                  kind: b.kind as 'drop' | 'event' | 'product' | 'sponsor' | 'checkin' | 'other',
+                  lat: b.lat,
+                  lng: b.lng,
+                  city: b.city,
+                  intensity: b.intensity || (b.scans ? Math.min(b.scans / 100, 1) : 0.5),
+                })),
+              ...(showLocations
+                ? locations.map((loc) => ({
+                    id: loc.id,
+                    title: loc.name,
+                    kind: 'other' as const,
+                    lat: loc.lat,
+                    lng: loc.lng,
+                    city: loc.address.split(',')[0],
+                    intensity: 0.3,
+                  }))
+                : []),
             ]}
-            onBeaconClick={(beacon) => {
-              if ('code' in beacon && 'title' in beacon) {
-                const typedBeacon = beacon as { code: string; title: string };
-                toast.info(`Beacon: ${typedBeacon.title} (/l/${typedBeacon.code})`);
-              } else if ('title' in beacon || 'id' in beacon) {
-                const typedBeacon = beacon as { title?: string; id: string };
-                toast.info(`Location: ${typedBeacon.title || typedBeacon.id}`);
-              }
-            }}
           />
         </div>
       </div>

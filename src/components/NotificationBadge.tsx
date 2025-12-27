@@ -30,6 +30,7 @@ export function NotificationBadge({ onClick, className = '' }: NotificationBadge
     } else {
       setUnreadCount(0);
       setLoading(false);
+      return;
     }
   }, [isAuthenticated, user]);
 

@@ -286,7 +286,7 @@ export default function Thread({ mode, threadId, sendEndpoint, onNavigate }: Pro
       {ticketListing && mode === "tickets" && (
         <ProofUploadQuickflow
           threadId={threadId}
-          threadType={mode}
+          threadType={mode === "tickets" ? "ticket" : mode}
           listingId={listingId}
           disabled={!me || sending || locked}
           onDone={() => {

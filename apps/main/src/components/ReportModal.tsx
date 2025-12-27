@@ -17,7 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { ShieldAlert } from "lucide-react";
 
-type TargetType = "beacon" | "ticket_listing" | "connect_thread" | "ticket_thread" | "message";
+type TargetType = "beacon" | "ticket_listing" | "connect_thread" | "ticket_thread" | "message" | "user";
 
 const REASON_OPTIONS = [
   { value: "harassment", label: "Harassment" },
@@ -28,12 +28,13 @@ const REASON_OPTIONS = [
 ];
 
 type Props = {
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
   targetType: TargetType;
   targetId: string;
+  onClose?: () => void;
 };
 
-export function ReportModal({ trigger, targetType, targetId }: Props) {
+export function ReportModal({ trigger, targetType, targetId, onClose }: Props) {
   const [open, setOpen] = React.useState(false);
   const [reason, setReason] = React.useState("harassment");
   const [details, setDetails] = React.useState("");
@@ -50,6 +51,11 @@ export function ReportModal({ trigger, targetType, targetId }: Props) {
       setError(null);
     }
   }, [open]);
+
+  // Support programmatic usage (e.g. VendorProfile) by auto-opening when no trigger is provided.
+  React.useEffect(() => {
+    if (!trigger) setOpen(true);
+  }, [trigger]);
 
   async function submit() {
     setSubmitting(true);
@@ -87,8 +93,14 @@ export function ReportModal({ trigger, targetType, targetId }: Props) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (!next) onClose?.();
+      }}
+    >
+      {trigger ? <DialogTrigger asChild>{trigger}</DialogTrigger> : null}
       <DialogContent className="rounded-2xl max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -152,7 +164,10 @@ export function ReportModal({ trigger, targetType, targetId }: Props) {
               <Button
                 variant="secondary"
                 className="flex-1 rounded-2xl"
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  setOpen(false);
+                  onClose?.();
+                }}
                 disabled={submitting}
               >
                 Cancel

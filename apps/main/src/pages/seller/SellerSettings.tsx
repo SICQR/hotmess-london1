@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { SellerLayout } from '../../components/layouts/SellerLayout';
 import { RouteId } from '../../lib/routes';
-import { supabase } from '../../lib/supabase';
+import { supabase as supabaseClient } from '../../lib/supabase';
 import { Store, Loader2, ExternalLink, Save } from 'lucide-react';
 import { StripeConnectOnboarding } from '../../components/seller/StripeConnectOnboarding';
 import { StripeConnectDashboard } from '../../components/seller/StripeConnectDashboard';
@@ -21,6 +21,7 @@ interface SellerData {
 }
 
 export function SellerSettings({ onNavigate }: SellerSettingsProps) {
+  const supabase: any = supabaseClient;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [seller, setSeller] = useState<SellerData | null>(null);

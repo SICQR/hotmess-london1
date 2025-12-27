@@ -393,20 +393,20 @@ export default function EventDetail({ eventId, onNavigate }: Props) {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-white/60">Ticket Price</span>
                 <span className="text-white font-bold">
-                  £{((selectedTier === 'ga' ? event.price_ga : event.price_vip) / 100).toFixed(2)}
+                  £{((((selectedTier === 'ga' ? event.price_ga : event.price_vip) ?? 0) / 100)).toFixed(2)}
                 </span>
               </div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-white/60">Buyer Fee (10%)</span>
                 <span className="text-white font-bold">
-                  £{(((selectedTier === 'ga' ? event.price_ga : event.price_vip) * 0.10) / 100).toFixed(2)}
+                  £{(((((selectedTier === 'ga' ? event.price_ga : event.price_vip) ?? 0) * 0.10) / 100)).toFixed(2)}
                 </span>
               </div>
               <div className="border-t border-white/10 my-2" />
               <div className="flex items-center justify-between">
                 <span className="text-white font-bold">Total</span>
                 <span className="text-[#FF0080] text-2xl font-black">
-                  £{(((selectedTier === 'ga' ? event.price_ga : event.price_vip) * 1.10) / 100).toFixed(2)}
+                  £{(((((selectedTier === 'ga' ? event.price_ga : event.price_vip) ?? 0) * 1.10) / 100)).toFixed(2)}
                 </span>
               </div>
             </div>

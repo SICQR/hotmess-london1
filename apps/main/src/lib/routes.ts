@@ -75,6 +75,9 @@ export type RouteId =
   | "communityNew"
   | "communityWhyRooms" // NEW: Why Rooms educational page
   | "rooms" // NEW: Rooms Directory (Telegram bridge)
+  | "events" // NEW: Events listing
+  | "safePlaces" // NEW: Safe places directory
+  | "careHub" // NEW: Care hub
   | "hnhMess"
   // Map & Beacons
   | "map"
@@ -118,6 +121,7 @@ export type RouteId =
   | "legalCareDisclaimer"
   | "legal18Plus"
   | "dataPrivacy"
+  | "about" // NEW: About / contact hub
   | "dataPrivacyDsar"
   | "dataPrivacyDelete"
   | "dataPrivacyExport"
@@ -195,6 +199,9 @@ export type RouteId =
   | "authDebug" // Debug auth state
   | "projectDashboard"; // NEW: Internal project management dashboard
 
+// Shared navigation function signature (used across pages/components)
+export type NavFunction = (route: RouteId, params?: Record<string, string>) => void;
+
 export interface RouteDef {
   id: RouteId;
   label: string;
@@ -222,6 +229,14 @@ export const ROUTES: Record<RouteId, RouteDef> = {
     label: "Scan",
     href: "/scan",
     group: "primary",
+  },
+
+  // ---- UTILITY ----
+  about: {
+    id: "about",
+    label: "About",
+    href: "/about",
+    group: "utility",
   },
   
   // ---- ARRIVAL FLOW ----
@@ -341,6 +356,27 @@ export const ROUTES: Record<RouteId, RouteDef> = {
     href: "/rooms",
     group: "hidden",
     description: "Rooms Directory - Web to Telegram bridge",
+  },
+  events: {
+    id: "events",
+    label: "Events",
+    href: "/events",
+    group: "hidden",
+    description: "Events listing and RSVP hub",
+  },
+  safePlaces: {
+    id: "safePlaces",
+    label: "Safe Places",
+    href: "/safe-places",
+    group: "hidden",
+    description: "Safe places directory",
+  },
+  careHub: {
+    id: "careHub",
+    label: "Care Hub",
+    href: "/care-hub",
+    group: "hidden",
+    description: "Care hub",
   },
   hnhMess: {
     id: "hnhMess",

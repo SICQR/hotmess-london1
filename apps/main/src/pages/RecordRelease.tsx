@@ -176,9 +176,11 @@ export function RecordRelease({ slug, onNavigate }: RecordReleaseProps) {
     const handleEnded = () => {
       setIsPlaying(false);
       // Auto-play next track
-      const currentIndex = release?.cuts.findIndex((cut: any) => cut.id === currentTrackId);
-      if (currentIndex !== undefined && currentIndex < release?.cuts.length - 1) {
-        playTrack(release?.cuts[currentIndex + 1].id);
+      const cuts = release?.cuts ?? [];
+      const currentIndex = cuts.findIndex((cut: any) => cut.id === currentTrackId);
+      if (currentIndex >= 0 && currentIndex < cuts.length - 1) {
+        const nextId = cuts[currentIndex + 1]?.id;
+        if (nextId) playTrack(nextId);
       }
     };
 
@@ -344,7 +346,7 @@ export function RecordRelease({ slug, onNavigate }: RecordReleaseProps) {
               </div>
               <div>
                 <span className="uppercase tracking-wider block text-hot" style={{ fontWeight: 900, fontSize: '10px' }}>RELEASED</span>
-                <span className="uppercase tracking-wider text-white" style={{ fontWeight: 700, fontSize: '14px' }}>{formatDate(release?.releaseDate)}</span>
+                <span className="uppercase tracking-wider text-white" style={{ fontWeight: 700, fontSize: '14px' }}>{formatDate(release?.releaseDate || new Date().toISOString())}</span>
               </div>
               <div>
                 <span className="uppercase tracking-wider block text-hot" style={{ fontWeight: 900, fontSize: '10px' }}>TAGS</span>
@@ -355,7 +357,7 @@ export function RecordRelease({ slug, onNavigate }: RecordReleaseProps) {
             {/* Primary Actions */}
             <div className="flex flex-col sm:flex-row gap-3">
               <button
-                onClick={() => playTrack(release?.cuts[0].id)}
+                onClick={() => playTrack(release?.cuts?.[0]?.id || '')}
                 className="bg-hot hover:bg-white text-white hover:text-black px-8 py-4 uppercase tracking-wider transition-all flex items-center justify-center gap-2"
                 style={{ fontWeight: 900, fontSize: '14px' }}
               >

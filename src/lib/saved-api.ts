@@ -6,7 +6,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const baseUrl = `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/api/saved`;
 
-export type ContentType = 'beacon' | 'record' | 'release' | 'product' | 'post' | 'show';
+export type ContentType = 'beacon' | 'record' | 'release' | 'product' | 'post' | 'show' | 'ticket';
 
 export interface SavedItem {
   userId: string;

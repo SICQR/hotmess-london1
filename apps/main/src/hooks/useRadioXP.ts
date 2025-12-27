@@ -11,21 +11,32 @@ import { toast } from 'sonner';
 interface UseRadioXPOptions {
   enabled?: boolean;
   onXPAwarded?: (xp: number) => void;
+  initialXP?: number;
+  extendedXP?: number;
+  extendedThresholdMinutes?: number;
 }
 
 export function useRadioXP(options: UseRadioXPOptions = {}) {
-  const { enabled = true, onXPAwarded } = options;
+  const {
+    enabled = true,
+    onXPAwarded,
+    initialXP = 10,
+    extendedXP = 20,
+    extendedThresholdMinutes = 10,
+  } = options;
   const { user } = useAuth();
   const [listenDuration, setListenDuration] = useState(0); // seconds
   const [xpAwarded, setXpAwarded] = useState(0);
   const [lastMilestone, setLastMilestone] = useState(0);
+  const [hasAwardedInitial, setHasAwardedInitial] = useState(false);
+  const [hasAwardedExtended, setHasAwardedExtended] = useState(false);
   const startTimeRef = useRef<number | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // XP milestones (in seconds)
   const XP_MILESTONES = [
-    { duration: 0, xp: 10, label: 'Started listening' },
-    { duration: 600, xp: 20, label: '10 minutes listened' },
+    { duration: 0, xp: initialXP, label: 'Started listening' },
+    { duration: extendedThresholdMinutes * 60, xp: extendedXP, label: `${extendedThresholdMinutes} minutes listened` },
     { duration: 1800, xp: 50, label: '30 minutes listened' },
   ];
 
@@ -53,6 +64,11 @@ export function useRadioXP(options: UseRadioXPOptions = {}) {
       if (data.success && data.xp) {
         setXpAwarded(prev => prev + data.xp);
         onXPAwarded?.(data.xp);
+
+        // Keep compatibility flags for UI
+        if (durationSeconds === 0) setHasAwardedInitial(true);
+        if (durationSeconds >= extendedThresholdMinutes * 60) setHasAwardedExtended(true);
+
         toast.success(`+${data.xp} XP for listening to RAW CONVICT RADIO`, {
           icon: '🎧',
         });
@@ -108,6 +124,8 @@ export function useRadioXP(options: UseRadioXPOptions = {}) {
     setListenDuration(0);
     setXpAwarded(0);
     setLastMilestone(0);
+    setHasAwardedInitial(false);
+    setHasAwardedExtended(false);
   };
 
   useEffect(() => {
@@ -118,7 +136,10 @@ export function useRadioXP(options: UseRadioXPOptions = {}) {
 
   return {
     listenDuration,
+    listeningMinutes: Math.floor(listenDuration / 60),
     xpAwarded,
+    hasAwardedInitial,
+    hasAwardedExtended,
     isTracking: !!startTimeRef.current,
     startTracking,
     stopTracking,

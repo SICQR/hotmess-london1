@@ -39,7 +39,7 @@ export function useTickets() {
     setError(null);
 
     try {
-      const { data, error } = await supabase.rpc('ticket_create_listing', {
+      const { data, error } = await (supabase.rpc as any)('ticket_create_listing', {
         p_beacon_id: params.beaconId,
         p_event_name: params.eventName,
         p_event_starts_at: params.eventStartsAt,
@@ -94,7 +94,7 @@ export function useTickets() {
     setError(null);
 
     try {
-      const { data, error } = await supabase.rpc('ticket_list_listings', {
+      const { data, error } = await (supabase.rpc as any)('ticket_list_listings', {
         p_beacon_id: beaconId,
         p_limit: limit,
       });
@@ -127,7 +127,7 @@ export function useTickets() {
     setError(null);
 
     try {
-      const { data, error } = await supabase.rpc('ticket_open_thread', {
+      const { data, error } = await (supabase.rpc as any)('ticket_open_thread', {
         p_listing_id: listingId,
       });
 
@@ -169,7 +169,7 @@ export function useTickets() {
     setError(null);
 
     try {
-      const { data, error } = await supabase.rpc('ticket_send_message', {
+      const { data, error } = await (supabase.rpc as any)('ticket_send_message', {
         p_thread_id: threadId,
         p_body: body.trim(),
       });

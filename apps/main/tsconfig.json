@@ -30,6 +30,11 @@
   "exclude": [
     "src/supabase/functions/**",
     "src/utils/supabase/server.ts",
+    "src/lib/actions/**",
+    "src/lib/requireUser.ts",
+    "src/lib/requireAdmin.ts",
+    "src/lib/supabaseAdmin.ts",
+    "src/lib/supabase/admin.ts",
     "src/cloudflare-worker-qr-skeleton.ts",
     "src/middleware.ts",
     "src/pages/wireframes/**",

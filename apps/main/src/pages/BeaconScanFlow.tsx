@@ -276,7 +276,7 @@ export function BeaconScanFlow({ code: initialCode, onNavigate, onClose }: Beaco
                   metadata={{
                     title: beacon.title,
                     description: beacon.description,
-                    image: null,
+                    image: undefined,
                     location: beacon.city_id
                   }}
                   size="sm"
@@ -414,7 +414,7 @@ export function BeaconScanFlow({ code: initialCode, onNavigate, onClose }: Beaco
               <CheckInSuccessModal
                 isOpen={true}
                 onClose={() => setActiveModal(null)}
-                {...mockData}
+                {...(mockData as any)}
               />
             );
           
@@ -423,7 +423,7 @@ export function BeaconScanFlow({ code: initialCode, onNavigate, onClose }: Beaco
               <QuickCheckoutModal
                 isOpen={true}
                 onClose={() => setActiveModal(null)}
-                {...mockData}
+                {...(mockData as any)}
               />
             );
           
@@ -432,7 +432,7 @@ export function BeaconScanFlow({ code: initialCode, onNavigate, onClose }: Beaco
               <RewardUnlockModal
                 isOpen={true}
                 onClose={() => setActiveModal(null)}
-                {...mockData}
+                {...(mockData as any)}
               />
             );
           
@@ -441,7 +441,7 @@ export function BeaconScanFlow({ code: initialCode, onNavigate, onClose }: Beaco
               <MusicPreSaveModal
                 isOpen={true}
                 onClose={() => setActiveModal(null)}
-                {...mockData}
+                {...(mockData as any)}
               />
             );
           
@@ -450,7 +450,7 @@ export function BeaconScanFlow({ code: initialCode, onNavigate, onClose }: Beaco
               <EventRSVPModal
                 isOpen={true}
                 onClose={() => setActiveModal(null)}
-                {...mockData}
+                {...(mockData as any)}
               />
             );
           
@@ -459,7 +459,7 @@ export function BeaconScanFlow({ code: initialCode, onNavigate, onClose }: Beaco
               <QuestProgressModal
                 isOpen={true}
                 onClose={() => setActiveModal(null)}
-                {...mockData}
+                {...(mockData as any)}
               />
             );
           
@@ -468,7 +468,7 @@ export function BeaconScanFlow({ code: initialCode, onNavigate, onClose }: Beaco
               <TelegramJoinModal
                 isOpen={true}
                 onClose={() => setActiveModal(null)}
-                {...mockData}
+                {...(mockData as any)}
               />
             );
           

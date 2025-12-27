@@ -230,7 +230,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         scPanelOpen: true,
       }));
       // pause any HTML audio that might still be playing
-      a.pause().catch?.(() => {});
+      try {
+        a.pause();
+      } catch {}
       return;
     }
 

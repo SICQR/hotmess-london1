@@ -2,7 +2,7 @@ import { Package, TrendingUp, DollarSign, ShoppingBag, Plus, Eye } from 'lucide-
 import { VENDOR, ADMIN } from '../design-system/tokens';
 
 interface VendorPortalProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (route: any, params?: any) => void;
 }
 
 const mockVendorStats = {

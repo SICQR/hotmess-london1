@@ -6,7 +6,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 
 interface VenueData {
@@ -211,7 +211,7 @@ export function ThreeGlobeComponent({ onCityClick, timeWindow = 'tonight' }: Thr
 
     // Stars
     const starGeometry = new THREE.BufferGeometry();
-    const starVertices = [];
+    const starVertices: number[] = [];
     for (let i = 0; i < 10000; i++) {
       const x = (Math.random() - 0.5) * 100;
       const y = (Math.random() - 0.5) * 100;

@@ -13,7 +13,7 @@ import { EmptyState } from '../components/EmptyState';
 import { DropType } from '../types/drops';
 
 interface DropsHubProps {
-  onNavigate: (route: string, params?: Record<string, string>) => void;
+  onNavigate: (route: any, params?: any) => void;
 }
 
 export function DropsHub({ onNavigate }: DropsHubProps) {

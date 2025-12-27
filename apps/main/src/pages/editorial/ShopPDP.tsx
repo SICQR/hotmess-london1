@@ -215,10 +215,9 @@ export function ShopPDP({ onNavigate, onBack }: ShopPDPProps) {
               <div className="mt-8 p-6 bg-black/50 border border-hot/30">
                 <h4 className="text-white mb-4 uppercase tracking-wider text-sm">Your Progress</h4>
                 <HMXPMeter 
-                  currentXP={480} 
-                  requiredXP={500} 
-                  currentLevel={12}
-                  variant="hot"
+                  current={480}
+                  max={500}
+                  level={12}
                 />
                 <p className="text-xs text-gray-400 mt-3">
                   This purchase gives you +{product.xpReward} XP

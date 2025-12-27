@@ -54,8 +54,10 @@ export function TicketsBeacon({ beaconId, onNavigate }: TicketsBeaconProps) {
       setBeacon(beaconData);
 
       // Fetch ticket listings using RPC
-      const { data: listingsResponse, error: listingsError } = await supabase
-        .rpc('ticket_list_listings', { p_beacon_id: beaconId });
+      const { data: listingsResponse, error: listingsError } = await (supabase.rpc as any)(
+        'ticket_list_listings',
+        { p_beacon_id: beaconId }
+      );
 
       if (listingsError) {
         throw new Error(listingsError.message);

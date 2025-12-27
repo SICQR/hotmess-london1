@@ -160,7 +160,7 @@ function reportMetric(metric: PerformanceMetric) {
   const EXCLUDED_DEV_METRICS = ['CLS'];
   
   // Only log significant metrics in development (not every CLS update)
-  if (process.env.NODE_ENV === 'development' && !EXCLUDED_DEV_METRICS.includes(metric.name)) {
+  if (import.meta.env.DEV && !EXCLUDED_DEV_METRICS.includes(metric.name)) {
     console.log(`📊 ${metric.name}:`, {
       value: Math.round(metric.value),
       rating: metric.rating,
@@ -274,7 +274,7 @@ export function setupGlobalErrorHandling() {
   const originalError = console.error;
   console.error = (...args: unknown[]) => {
     // Only track in production
-    if (process.env.NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
       analytics.error(args.join(' '), {
         type: 'console_error',
       });
@@ -289,7 +289,7 @@ export function setupGlobalErrorHandling() {
  */
 export function trackLongTasks() {
   // Completely disabled in development - no tracking, no observers, no warnings
-  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') {
+  if (typeof window === 'undefined' || !import.meta.env.PROD) {
     return;
   }
   
@@ -326,11 +326,11 @@ export function initMonitoring() {
   
   // Long task tracking disabled in development to avoid console noise
   // Only runs in production environments
-  if (process.env.NODE_ENV === 'production') {
+  if (import.meta.env.PROD) {
     trackLongTasks();
   }
 
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.log('📊 Performance monitoring initialized (long task tracking disabled in dev)');
   }
 }

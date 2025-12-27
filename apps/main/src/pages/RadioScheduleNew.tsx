@@ -5,9 +5,10 @@ import { useState } from 'react';
 import { Calendar, Clock, Headphones, ChevronLeft, Play, Send } from 'lucide-react';
 import { motion } from 'motion/react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import type { NavFunction } from '../lib/routes';
 
 interface RadioScheduleNewProps {
-  onNavigate: (page: string) => void;
+  onNavigate: NavFunction;
 }
 
 const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];

@@ -5,8 +5,7 @@
 
 import { useState } from 'react';
 import { RouteId } from '../lib/routes';
-import { UnifiedGlobe } from '../components/globe/UnifiedGlobe';
-import { useNightPulseRealtime } from '../hooks/useNightPulseRealtime';
+import { useNightPulse } from '../contexts/NightPulseContext';
 import { GLOBAL_MICROCOPY } from '../constants/copy';
 import { ArrowLeft, Clock, TrendingUp, MapPin, Users, Zap } from 'lucide-react';
 import type { NightPulseCity } from '../types/night-pulse';
@@ -17,12 +16,14 @@ interface NightPulseProps {
 
 export function NightPulse({ onNavigate }: NightPulseProps) {
   const [selectedCity, setSelectedCity] = useState<NightPulseCity | null>(null);
-  const { cities, loading, error, lastUpdate } = useNightPulseRealtime();
+  const { cities, loading, error, lastUpdate } = useNightPulse();
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    // This route renders the globe as a persistent background layer in AppContent.
+    // Ensure the foreground layout doesn't block pointer events to the globe canvas.
+    <div className="min-h-screen text-white flex flex-col relative pointer-events-none">
       {/* Header */}
-      <div className="border-b border-white/10 bg-black/80 backdrop-blur-md z-30 shrink-0">
+      <div className="border-b border-white/10 bg-black/80 backdrop-blur-md z-30 shrink-0 pointer-events-auto">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -43,28 +44,11 @@ export function NightPulse({ onNavigate }: NightPulseProps) {
         </div>
       </div>
 
-      {/* Globe Container - FIXED HEIGHT */}
-      <div className="flex-1 relative min-h-0">
-        <div className="absolute inset-0">
-          <UnifiedGlobe 
-            nightPulseCities={cities}
-            showBeacons={false}
-            showHeat={true}
-            showCities={true}
-            showTickets={false}
-            showTrails={false}
-            onCityClick={(city) => {
-              if ('city_name' in city) {
-                setSelectedCity(city as NightPulseCity);
-              }
-            }}
-            realtimeEnabled={true}
-          />
-        </div>
-      </div>
+      {/* Globe is mounted persistently in AppContent as a background layer */}
+      <div className="flex-1 min-h-0" />
 
       {/* Stats Overlay */}
-      <div className="absolute top-20 right-4 bg-black/90 border border-[#ff1694]/30 backdrop-blur-md p-4 max-w-xs z-20">
+      <div className="absolute top-20 right-4 bg-black/90 border border-[#ff1694]/30 backdrop-blur-md p-4 max-w-xs z-20 pointer-events-auto">
         <p className="text-[#ff1694] uppercase mb-2" style={{ fontWeight: 900, fontSize: '11px', letterSpacing: '0.1em' }}>
           🌍 NIGHT PULSE REAL-TIME
         </p>
@@ -77,6 +61,11 @@ export function NightPulse({ onNavigate }: NightPulseProps) {
         <div className="text-white/40 mb-3" style={{ fontWeight: 400, fontSize: '9px' }}>
           Updated: {lastUpdate.toLocaleTimeString()}
         </div>
+        {loading && !error && (
+          <p className="text-white/50 text-xs mt-2">
+            Loading live cities…
+          </p>
+        )}
         {error && (
           <p className="text-red-500 text-xs mt-2">
             ⚠️ {error}
@@ -86,7 +75,7 @@ export function NightPulse({ onNavigate }: NightPulseProps) {
 
       {/* City Details Panel */}
       {selectedCity && (
-        <div className="absolute bottom-0 left-0 right-0 bg-black/95 border-t border-white/10 backdrop-blur-lg p-6">
+        <div className="absolute bottom-0 left-0 right-0 bg-black/95 border-t border-white/10 backdrop-blur-lg p-6 pointer-events-auto">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-start justify-between mb-6">
               <div>

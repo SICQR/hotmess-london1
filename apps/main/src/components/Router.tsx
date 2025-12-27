@@ -215,7 +215,9 @@ interface RouterProps {
 }
 
 export function Router({ currentRoute, routeParams, onNavigate }: RouterProps) {
-  const navigate = (route: RouteId, params?: Record<string, string>) => onNavigate(route, params);
+  // Many legacy pages still type their navigation callbacks as `(route: string, params?: any)`.
+  // Keep Router runtime strict (RouteId) but accept broader callback types for compatibility.
+  const navigate: any = (route: string, params?: any) => onNavigate(route as any, params as any);
   const { user } = useAuth();
 
   // Check if route requires authentication and redirect if needed
@@ -228,7 +230,7 @@ export function Router({ currentRoute, routeParams, onNavigate }: RouterProps) {
   }, [currentRoute, currentRouteConfig?.auth, user, onNavigate]);
 
   // Route to component mapping
-  const routes: Partial<Record<RouteId, JSX.Element>> = {
+  const routes: Record<string, JSX.Element> = {
     // Public
     home: <Homepage onNavigate={navigate} />,
     scan: <ScanEnterCode onNavigate={navigate} />,
@@ -364,7 +366,7 @@ export function Router({ currentRoute, routeParams, onNavigate }: RouterProps) {
     adminRecordsReleases: <AdminRecordsReleases onNavigate={navigate} />,
 
     // Debug
-    authDebug: <AuthDebug onNavigate={navigate} />,
+    authDebug: <AuthDebug />,
     projectDashboard: <ProjectDashboard onNavigate={navigate} />,
 
     // User
@@ -373,7 +375,7 @@ export function Router({ currentRoute, routeParams, onNavigate }: RouterProps) {
     accountOrders: <AccountOrders onNavigate={navigate} />,
     accountConsents: <AccountConsents onNavigate={navigate} />,
     accountTickets: <AccountTickets onNavigate={navigate} />,
-    profile: <Profile userId={routeParams?.userId || user?.id || ''} onNavigate={navigate} />,
+    profile: <Profile onNavigate={navigate} />,
     settings: <Settings onNavigate={navigate} />,
     saved: <SavedContent onNavigate={navigate} />,
     notifications: <Notifications onNavigate={navigate} />,

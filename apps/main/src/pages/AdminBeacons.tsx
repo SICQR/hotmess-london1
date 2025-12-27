@@ -3,10 +3,10 @@
  * Manage all beacons in the system
  */
 
-import { RouteId } from '../lib/routes';
+import { NavFunction } from '../lib/routes';
 
 interface AdminBeaconsProps {
-  onNavigate: (route: RouteId, params?: Record<string, string>) => void;
+  onNavigate: NavFunction;
 }
 
 export function AdminBeacons({ onNavigate }: AdminBeaconsProps) {
@@ -21,7 +21,7 @@ export function AdminBeacons({ onNavigate }: AdminBeaconsProps) {
         </p>
         
         <button
-          onClick={() => onNavigate('adminDashboard')}
+          onClick={() => onNavigate('admin')}
           className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
         >
           ← Back to Admin Dashboard

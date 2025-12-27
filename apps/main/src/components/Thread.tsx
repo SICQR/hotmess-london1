@@ -15,15 +15,9 @@ import { ProofUploadQuickflow } from "@/components/tickets/ProofUploadQuickflow"
 import { AttachmentViewer } from "@/components/tickets/AttachmentViewer";
 import { trackTicketEvent } from "@/lib/tickets/track";
 import { buildPath } from "@/lib/routes";
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from "@/lib/env";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Missing Supabase environment variables. Please check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY');
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 type Mode = "connect" | "tickets";
 
@@ -223,7 +217,7 @@ export default function Thread({ mode, threadId, sendEndpoint, onNavigate }: Pro
           
           {/* Safety Menu */}
           <ThreadSafetyMenu
-            threadType={mode}
+            threadType={mode === "tickets" ? "ticket" : (mode as any)}
             threadId={threadId}
             otherUserId={otherUserId || undefined}
           />
@@ -286,7 +280,7 @@ export default function Thread({ mode, threadId, sendEndpoint, onNavigate }: Pro
       {ticketListing && mode === "tickets" && (
         <ProofUploadQuickflow
           threadId={threadId}
-          threadType={mode}
+          threadType={mode === "tickets" ? "ticket" : mode}
           listingId={listingId}
           disabled={!me || sending || locked}
           onDone={() => {

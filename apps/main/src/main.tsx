@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./styles/globals.css";
 import { toast } from "sonner";
+import { registerSW } from 'virtual:pwa-register';
 
 // Define global types for error tracking
 interface WindowWithSentry extends Window {
@@ -32,10 +33,13 @@ if (!rootEl) {
   throw new Error('Root element #root not found');
 }
 
+// PWA: register service worker (injectManifest) for offline resilience.
+registerSW({ immediate: true });
+
 function renderFatalError(error: unknown) {
   const message = error instanceof Error ? error.message : String(error);
 
-  createRoot(rootEl).render(
+  createRoot(rootEl!).render(
     <div className="min-h-screen bg-black flex items-center justify-center p-6">
       <div className="max-w-md w-full bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
         <h1 className="text-2xl font-black text-white uppercase tracking-tight mb-3">
@@ -60,7 +64,7 @@ function renderFatalError(error: unknown) {
   try {
     const mod = await import('./App.tsx');
     const App = mod.default;
-    createRoot(rootEl).render(<App />);
+    createRoot(rootEl!).render(<App />);
   } catch (error) {
     console.error('Fatal startup error:', error);
     renderFatalError(error);

@@ -31,7 +31,7 @@ import {
 } from '../pages/editorial';
 
 interface EditorialShowcaseProps {
-  onNavigate?: (page: string) => void;
+  onNavigate?: (route: any, params?: any) => void;
 }
 
 export function EditorialShowcase({ onNavigate }: EditorialShowcaseProps) {

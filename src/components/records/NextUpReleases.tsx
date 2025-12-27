@@ -29,14 +29,14 @@ export function NextUpReleases({ releaseId }: { releaseId: string }) {
     <section className="rounded-2xl border p-4 space-y-3">
       <div className="flex items-center justify-between">
         <div className="font-semibold">Next up</div>
-        <Link className="text-sm underline" href="/records/releases">
+        <a className="text-sm underline" href="/records/releases">
           Browse all
-        </Link>
+        </a>
       </div>
 
       <div className="grid md:grid-cols-3 gap-2">
         {items.map((item) => (
-          <Link
+          <a
             key={item.id}
             href={`/records/releases/${item.slug}`}
             className="rounded-2xl border p-3 hover:bg-black/5 transition-colors"
@@ -46,36 +46,36 @@ export function NextUpReleases({ releaseId }: { releaseId: string }) {
             <div className="text-xs opacity-70 mt-1">
               {new Date(item.release_date).toLocaleDateString("en-GB")}
             </div>
-          </Link>
+          </a>
         ))}
       </div>
 
       {/* Ecosystem crossover links */}
       <div className="flex flex-wrap gap-2 pt-1">
-        <Link
+        <a
           className="rounded-2xl border px-4 py-2 text-sm"
           href="/radio"
         >
           Go Radio
-        </Link>
-        <Link
+        </a>
+        <a
           className="rounded-2xl border px-4 py-2 text-sm"
           href="/care"
         >
           Care
-        </Link>
-        <Link
+        </a>
+        <a
           className="rounded-2xl border px-4 py-2 text-sm"
           href="/shop"
         >
           Shop
-        </Link>
-        <Link
+        </a>
+        <a
           className="rounded-2xl border px-4 py-2 text-sm"
           href="/affiliate"
         >
           Affiliate
-        </Link>
+        </a>
       </div>
     </section>
   );

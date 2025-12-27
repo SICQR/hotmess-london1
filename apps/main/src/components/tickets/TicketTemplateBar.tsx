@@ -56,7 +56,7 @@ export function TicketTemplateBar({
               onClick={() => {
                 trackTicketEvent("ticket_template_insert", {
                   listing_id: listingId ?? null,
-                  meta: { template_id: t.id, tone: t.tone },
+                  meta: { template_id: t.id, tone: t.tone } as any,
                 });
                 onInsert(t.message);
               }}
@@ -77,7 +77,7 @@ export function TicketTemplateBar({
                 onClick={() => {
                   trackTicketEvent("ticket_template_send", {
                     listing_id: listingId ?? null,
-                    meta: { template_id: t.id, tone: t.tone },
+                    meta: { template_id: t.id, tone: t.tone } as any,
                   });
                   onSendNow(t.message);
                 }}

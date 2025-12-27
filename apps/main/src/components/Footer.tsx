@@ -11,12 +11,12 @@ export function Footer({ onNavigate }: FooterProps) {
     { label: 'Accessibility', route: 'accessibility' },
     { label: 'Abuse Reporting', route: 'abuseReporting' },
     { label: 'DMCA', route: 'dmca' },
-    { label: 'Sponsorship', route: 'sponsorship' },
+    { label: 'Sponsorship', route: 'affiliate' },
   ];
 
   const quickLinks: { label: string; route: RouteId }[] = [
     { label: 'About', route: 'about' },
-    { label: 'Press', route: 'press' },
+    { label: 'Press', route: 'pressRoom' },
     { label: 'Care', route: 'care' },
     { label: 'Affiliate', route: 'affiliate' },
   ];

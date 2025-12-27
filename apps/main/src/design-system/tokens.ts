@@ -270,6 +270,9 @@ export const PROFILE = {
 
 export const REWARDS = {
   intro: "Your chaos → our gifts. Trade XP for heat, gear, access, trouble.",
+  emptyTitle: "No rewards yet",
+  emptyMessage: "Keep earning XP to unlock rewards.",
+  redeemButton: "Redeem",
   categories: {
     merch: {
       name: "Merch Unlocks",

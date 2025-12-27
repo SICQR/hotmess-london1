@@ -189,10 +189,12 @@ export default function BeaconScanResult({ code, onNavigate }: BeaconScanResultP
             {beacon.ctaUrl && (
               <Button
                 onClick={() => {
-                  if (beacon.ctaUrl.startsWith('/')) {
-                    onNavigate(beacon.ctaUrl.slice(1) as RouteId);
+                  const ctaUrl = beacon.ctaUrl;
+                  if (!ctaUrl) return;
+                  if (ctaUrl.startsWith('/')) {
+                    onNavigate(ctaUrl.slice(1) as RouteId);
                   } else {
-                    window.open(beacon.ctaUrl, '_blank');
+                    window.open(ctaUrl, '_blank');
                   }
                 }}
                 size="lg"

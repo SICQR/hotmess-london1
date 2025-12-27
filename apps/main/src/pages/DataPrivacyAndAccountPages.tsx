@@ -8,6 +8,7 @@ import { mockUser, mockOrders, formatPrice, formatDate } from '../lib/mockData';
 import { useEffect, useState } from 'react';
 import { SUPABASE_URL } from '../lib/env';
 import { getAccessTokenAsync, getCurrentUser } from '../lib/auth';
+import { supabase } from '../lib/supabase';
 
 type NavFunction = (route: RouteId, params?: Record<string, string>) => void;
 
@@ -671,19 +672,218 @@ export function AccountProfile({ onNavigate }: { onNavigate: NavFunction }) {
   );
 }
 
-export function AccountConsents({ onNavigate }: { onNavigate: NavFunction }) {
+export function AccountConsents({
+  onNavigate,
+  gateMode,
+  onAccepted,
+}: {
+  onNavigate: NavFunction;
+  gateMode?: boolean;
+  onAccepted?: () => void;
+}) {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<{ consent_accepted: boolean; is_18_plus: boolean } | null>(null);
+
+  // Escape hatch: many legacy tables are not represented in local DB typings.
+  const sb = supabase as any;
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setError(null);
+      setLoading(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          if (!cancelled) setStatus(null);
+          return;
+        }
+
+        const { data, error: fetchError } = await sb
+          .from('profiles')
+          .select('consent_accepted, is_18_plus')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (fetchError) {
+          throw fetchError;
+        }
+
+        // If the profile row doesn't exist yet, create it (RLS allows own insert).
+        if (!data) {
+          const { error: upsertError } = await sb
+            .from('profiles')
+            .upsert({ id: user.id }, { onConflict: 'id' });
+          if (upsertError) throw upsertError;
+
+          const { data: created, error: refetchError } = await sb
+            .from('profiles')
+            .select('consent_accepted, is_18_plus')
+            .eq('id', user.id)
+            .maybeSingle();
+          if (refetchError) throw refetchError;
+
+          if (!cancelled) {
+            setStatus({
+              consent_accepted: Boolean((created as any)?.consent_accepted),
+              is_18_plus: Boolean((created as any)?.is_18_plus),
+            });
+          }
+          return;
+        }
+
+        if (!cancelled) {
+          setStatus({
+            consent_accepted: Boolean((data as any)?.consent_accepted),
+            is_18_plus: Boolean((data as any)?.is_18_plus),
+          });
+        }
+      } catch (e: any) {
+        if (!cancelled) {
+          setError(e?.message || 'Failed to load consent settings');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const canAccept = Boolean(status?.consent_accepted) && Boolean(status?.is_18_plus);
+
+  const save = async (next: { consent_accepted: boolean; is_18_plus: boolean }): Promise<boolean> => {
+    setError(null);
+    setSaving(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setError('Please sign in to manage consents.');
+        return false;
+      }
+
+      const { error: updateError } = await sb
+        .from('profiles')
+        .update({ consent_accepted: next.consent_accepted, is_18_plus: next.is_18_plus })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+      setStatus(next);
+
+      if (gateMode && onAccepted && next.consent_accepted && next.is_18_plus) {
+        onAccepted();
+      }
+
+      return true;
+    } catch (e: any) {
+      setError(e?.message || 'Failed to save consent settings');
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAcceptAll = async () => {
+    await save({ consent_accepted: true, is_18_plus: true });
+  };
+
   return (
-    <PageTemplate title="Privacy & Consents" icon={Shield} backRoute="account" backLabel="Account" onNavigate={onNavigate}>
+    <PageTemplate
+      title="Privacy & Consents"
+      icon={Shield}
+      backRoute={gateMode ? undefined : 'account'}
+      backLabel={gateMode ? undefined : 'Account'}
+      onNavigate={onNavigate}
+    >
       <div className="max-w-2xl space-y-6">
-        {Object.entries(mockUser.consents).map(([key, consent]) => (
-          <div key={key} className="bg-white/5 border border-white/20 p-6 flex items-center justify-between">
-            <div>
-              <h3 className="text-white uppercase tracking-wider mb-1" style={{ fontWeight: 700 }}>{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
-              <p className="text-white/40 text-sm">{consent.date ? `Granted ${formatDate(consent.date)}` : 'Not granted'}</p>
-            </div>
-            <input type="checkbox" checked={consent.granted} className="w-6 h-6" readOnly />
+        {gateMode && (
+          <div className="bg-hot/10 border border-hot/30 p-6">
+            <h3 className="text-hot uppercase tracking-wider mb-2" style={{ fontWeight: 900 }}>
+              Consent Required
+            </h3>
+            <p className="text-white/70 text-sm">
+              You must confirm you are 18+ and accept consent-first terms before continuing.
+            </p>
           </div>
-        ))}
+        )}
+
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/30 p-4 text-white/80 text-sm">
+            {error}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="bg-white/5 border border-white/10 p-12 text-center">
+            <p className="text-white/60">Loading consents…</p>
+          </div>
+        ) : !status ? (
+          <EmptyState
+            title="Sign in required"
+            description="You need an account to store consent settings."
+            actionLabel="Sign in"
+            onAction={() => onNavigate('login')}
+          />
+        ) : (
+          <>
+            <div className="bg-white/5 border border-white/20 p-6 flex items-center justify-between">
+              <div>
+                <h3 className="text-white uppercase tracking-wider mb-1" style={{ fontWeight: 700 }}>
+                  18+ Confirmation
+                </h3>
+                <p className="text-white/40 text-sm">
+                  Required to access adult nightlife features.
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                checked={status.is_18_plus}
+                className="w-6 h-6"
+                disabled={saving}
+                onChange={(e) => {
+                  const next = { ...status, is_18_plus: e.target.checked };
+                  void save(next);
+                }}
+              />
+            </div>
+
+            <div className="bg-white/5 border border-white/20 p-6 flex items-center justify-between">
+              <div>
+                <h3 className="text-white uppercase tracking-wider mb-1" style={{ fontWeight: 700 }}>
+                  Consent Accepted
+                </h3>
+                <p className="text-white/40 text-sm">
+                  Confirms you agree to consent-first rules and safety expectations.
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                checked={status.consent_accepted}
+                className="w-6 h-6"
+                disabled={saving}
+                onChange={(e) => {
+                  const next = { ...status, consent_accepted: e.target.checked };
+                  void save(next);
+                }}
+              />
+            </div>
+
+            {gateMode && (
+              <button
+                onClick={handleAcceptAll}
+                disabled={saving || canAccept}
+                className="w-full bg-hot hover:bg-white text-white hover:text-black h-14 uppercase tracking-wider transition-all disabled:opacity-50"
+                style={{ fontWeight: 900 }}
+              >
+                {canAccept ? 'Accepted' : 'I AM 18+ AND AGREE'}
+              </button>
+            )}
+          </>
+        )}
       </div>
     </PageTemplate>
   );

@@ -61,7 +61,7 @@ export function NotFound({ resourceType, onNavigate, message }: NotFoundProps) {
           </button>
 
           <button
-            onClick={() => onNavigate('feed')}
+              onClick={() => onNavigate('home')}
             className="flex items-center justify-center gap-2 px-8 py-4 bg-[#ff1694] text-white uppercase tracking-wider hover:bg-[#ff1694]/90 transition-colors"
             style={{ fontWeight: 900 }}
           >

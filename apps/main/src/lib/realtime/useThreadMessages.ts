@@ -6,12 +6,13 @@
 import * as React from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@supabase/supabase-js";
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from "../env";
 
 // Client-side Supabase instance (needs to be created)
 // This should match your existing client setup
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
 );
 
 export type PendingState = "pending" | "sent" | "failed";
@@ -128,7 +129,7 @@ export function useThreadMessages(opts: {
                 id: row.id,
                 uiId: row.id,
                 created_at: row.created_at,
-                state: "sent",
+                state: "sent" as any,
               };
               return next;
             }
@@ -142,7 +143,7 @@ export function useThreadMessages(opts: {
                 sender_user_id: row.sender_user_id,
                 body: row.body,
                 created_at: row.created_at,
-                state: "sent",
+                state: "sent" as any,
               },
             ].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
           });

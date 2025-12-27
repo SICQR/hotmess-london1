@@ -8,7 +8,7 @@ import { Badge } from '../components/Badge';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 
 interface RewardsProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (route: any, params?: any) => void;
 }
 
 const mockRewards = [

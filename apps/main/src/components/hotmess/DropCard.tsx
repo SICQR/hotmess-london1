@@ -11,7 +11,7 @@ interface DropCardProps {
     image: string;
     xp: number;
     stock: number;
-    endsAt: string;
+    endsAt?: string;
   };
   onNavigate: (route: string, params?: Record<string, string>) => void;
 }
@@ -39,7 +39,7 @@ export function DropCard({ drop, onNavigate }: DropCardProps) {
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-1.5 text-white/50">
             <Clock size={12} strokeWidth={1.5} />
-            <span>{drop.endsAt}</span>
+            <span>{drop.endsAt ?? ''}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <Zap size={12} className="text-hotmess-red" strokeWidth={1.5} />

@@ -15,6 +15,7 @@ import {
   type SearchResultType
 } from '../lib/search-api';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import type { RouteId } from '../lib/routes';
 
 interface SearchProps {
   onNavigate: (route: string, params?: Record<string, string>) => void;
@@ -465,7 +466,7 @@ function EmptyResults({ query }: { query: string }) {
 
 // Trending Section
 function TrendingSection({ onNavigate }: { onNavigate: (route: string, params?: Record<string, string>) => void }) {
-  const trending = [
+  const trending: Array<{ label: string; icon: string; route: RouteId; params?: Record<string, string> }> = [
     { label: 'KLUB MESS', icon: '🎟️', route: 'tickets' },
     { label: 'Wake the Mess', icon: '📻', route: 'radioShow', params: { slug: 'wake-the-mess' } },
     { label: 'The Glory Beacon', icon: '📍', route: 'beaconScan', params: { code: 'GLO-001' } },

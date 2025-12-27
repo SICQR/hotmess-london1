@@ -14,7 +14,9 @@
  * This is the P0 critical feature that makes HOTMESS work.
  */
 
-import { supabase } from '../supabase';
+import { supabase as supabaseClient } from '../supabase';
+
+const supabase: any = supabaseClient;
 import { RouteId } from '../routes';
 
 // ============================================================================

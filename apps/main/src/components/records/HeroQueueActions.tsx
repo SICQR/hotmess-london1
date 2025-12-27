@@ -53,13 +53,13 @@ export function HeroQueueActions({
   }
 
   async function hqItems() {
-    const items = [];
+    const items: any[] = [];
     for (const t of trackRows) {
       if (!t.hq_track_version_id) continue;
       try {
         const src = await getSignedHqUrl(t.hq_track_version_id);
         items.push(
-          makeHqItem({
+          (makeHqItem as any)({
             trackVersionId: t.hq_track_version_id,
             src,
             title: t.title,

@@ -11,7 +11,7 @@ import { LoadingState } from '../components/LoadingState';
 import { MembershipTier } from '../types/membership';
 
 interface MembershipPageProps {
-  onNavigate: (route: string, params?: Record<string, string>) => void;
+  onNavigate: (route: any, params?: any) => void;
 }
 
 export function MembershipPage({ onNavigate }: MembershipPageProps) {

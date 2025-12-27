@@ -29,7 +29,7 @@ export function useConnect() {
     setError(null);
 
     try {
-      const { data, error } = await supabase.rpc('connect_create_intent', {
+      const { data, error } = await (supabase.rpc as any)('connect_create_intent', {
         p_beacon_id: beaconId,
         p_tags: tags,
       });
@@ -67,7 +67,7 @@ export function useConnect() {
     setError(null);
 
     try {
-      const { data, error } = await supabase.rpc('connect_list_intents', {
+      const { data, error } = await (supabase.rpc as any)('connect_list_intents', {
         p_beacon_id: beaconId,
         p_limit: limit,
       });
@@ -100,7 +100,7 @@ export function useConnect() {
     setError(null);
 
     try {
-      const { data, error } = await supabase.rpc('connect_opt_in', {
+      const { data, error } = await (supabase.rpc as any)('connect_opt_in', {
         p_intent_public_id: intentPublicId,
       });
 
@@ -150,7 +150,7 @@ export function useConnect() {
     setError(null);
 
     try {
-      const { data, error } = await supabase.rpc('connect_send_message', {
+      const { data, error } = await (supabase.rpc as any)('connect_send_message', {
         p_thread_id: threadId,
         p_body: body.trim(),
       });
@@ -184,7 +184,7 @@ export function useConnect() {
     setError(null);
 
     try {
-      const { error } = await supabase.rpc('connect_close_thread', {
+      const { error } = await (supabase.rpc as any)('connect_close_thread', {
         p_thread_id: threadId,
         p_reason: reason || null,
       });

@@ -85,7 +85,7 @@ export function SellerListingCreate({ onNavigate }: SellerListingCreateProps) {
         description: formData.description.trim(),
         price: parseFloat(formData.price),
         stock: parseInt(formData.stock),
-        category: formData.category || null,
+        category: formData.category || undefined,
         tags: formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
         images: imageUrls,
         shipping_cost: formData.shippingCost ? parseFloat(formData.shippingCost) : 0,

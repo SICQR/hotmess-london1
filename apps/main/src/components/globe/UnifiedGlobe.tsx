@@ -6,7 +6,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import type { NightPulseCity } from '../../types/night-pulse';
 
 // ============================================================================
@@ -19,7 +19,7 @@ export interface BeaconMarker {
   lat: number;
   lng: number;
   city?: string;
-  kind?: 'drop' | 'event' | 'product' | 'sponsor' | 'checkin' | 'ticket' | 'other';
+  kind?: 'drop' | 'event' | 'product' | 'sponsor' | 'checkin' | 'ticket' | 'chat' | 'other';
   intensity?: number; // 0-1
   sponsored?: boolean;
   scans?: number;
@@ -131,6 +131,10 @@ export function UnifiedGlobe({
   const markersGroupRef = useRef<THREE.Group | null>(null);
   const heatGroupRef = useRef<THREE.Group | null>(null);
   const trailsGroupRef = useRef<THREE.Group | null>(null);
+
+  const isInteractingRef = useRef(false);
+  const lastInteractionAtRef = useRef<number>(Date.now());
+  const lastZoomUiUpdateAtRef = useRef<number>(0);
   
   const [loading, setLoading] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(0);
@@ -203,6 +207,26 @@ export function UnifiedGlobe({
     controls.zoomSpeed = 1.2;
     controls.panSpeed = 0.8;
     controlsRef.current = controls;
+
+    // Track interaction so we can resume gentle auto-rotation after idle.
+    const markInteraction = () => {
+      lastInteractionAtRef.current = Date.now();
+    };
+    const onControlStart = () => {
+      isInteractingRef.current = true;
+      markInteraction();
+    };
+    const onControlEnd = () => {
+      isInteractingRef.current = false;
+      markInteraction();
+    };
+    const onControlChange = () => {
+      // OrbitControls fires this continuously while dragging/zooming.
+      markInteraction();
+    };
+    controls.addEventListener('start', onControlStart);
+    controls.addEventListener('end', onControlEnd);
+    controls.addEventListener('change', onControlChange);
 
     // Earth sphere
     const earthGeometry = new THREE.SphereGeometry(1, 128, 128);
@@ -278,7 +302,7 @@ export function UnifiedGlobe({
 
     // Stars
     const starGeometry = new THREE.BufferGeometry();
-    const starVertices = [];
+    const starVertices: number[] = [];
     for (let i = 0; i < 15000; i++) {
       const x = (Math.random() - 0.5) * 2000;
       const y = (Math.random() - 0.5) * 2000;
@@ -373,11 +397,17 @@ export function UnifiedGlobe({
       controls.update();
 
       // Update zoom level
-      const distance = camera.position.distanceTo(new THREE.Vector3(0, 0, 0));
-      setZoomLevel(Math.round((1 - (distance - 1.5) / (20 - 1.5)) * 100));
+      const now = Date.now();
+      if (now - lastZoomUiUpdateAtRef.current > 100) {
+        lastZoomUiUpdateAtRef.current = now;
+        const distance = camera.position.distanceTo(new THREE.Vector3(0, 0, 0));
+        setZoomLevel(Math.round((1 - (distance - 1.5) / (20 - 1.5)) * 100));
+      }
 
-      // Slow rotation when not interacting
-      if (!controls.enabled || Math.abs(controls.getAzimuthalAngle()) < 0.01) {
+      // Gentle auto-rotation after the user is idle.
+      // This avoids the previous behavior where a single drag could “freeze” motion.
+      const idleMs = now - lastInteractionAtRef.current;
+      if (!isInteractingRef.current && idleMs > 1200) {
         earth.rotation.y += 0.0005;
         nightLights.rotation.y += 0.0005;
       }
@@ -417,6 +447,9 @@ export function UnifiedGlobe({
         container.removeChild(renderer.domElement);
       }
       renderer.dispose();
+      controls.removeEventListener('start', onControlStart);
+      controls.removeEventListener('end', onControlEnd);
+      controls.removeEventListener('change', onControlChange);
       controls.dispose();
       earthGeometry.dispose();
       earthMaterial.dispose();

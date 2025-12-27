@@ -14,11 +14,14 @@ export function CookieBanner({ onNavigate }: CookieBannerProps) {
   useEffect(() => {
     // Check if user has already given consent
     const hasConsent = localStorage.getItem(CONSENT_KEY);
+    let timer: ReturnType<typeof setTimeout> | undefined;
     if (!hasConsent) {
       // Show banner after 1 second delay
-      const timer = setTimeout(() => setIsVisible(true), 1000);
-      return () => clearTimeout(timer);
+      timer = setTimeout(() => setIsVisible(true), 1000);
     }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, []);
 
   const handleAcceptAll = () => {

@@ -3,7 +3,9 @@
  * Meta tags, Open Graph, structured data, and SEO helpers
  */
 
-import { Metadata } from 'next';
+// NOTE: This app is Vite/React (not Next.js). We keep the public API of this
+// module but provide a lightweight local `Metadata` type.
+export type Metadata = Record<string, any>;
 
 // Base SEO configuration
 const BASE_URL = 'https://hotmess.london';

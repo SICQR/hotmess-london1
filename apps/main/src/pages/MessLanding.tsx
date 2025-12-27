@@ -62,7 +62,7 @@ export function MessLanding({ onNavigate }: MessLandingProps) {
       <div className="max-w-4xl mx-auto px-6 pb-16 space-y-4">
         {/* Community Room */}
         <button
-          onClick={() => onNavigate('communityRooms')}
+          onClick={() => onNavigate('rooms')}
           className="w-full bg-gradient-to-r from-zinc-900 to-zinc-800 hover:from-zinc-800 hover:to-zinc-700 border border-zinc-700 hover:border-zinc-600 rounded-xl p-6 text-left transition-all group"
         >
           <div className="flex items-start justify-between">
@@ -105,7 +105,7 @@ export function MessLanding({ onNavigate }: MessLandingProps) {
 
         {/* Aftercare Resources */}
         <button
-          onClick={() => onNavigate('careHub')}
+          onClick={() => onNavigate('care')}
           className="w-full bg-gradient-to-r from-zinc-900 to-zinc-800 hover:from-zinc-800 hover:to-zinc-700 border border-zinc-700 hover:border-zinc-600 rounded-xl p-6 text-left transition-all group"
         >
           <div className="flex items-start justify-between">

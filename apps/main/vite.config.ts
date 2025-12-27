@@ -1,16 +1,42 @@
+import { defineConfig, loadEnv } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
+import { VitePWA } from 'vite-plugin-pwa';
 
-  import { defineConfig } from 'vite';
-  import react from '@vitejs/plugin-react-swc';
-  import path from 'path';
+export default defineConfig(({ mode }) => {
+  // Monorepo: load .env files from the repo root so `apps/main` sees root `.env.local`.
+  // Without this, Vite only loads env from `apps/main`, causing white-screen throws.
+  const envDir = path.resolve(__dirname, '../..');
+  const env = loadEnv(mode, envDir, '');
+  const supabaseUrl = (env.VITE_SUPABASE_URL ?? '').trim().replace(/\/+$/g, '');
 
-  export default defineConfig({
-    // Monorepo: load .env files from the repo root so `apps/main` sees root `.env.local`.
-    // Without this, Vite only loads env from `apps/main`, causing white-screen throws.
-    envDir: path.resolve(__dirname, '../..'),
+  return {
+    envDir,
     define: {
       'process.env': {},
     },
-    plugins: [react()],
+    plugins: [
+      react(),
+      VitePWA({
+        strategies: 'injectManifest',
+        srcDir: 'src',
+        filename: 'sw.ts',
+        registerType: 'autoUpdate',
+        devOptions: { enabled: false },
+        injectManifest: { maximumFileSizeToCacheInBytes: 6 * 1024 * 1024 },
+        manifest: {
+          name: 'HOTMESS LONDON',
+          short_name: 'HOTMESS',
+          theme_color: '#000000',
+          background_color: '#000000',
+          display: 'standalone',
+          icons: [
+            { src: '/pwa-192x192.png', sizes: '192x192', type: 'image/png' },
+            { src: '/pwa-512x512.png', sizes: '512x512', type: 'image/png' },
+          ],
+        },
+      }),
+    ],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {
@@ -28,15 +54,42 @@
         'input-otp@1.4.2': 'input-otp',
         'hono@4.10.6': 'hono',
         'hono@4': 'hono',
-        'figma:asset/f0ece0dd923d23e91527af3d73db5524ffaca3c4.png': path.resolve(__dirname, './src/assets/f0ece0dd923d23e91527af3d73db5524ffaca3c4.png'),
-        'figma:asset/ece298d0ec2c16f10310d45724b276a6035cb503.png': path.resolve(__dirname, './src/assets/ece298d0ec2c16f10310d45724b276a6035cb503.png'),
-        'figma:asset/e75eb0e74a1b0bee0cd6030c72cf836c66d1613a.png': path.resolve(__dirname, './src/assets/e75eb0e74a1b0bee0cd6030c72cf836c66d1613a.png'),
-        'figma:asset/cf53a755c3b46e98c5dbed6574ed2961b24bc5cc.png': path.resolve(__dirname, './src/assets/cf53a755c3b46e98c5dbed6574ed2961b24bc5cc.png'),
-        'figma:asset/c2cd128e31fba7388b95db7b7b2b793f06f31897.png': path.resolve(__dirname, './src/assets/c2cd128e31fba7388b95db7b7b2b793f06f31897.png'),
-        'figma:asset/ae634f0aa99d6939ad7ebcdbc1446f3ce8f322f1.png': path.resolve(__dirname, './src/assets/ae634f0aa99d6939ad7ebcdbc1446f3ce8f322f1.png'),
-        'figma:asset/51d4953c87f1877720b332c4f3900bac33f85eba.png': path.resolve(__dirname, './src/assets/51d4953c87f1877720b332c4f3900bac33f85eba.png'),
-        'figma:asset/4bf35d51749c5a136c2049bbe6aa596353823bb7.png': path.resolve(__dirname, './src/assets/4bf35d51749c5a136c2049bbe6aa596353823bb7.png'),
-        'figma:asset/308dc754455a364b0e3f101af7eec2262b1da94f.png': path.resolve(__dirname, './src/assets/308dc754455a364b0e3f101af7eec2262b1da94f.png'),
+        'figma:asset/f0ece0dd923d23e91527af3d73db5524ffaca3c4.png': path.resolve(
+          __dirname,
+          './src/assets/f0ece0dd923d23e91527af3d73db5524ffaca3c4.png'
+        ),
+        'figma:asset/ece298d0ec2c16f10310d45724b276a6035cb503.png': path.resolve(
+          __dirname,
+          './src/assets/ece298d0ec2c16f10310d45724b276a6035cb503.png'
+        ),
+        'figma:asset/e75eb0e74a1b0bee0cd6030c72cf836c66d1613a.png': path.resolve(
+          __dirname,
+          './src/assets/e75eb0e74a1b0bee0cd6030c72cf836c66d1613a.png'
+        ),
+        'figma:asset/cf53a755c3b46e98c5dbed6574ed2961b24bc5cc.png': path.resolve(
+          __dirname,
+          './src/assets/cf53a755c3b46e98c5dbed6574ed2961b24bc5cc.png'
+        ),
+        'figma:asset/c2cd128e31fba7388b95db7b7b2b793f06f31897.png': path.resolve(
+          __dirname,
+          './src/assets/c2cd128e31fba7388b95db7b7b2b793f06f31897.png'
+        ),
+        'figma:asset/ae634f0aa99d6939ad7ebcdbc1446f3ce8f322f1.png': path.resolve(
+          __dirname,
+          './src/assets/ae634f0aa99d6939ad7ebcdbc1446f3ce8f322f1.png'
+        ),
+        'figma:asset/51d4953c87f1877720b332c4f3900bac33f85eba.png': path.resolve(
+          __dirname,
+          './src/assets/51d4953c87f1877720b332c4f3900bac33f85eba.png'
+        ),
+        'figma:asset/4bf35d51749c5a136c2049bbe6aa596353823bb7.png': path.resolve(
+          __dirname,
+          './src/assets/4bf35d51749c5a136c2049bbe6aa596353823bb7.png'
+        ),
+        'figma:asset/308dc754455a364b0e3f101af7eec2262b1da94f.png': path.resolve(
+          __dirname,
+          './src/assets/308dc754455a364b0e3f101af7eec2262b1da94f.png'
+        ),
         'embla-carousel-react@8.6.0': 'embla-carousel-react',
         'cmdk@1.1.1': 'cmdk',
         'class-variance-authority@0.7.1': 'class-variance-authority',
@@ -82,5 +135,21 @@
       port: 3010,
       strictPort: true,
       open: true,
+      hmr: {
+        protocol: 'ws',
+        host: '127.0.0.1',
+        port: 3010,
+        clientPort: 3010,
+      },
+      proxy: supabaseUrl
+        ? {
+            '/functions/v1': {
+              target: supabaseUrl,
+              changeOrigin: true,
+              secure: true,
+            },
+          }
+        : undefined,
     },
-  });
+  };
+});

@@ -20,24 +20,30 @@ interface TelegramRoom {
 interface TelegramJoinModalProps {
   isOpen: boolean;
   onClose: () => void;
-  room: TelegramRoom;
-  xpEarned: number;
+  room?: TelegramRoom;
+  xpEarned?: number;
 }
 
 export function TelegramJoinModal({
   isOpen,
   onClose,
   room,
-  xpEarned,
+  xpEarned = 0,
 }: TelegramJoinModalProps) {
   const [joined, setJoined] = useState(false);
+
+  if (!isOpen || !room) return null;
+
+  const currentRoom = room as TelegramRoom;
+
+  const telegramUrl = currentRoom.telegramUrl;
 
   function handleJoin() {
     // Track join event
     setJoined(true);
     
     // Open Telegram in new tab
-    window.open(room.telegramUrl, '_blank');
+    window.open(telegramUrl, '_blank');
     
     // Close modal after a delay
     setTimeout(() => {

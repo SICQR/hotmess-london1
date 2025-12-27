@@ -11,10 +11,10 @@ import { Card } from '../../components/design-system/Card';
 import { HMButton } from '../../components/library/HMButton';
 import { supabase } from '../../lib/supabase';
 import { purchaseTicket } from '../../lib/stripe/stripeService';
-import { STRIPE_PUBLISHABLE_KEY } from '../../lib/env';
+import { STRIPE_CONFIGURED, STRIPE_PUBLISHABLE_KEY } from '../../lib/env';
 
 // Initialize Stripe
-const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
+const stripePromise = STRIPE_CONFIGURED ? loadStripe(STRIPE_PUBLISHABLE_KEY) : null;
 
 interface TicketEvent {
   id: string;
@@ -110,6 +110,23 @@ export default function PurchaseTicket() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  if (!STRIPE_CONFIGURED) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+        <Card className="max-w-md w-full p-6 text-center">
+          <div className="text-red-500 text-4xl mb-4">⚠️</div>
+          <h2 className="text-xl mb-2">Payments not configured</h2>
+          <p className="text-white/60 mb-6">
+            Stripe is not configured. Set VITE_STRIPE_PUBLISHABLE_KEY (pk_test_… or pk_live_…) to enable ticket purchases.
+          </p>
+          <HMButton onClick={() => window.history.back()} variant="ghost" className="w-full">
+            Go Back
+          </HMButton>
+        </Card>
+      </div>
+    );
+  }
+
   useEffect(() => {
     if (!eventId) {
       setError('No event selected');
@@ -122,8 +139,14 @@ export default function PurchaseTicket() {
 
   async function loadEventAndCreateIntent() {
     try {
+      if (!eventId) {
+        setError('No event selected');
+        setLoading(false);
+        return;
+      }
+
       // Get event details
-      const { data: eventData, error: eventError } = await supabase
+      const { data: eventData, error: eventError } = await (supabase as any)
         .from('club_events')
         .select('*')
         .eq('id', eventId)
@@ -146,7 +169,7 @@ export default function PurchaseTicket() {
       }
 
       // Get price for selected tier
-      const price = tier === 'ga' ? eventData.price_ga : eventData.price_vip;
+      const price = tier === 'ga' ? (eventData as any).price_ga : (eventData as any).price_vip;
       if (!price) {
         setError('Ticket tier not available');
         setLoading(false);

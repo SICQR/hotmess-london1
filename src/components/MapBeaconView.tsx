@@ -404,7 +404,7 @@ export function MapBeaconView(props: Props) {
       {/* Map */}
       <Map
         ref={mapRef as any}
-        mapLib={maplibregl}
+        mapLib={maplibregl as any}
         mapStyle={props.mapStyleUrl}
         initialViewState={viewState}
         onMove={onMove}

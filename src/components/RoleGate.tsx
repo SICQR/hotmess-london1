@@ -39,7 +39,7 @@ export function RoleGate({ children, allowedRoles, fallback }: RoleGateProps) {
     );
   }
 
-  if (!allowedRoles.includes(user.role)) {
+  if (!allowedRoles.includes(user?.role || '')) {
     return (
       fallback || (
         <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">

@@ -18,7 +18,7 @@ interface Reward {
 interface RewardUnlockModalProps {
   isOpen: boolean;
   onClose: () => void;
-  reward: Reward;
+  reward?: Reward;
   xpBonus?: number;
 }
 
@@ -29,6 +29,8 @@ export function RewardUnlockModal({
   xpBonus = 50,
 }: RewardUnlockModalProps) {
   const [revealed, setRevealed] = useState(false);
+
+  if (!isOpen || !reward) return null;
 
   useEffect(() => {
     if (isOpen) {

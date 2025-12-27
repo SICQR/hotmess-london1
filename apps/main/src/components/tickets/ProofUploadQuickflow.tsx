@@ -81,7 +81,7 @@ export function ProofUploadQuickflow({
         meta: {
           count: files.length,
           bytes: files.reduce((a, f) => a + f.size, 0),
-        },
+        } as any,
       });
     }
 

@@ -48,11 +48,15 @@ export function ProjectDashboard({ onNavigate }: ProjectDashboardProps) {
 
   useEffect(() => {
     loadProjectStatus();
-    
+
+    let interval: ReturnType<typeof setInterval> | undefined;
     if (autoRefresh) {
-      const interval = setInterval(loadProjectStatus, 30000); // Refresh every 30s
-      return () => clearInterval(interval);
+      interval = setInterval(loadProjectStatus, 30000); // Refresh every 30s
     }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [autoRefresh]);
 
   const loadProjectStatus = async () => {

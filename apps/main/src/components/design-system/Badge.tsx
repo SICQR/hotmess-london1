@@ -15,7 +15,23 @@ import { Zap, MapPin, CheckCircle2, Crown, Tag, Megaphone } from 'lucide-react';
 
 export interface BadgeProps extends HTMLAttributes<HTMLDivElement> {
   /** Badge variant */
-  variant?: 'xp' | 'city' | 'verified' | 'host' | 'niche' | 'sponsor' | 'productType' | 'primary' | 'danger' | 'custom';
+  variant?:
+    | 'xp'
+    | 'city'
+    | 'verified'
+    | 'host'
+    | 'niche'
+    | 'sponsor'
+    | 'productType'
+    | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'danger'
+    | 'default'
+    | 'gray'
+    | 'green'
+    | 'blue'
+    | 'custom';
   
   /** Custom color (hex) */
   color?: string;
@@ -33,6 +49,23 @@ export interface BadgeProps extends HTMLAttributes<HTMLDivElement> {
 
 const getVariantConfig = (variant: BadgeProps['variant']) => {
   switch (variant) {
+    case 'default':
+    case 'gray':
+    case 'secondary':
+      return {
+        color: colors.white,
+        backgroundColor: colors.grey[400],
+        icon: null,
+      };
+
+    case 'success':
+    case 'green':
+      return {
+        color: colors.green,
+        backgroundColor: `${colors.green}20`,
+        icon: null,
+      };
+
     case 'primary':
       return {
         color: colors.red,
@@ -55,6 +88,7 @@ const getVariantConfig = (variant: BadgeProps['variant']) => {
       };
 
     case 'city':
+    case 'blue':
       return {
         color: colors.blue,
         backgroundColor: `${colors.blue}20`,
