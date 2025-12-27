@@ -93,6 +93,9 @@ deno.lock
 *.tsbuildinfo
 .eslintcache
 
+# Local typecheck scratch
+apps/main/tsc-errors.txt
+
 # Optional npm cache directory
 .npm
 
