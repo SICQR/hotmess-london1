@@ -170,8 +170,8 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
               },
             ]
           : [
-              { id: 'login' as RouteId, label: 'Login', icon: LogIn },
-              { id: 'register' as RouteId, label: 'Register', icon: User },
+              { id: 'login' as RouteId, label: 'Login', icon: LogIn, badge: undefined },
+              { id: 'register' as RouteId, label: 'Register', icon: User, badge: undefined },
             ],
       },
       {

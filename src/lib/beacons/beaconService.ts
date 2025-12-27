@@ -67,10 +67,9 @@ export async function createBeacon(
     const slugPrefix = input.type;
 
     for (let attempt = 0; attempt < maxTries; attempt++) {
-      const slug = makeSlug(slugPrefix, 8);
+      const code = makeSlug(slugPrefix, 8);
 
-      const payload = {
-        slug,
+      const payloadBase = {
         type: input.type,
         title: input.title,
         description: input.description ?? null,
@@ -83,11 +82,29 @@ export async function createBeacon(
         created_by: user.id,
       };
 
-      const { data, error } = await supabase
-        .from('beacons')
-        .insert(payload)
-        .select('id, slug, type, title, status, created_at')
-        .single();
+      // Prefer modern/legacy beacon schemas that use `code`.
+      // If the backend happens to use `slug`, fall back.
+      let data: any = null;
+      let error: any = null;
+      {
+        const res = await supabase
+          .from('beacons')
+          .insert({ ...payloadBase, code })
+          .select('id, code, type, title, status, created_at')
+          .single();
+        data = res.data;
+        error = res.error;
+      }
+
+      if (error?.message?.toLowerCase?.().includes('code')) {
+        const res = await supabase
+          .from('beacons')
+          .insert({ ...payloadBase, slug: code })
+          .select('id, slug, type, title, status, created_at')
+          .single();
+        data = res.data;
+        error = res.error;
+      }
 
       if (!error && data) {
         return { ok: true, beacon: data };
@@ -127,7 +144,7 @@ export async function getBeacon(
   idOrSlug: string
 ): Promise<{ ok: true; beacon: any } | { ok: false; error: string }> {
   try {
-    // Try to fetch by slug first, then by ID
+    // Try to fetch by code/slug, or by ID.
     let query = supabase.from('beacons').select('*');
     
     // Check if it's a UUID
@@ -136,10 +153,14 @@ export async function getBeacon(
     if (isUUID) {
       query = query.eq('id', idOrSlug);
     } else {
-      query = query.eq('slug', idOrSlug);
+      // Prefer `code` (beacon system), fall back to `slug` (legacy UI).
+      query = query.eq('code', idOrSlug);
     }
-    
-    const { data, error } = await query.single();
+
+    let { data, error } = await query.single();
+    if (error?.message?.toLowerCase?.().includes('code') && !isUUID) {
+      ({ data, error } = await supabase.from('beacons').select('*').eq('slug', idOrSlug).single());
+    }
 
     if (error) {
       return { ok: false, error: error.message || 'Beacon not found' };
@@ -213,10 +234,14 @@ export async function updateBeacon(
     if (isUUID) {
       query = query.eq('id', idOrSlug);
     } else {
-      query = query.eq('slug', idOrSlug);
+      // Prefer `code` (beacon system), fall back to `slug` (legacy UI).
+      query = query.eq('code', idOrSlug);
     }
-    
-    const { data, error } = await query.single();
+
+    let { data, error } = await query.single();
+    if (error?.message?.toLowerCase?.().includes('code') && !isUUID) {
+      ({ data, error } = await supabase.from('beacons').update(payload).select().eq('slug', idOrSlug).single());
+    }
 
     if (error) {
       return { ok: false, error: error.message || 'Failed to update beacon' };

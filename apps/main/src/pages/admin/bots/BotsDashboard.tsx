@@ -12,10 +12,10 @@ import { XPStats } from './XPStats';
 import { BotBroadcast } from './BotBroadcast';
 import { TicketsPanel } from './TicketsPanel';
 import { ArrowLeft } from 'lucide-react';
-import { RouteId } from '../../../lib/routes';
+import { NavFunction } from '../../../lib/routes';
 
 interface BotsDashboardProps {
-  onNavigate: (route: RouteId) => void;
+  onNavigate: NavFunction;
 }
 
 export function BotsDashboard({ onNavigate }: BotsDashboardProps) {
@@ -34,7 +34,7 @@ export function BotsDashboard({ onNavigate }: BotsDashboardProps) {
       {/* Header */}
       <div className="max-w-[1400px] mx-auto mb-8">
         <button
-          onClick={() => onNavigate('adminDashboard')}
+          onClick={() => onNavigate('admin')}
           className="flex items-center gap-2 text-white/60 hover:text-white mb-6 transition-colors"
         >
           <ArrowLeft size={20} />

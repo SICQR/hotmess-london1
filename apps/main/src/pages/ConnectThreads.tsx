@@ -43,7 +43,10 @@ export function ConnectThreads({ onNavigate }: ConnectThreadsProps) {
   async function loadThreads() {
     setLoading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      // Escape hatch: many legacy tables are not represented in local DB typings.
+      const sb = supabase as any;
+
+      const { data: { session } } = await sb.auth.getSession();
       if (!session) {
         toast.error('Please sign in to view threads');
         onNavigate('login');
@@ -51,7 +54,7 @@ export function ConnectThreads({ onNavigate }: ConnectThreadsProps) {
       }
 
       // Query connect_threads where user is a member
-      const { data: threadMemberships, error: memberError } = await supabase
+      const { data: threadMemberships, error: memberError } = await sb
         .from('connect_thread_members')
         .select(`
           thread_id,
@@ -78,7 +81,7 @@ export function ConnectThreads({ onNavigate }: ConnectThreadsProps) {
       const threadIds = threadMemberships.map((m: any) => m.thread_id);
 
       // Get the other members for each thread
-      const { data: otherMembers, error: otherMembersError } = await supabase
+      const { data: otherMembers, error: otherMembersError } = await sb
         .from('connect_thread_members')
         .select('thread_id, user_id')
         .in('thread_id', threadIds)
@@ -89,7 +92,7 @@ export function ConnectThreads({ onNavigate }: ConnectThreadsProps) {
       }
 
       // Get last messages for each thread
-      const { data: lastMessages, error: messagesError } = await supabase
+      const { data: lastMessages, error: messagesError } = await sb
         .from('connect_messages')
         .select('thread_id, body, created_at')
         .in('thread_id', threadIds)

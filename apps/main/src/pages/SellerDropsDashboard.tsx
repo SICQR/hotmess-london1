@@ -129,7 +129,7 @@ export function SellerDropsDashboard({ onNavigate }: SellerDropsDashboardProps) 
                       <div>
                         <h3 className="text-white mb-1">{drop.title}</h3>
                         <p className="text-sm text-white/60">
-                          {drop.type.toUpperCase()} • {drop.city}
+                          {drop.type.toUpperCase()} • {(drop as any).city ?? ''}
                         </p>
                       </div>
                       <div className={`px-3 py-1 rounded-full text-xs ${

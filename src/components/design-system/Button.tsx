@@ -13,7 +13,11 @@ import { colors, radius, animation } from './tokens';
 // TYPES
 // ============================================================================
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps
+  extends Omit<
+    ButtonHTMLAttributes<HTMLButtonElement>,
+    'onAnimationStart' | 'onAnimationEnd' | 'onAnimationIteration'
+  > {
   /** Visual style variant */
   variant?: 'primary' | 'secondary' | 'tertiary' | 'danger' | 'ghost' | 'link';
   
@@ -215,7 +219,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           // Disabled styles
           opacity: disabled || loading ? 0.5 : 1,
         }}
-        {...props}
+        {...(props as any)}
       >
         {loading && (
           <motion.div

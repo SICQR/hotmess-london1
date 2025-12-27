@@ -1,15 +1,16 @@
 import { motion } from 'motion/react';
 import { ArrowLeft, type LucideIcon } from 'lucide-react';
+import type { ElementType, ReactNode } from 'react';
 import { RouteId } from '../lib/routes';
 
 interface PageTemplateProps {
   title: string;
   subtitle?: string;
-  icon?: LucideIcon;
+  icon?: LucideIcon | ElementType<any>;
   backRoute?: RouteId;
   backLabel?: string;
   onNavigate: (route: RouteId, params?: Record<string, string>) => void;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function PageTemplate({

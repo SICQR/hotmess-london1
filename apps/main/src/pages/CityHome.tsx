@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Button } from '../components/design-system/Button';
 import { Card } from '../components/design-system/Card';
 import { ArrowLeft, Settings, Map, Radio, Calendar, MessageCircle, MapPin, TrendingUp } from 'lucide-react';
-import { unsplash_tool } from '../lib/unsplash';
 
 interface CityStats {
   beaconCount: number;

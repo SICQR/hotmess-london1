@@ -13,7 +13,8 @@ import { colors, radius, shadows } from './tokens';
 // TYPES
 // ============================================================================
 
-export interface CardProps extends HTMLAttributes<HTMLDivElement> {
+export interface CardProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, 'onAnimationStart' | 'onAnimationEnd' | 'onAnimationIteration'> {
   /** Visual style variant */
   variant?: 'default' | 'elevated' | 'frosted' | 'neonBorder' | 'product' | 'ticket' | 'beacon' | 'seller';
   
@@ -145,8 +146,8 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         onClick={onClick}
         className={className}
         style={baseStyle}
-        {...motionProps}
-        {...props}
+        {...(motionProps as any)}
+        {...(props as any)}
       >
         {/* Media */}
         {media && (
@@ -175,7 +176,7 @@ Card.displayName = 'Card';
 // CARD HEADER
 // ============================================================================
 
-export interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {
+export interface CardHeaderProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   /** Header title */
   title?: ReactNode;
   

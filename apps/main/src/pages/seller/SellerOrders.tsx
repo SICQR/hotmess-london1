@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { SellerLayout } from '../../components/layouts/SellerLayout';
 import { RouteId } from '../../lib/routes';
-import { supabase } from '../../lib/supabase';
+import { supabase as supabaseClient } from '../../lib/supabase';
 import { 
   Package, 
   Clock, 
@@ -51,6 +51,7 @@ const STATUS_CONFIG = {
 };
 
 export function SellerOrders({ onNavigate }: SellerOrdersProps) {
+  const supabase: any = supabaseClient;
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

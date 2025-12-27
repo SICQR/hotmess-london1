@@ -5,10 +5,11 @@ import { useState } from 'react';
 import { ChevronLeft, Play, Pause, SkipBack, SkipForward, Download, Share2, Clock } from 'lucide-react';
 import { motion } from 'motion/react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import type { NavFunction } from '../lib/routes';
 
 interface RadioEpisodeDetailProps {
   slug: string;
-  onNavigate: (page: string) => void;
+  onNavigate: NavFunction;
 }
 
 // Mock episode data - in production this would come from API/Supabase

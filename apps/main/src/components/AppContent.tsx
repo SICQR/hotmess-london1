@@ -12,6 +12,8 @@ import { ExpandedRadioPlayer } from './radio/ExpandedRadioPlayer';
 import { FirstRunOnboarding } from './FirstRunOnboarding';
 import { RouteId } from '../lib/routes';
 import { useAuth } from '../contexts/AuthContext';
+import { NightPulseProvider, useNightPulse } from '../contexts/NightPulseContext';
+import { UnifiedGlobe } from './globe/UnifiedGlobe';
 
 interface AppContentProps {
   currentRoute: RouteId;
@@ -21,6 +23,14 @@ interface AppContentProps {
 
 export function AppContent({ currentRoute, routeParams, onNavigate }: AppContentProps) {
   const { signOut } = useAuth();
+
+  const isGlobeBackgroundRoute =
+    currentRoute === 'nightPulse' ||
+    currentRoute === 'messmarket' ||
+    currentRoute === 'shop' ||
+    currentRoute === 'radioNowPlaying' ||
+    currentRoute === 'profile' ||
+    currentRoute === 'home';
 
   // Handle logout route
   useEffect(() => {
@@ -42,11 +52,56 @@ export function AppContent({ currentRoute, routeParams, onNavigate }: AppContent
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <NightPulseProvider>
+      <AppContentInner
+        currentRoute={currentRoute}
+        routeParams={routeParams}
+        onNavigate={onNavigate}
+        isGlobeBackgroundRoute={isGlobeBackgroundRoute}
+        handleLogout={handleLogout}
+      />
+    </NightPulseProvider>
+  );
+}
+
+function AppContentInner({
+  currentRoute,
+  routeParams,
+  onNavigate,
+  isGlobeBackgroundRoute,
+  handleLogout,
+}: AppContentProps & {
+  isGlobeBackgroundRoute: boolean;
+  handleLogout: () => Promise<void>;
+}) {
+  const { cities } = useNightPulse();
+
+  return (
+    <div className="min-h-screen bg-black text-white relative">
       <Toaster position="top-right" theme="dark" richColors />
+
+      {/* Persistent Globe Background Layer (prevents remount flicker across routes) */}
+      <div
+        className={`fixed inset-0 z-0 ${isGlobeBackgroundRoute ? '' : 'opacity-0'} transition-opacity`}
+        style={{ pointerEvents: currentRoute === 'nightPulse' ? 'auto' : 'none' }}
+        aria-hidden={currentRoute !== 'nightPulse'}
+      >
+        <UnifiedGlobe
+          nightPulseCities={cities}
+          showBeacons={false}
+          showHeat={true}
+          showCities={true}
+          showTickets={false}
+          showTrails={false}
+          realtimeEnabled={true}
+        />
+      </div>
+
+      <div className="relative z-10">
       
       {/* Hide navigation for full-bleed immersive routes and auth pages */}
       {currentRoute !== 'earth' && 
+       currentRoute !== 'nightPulse' &&
        currentRoute !== 'login' && 
        currentRoute !== 'register' &&
        currentRoute !== 'welcome' &&
@@ -91,6 +146,7 @@ export function AppContent({ currentRoute, routeParams, onNavigate }: AppContent
 
       {/* Hide footer for full-bleed routes and auth pages */}
       {currentRoute !== 'earth' && 
+       currentRoute !== 'nightPulse' &&
        currentRoute !== 'login' && 
        currentRoute !== 'register' &&
        currentRoute !== 'welcome' &&
@@ -119,6 +175,7 @@ export function AppContent({ currentRoute, routeParams, onNavigate }: AppContent
       
       {/* First Run Onboarding - Shows for new users */}
       <FirstRunOnboarding />
+      </div>
     </div>
   );
 }

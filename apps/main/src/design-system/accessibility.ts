@@ -211,7 +211,7 @@ export function generateProductAlt(params: {
   style?: string;
 }): string {
   const { type, color, brand, style } = params;
-  const parts = [];
+  const parts: string[] = [];
   if (color) parts.push(color);
   if (style) parts.push(style);
   parts.push(type);

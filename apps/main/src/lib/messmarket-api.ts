@@ -1,5 +1,7 @@
-import { supabase } from './supabase';
+import { supabase as supabaseClient } from './supabase';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
+
+const supabase: any = supabaseClient;
 
 const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/api/vendor`;
 

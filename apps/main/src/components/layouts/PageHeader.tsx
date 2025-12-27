@@ -5,12 +5,14 @@
 
 import * as React from "react";
 import { typography, spacing } from "@/lib/design-system";
+import { ArrowLeft } from "lucide-react";
 
 interface PageHeaderProps {
   title: string;
   subtitle?: string;
   label?: string;
   actions?: React.ReactNode;
+  onBack?: () => void;
   children?: React.ReactNode;
 }
 
@@ -19,10 +21,24 @@ export function PageHeader({
   subtitle,
   label,
   actions,
+  onBack,
   children,
 }: PageHeaderProps) {
   return (
     <header className="space-y-4 md:space-y-5">
+      {onBack && (
+        <div>
+          <button
+            type="button"
+            onClick={onBack}
+            className={typography.label + " inline-flex items-center gap-2 opacity-80 hover:opacity-100"}
+          >
+            <ArrowLeft className="size-4" />
+            Back
+          </button>
+        </div>
+      )}
+
       {label && (
         <div className={typography.label + " text-hot"}>
           {label}

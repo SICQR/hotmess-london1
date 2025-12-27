@@ -14,13 +14,49 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { RouteId } from './lib/routes';
 import { analytics } from './lib/analytics';
 import { initMonitoring } from './lib/monitoring';
+import { supabase } from './lib/supabase';
+import { AccountConsents } from './pages/DataPrivacyAndAccountPages';
 import './styles/globals.css';
+
+function withTimeout<T>(promiseLike: PromiseLike<T>, ms: number, label: string): Promise<T> {
+  const promise = Promise.resolve(promiseLike);
+  let timeoutId: number | undefined;
+
+  const timeout = new Promise<never>((_, reject) => {
+    timeoutId = window.setTimeout(() => {
+      reject(new Error(`[timeout] ${label} after ${ms}ms`));
+    }, ms);
+  });
+
+  return (Promise.race([promise, timeout]).finally(() => {
+    if (timeoutId !== undefined) {
+      window.clearTimeout(timeoutId);
+    }
+  }) as unknown) as Promise<T>;
+}
 
 export default function App() {
   const [splashComplete, setSplashComplete] = useState(false);
   const [ageVerified, setAgeVerified] = useState(false);
+  const [complianceChecked, setComplianceChecked] = useState(false);
+  const [consentRequired, setConsentRequired] = useState(false);
   const [currentRoute, setCurrentRoute] = useState<RouteId>('home');
   const [routeParams, setRouteParams] = useState<Record<string, string>>({});
+
+  // Supabase password recovery links reliably include `#type=recovery` in the hash.
+  // Force routing to the reset flow and bypass gates that would otherwise block the screen.
+  useEffect(() => {
+    const hash = window.location.hash || '';
+    if (hash.includes('type=recovery')) {
+      console.log('OS: Password Reset Session Detected.');
+      setCurrentRoute('setNewPassword');
+      setRouteParams({});
+      setSplashComplete(true);
+      setAgeVerified(true);
+      setComplianceChecked(true);
+      setConsentRequired(false);
+    }
+  }, []);
 
   // Initialize analytics and monitoring
   useEffect(() => {
@@ -32,6 +68,115 @@ export default function App() {
     
     console.log('📊 Analytics & monitoring initialized');
   }, []);
+
+  // Consent lock (DB-backed): once age gate has been passed, confirm profile flags
+  // before mounting the main AppContent.
+  useEffect(() => {
+    if (!splashComplete || !ageVerified) {
+      setComplianceChecked(false);
+      setConsentRequired(false);
+      return;
+    }
+
+    // Password recovery flow must not be blocked by consent gating.
+    if ((window.location.hash || '').includes('type=recovery')) {
+      setConsentRequired(false);
+      setComplianceChecked(true);
+      return;
+    }
+
+    let cancelled = false;
+
+    const checkCompliance = async () => {
+      setComplianceChecked(false);
+      try {
+        // Use session (local) instead of getUser (network) to avoid hanging when offline.
+        const { data: sessionData } = await withTimeout(
+          supabase.auth.getSession(),
+          1500,
+          'supabase.auth.getSession()'
+        );
+        const user = sessionData.session?.user ?? null;
+
+        // If not signed in, we can't persist consent to DB; allow read-only browsing.
+        if (!user) {
+          if (!cancelled) {
+            setConsentRequired(false);
+            setComplianceChecked(true);
+          }
+          return;
+        }
+
+        // Ensure profile row exists.
+        // Supabase typings can infer insert/upsert payload as `never` in this repo;
+        // cast at the call-site to keep builds unblocked.
+        await withTimeout(
+          (supabase as any).from('profiles').upsert({ id: user.id }, { onConflict: 'id' }),
+          4000,
+          'profiles.upsert(id)'
+        );
+
+        const { data, error } = await withTimeout(
+          supabase
+            .from('profiles')
+            .select('consent_accepted, is_18_plus')
+            .eq('id', user.id)
+            .maybeSingle(),
+          4000,
+          'profiles.select(consent_accepted,is_18_plus)'
+        );
+
+        if (error) {
+          const message = String((error as any)?.message ?? '');
+          const code = String((error as any)?.code ?? '');
+          const missingColumns =
+            code === 'PGRST204' ||
+            message.toLowerCase().includes('schema cache') ||
+            message.toLowerCase().includes('column') ||
+            message.toLowerCase().includes('could not find');
+
+          if (!cancelled) {
+            // If compliance columns are missing (migration not applied yet), fail open to unblock the app.
+            if (missingColumns) {
+              console.warn('Compliance columns missing. Bypassing lock.', { code, message });
+              setConsentRequired(false);
+              setComplianceChecked(true);
+              return;
+            }
+
+            // Otherwise fail closed for authenticated users: route to consent gate.
+            setConsentRequired(true);
+            setComplianceChecked(true);
+          }
+          return;
+        }
+
+        const ok = Boolean((data as any)?.consent_accepted) && Boolean((data as any)?.is_18_plus);
+        if (!cancelled) {
+          setConsentRequired(!ok);
+          setComplianceChecked(true);
+        }
+      } catch {
+        if (!cancelled) {
+          // If Supabase is unreachable or slow, don't hard-lock the app.
+          // Users can still browse read-only; the consent gate will show when the backend is available.
+          setConsentRequired(false);
+          setComplianceChecked(true);
+        }
+      }
+    };
+
+    const { data: authSub } = supabase.auth.onAuthStateChange(() => {
+      void checkCompliance();
+    });
+
+    void checkCompliance();
+
+    return () => {
+      cancelled = true;
+      authSub.subscription.unsubscribe();
+    };
+  }, [splashComplete, ageVerified]);
 
   // Check localStorage for existing verification
   useEffect(() => {
@@ -141,7 +286,23 @@ export default function App() {
             )}
 
             {/* Main app content - ONLY SHOW AFTER VERIFICATION */}
-            {splashComplete && ageVerified && (
+            {splashComplete && ageVerified && !complianceChecked && (
+              <div className="min-h-screen bg-black flex items-center justify-center">
+                <div className="text-white/60 text-sm">Checking consent…</div>
+              </div>
+            )}
+
+            {splashComplete && ageVerified && complianceChecked && consentRequired && (
+              <AccountConsents
+                onNavigate={handleNavigate}
+                gateMode
+                onAccepted={() => {
+                  setConsentRequired(false);
+                }}
+              />
+            )}
+
+            {splashComplete && ageVerified && complianceChecked && !consentRequired && (
               <AppContent
                 currentRoute={currentRoute}
                 routeParams={routeParams}

@@ -7,7 +7,7 @@ import { typography, spacing } from "@/lib/design-system";
 import { Badge } from "@/components/ui/badge";
 
 interface XPProfileProps {
-  onNavigate: (route: string) => void;
+  onNavigate: (route: any, params?: any) => void;
 }
 
 // Mock user data - replace with real API

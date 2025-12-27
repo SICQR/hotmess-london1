@@ -38,6 +38,9 @@ export function Connect({ onNavigate }: ConnectProps) {
   const [isPremium, setIsPremium] = useState(false);
   const [showConsentModal, setShowConsentModal] = useState(false);
 
+  // Escape hatch: many legacy tables are not represented in local DB typings.
+  const sb = supabase as any;
+
   useEffect(() => {
     checkAuth();
   }, []);
@@ -52,39 +55,54 @@ export function Connect({ onNavigate }: ConnectProps) {
 
     setUser(session.user);
 
-    // Check age verification and consent
-    const profile = session.user.user_metadata;
-    const age18Plus = profile?.age_verified || false;
-    const consentGiven = profile?.connect_consent || false;
-    
-    // BYPASS: Auto-consent for testing (remove in production)
-    setHasConsent(true); // age18Plus && consentGiven
+    // Consent + age gate are now backed by profiles flags.
+    // (This aligns with the App-level consent lock gate.)
+    const { data: profileRow, error: profileError } = await sb
+      .from('profiles')
+      .select('consent_accepted, is_18_plus')
+      .eq('id', session.user.id)
+      .maybeSingle();
 
-    // Check membership tier
-    const tier = profile?.membership_tier || 'free';
-    // BYPASS: Set to true for testing
-    setIsPremium(true); // tier !== 'free'
+    if (profileError) {
+      console.error('[Connect] Failed to load profile flags:', profileError);
+      setHasConsent(false);
+    } else if (!profileRow) {
+      // If profile row doesn't exist yet, create it (then treat as not consented).
+      const { error: upsertError } = await sb
+        .from('profiles')
+        .upsert({ id: session.user.id }, { onConflict: 'id' });
+      if (upsertError) {
+        console.error('[Connect] Failed to create profile row:', upsertError);
+      }
+      setHasConsent(false);
+    } else {
+      const is18Plus = Boolean((profileRow as any).is_18_plus);
+      const consentAccepted = Boolean((profileRow as any).consent_accepted);
+      setHasConsent(is18Plus && consentAccepted);
+      if (!is18Plus || !consentAccepted) {
+        setShowConsentModal(true);
+      }
+    }
 
-    // Auto-show consent modal if not given
-    // BYPASS: Disabled for testing
-    // if (!age18Plus || !consentGiven) {
-    //   setShowConsentModal(true);
-    // }
+    // Membership tier remains in user metadata (until moved to profiles).
+    const meta = session.user.user_metadata;
+    const tier = meta?.membership_tier || 'free';
+    setIsPremium(tier !== 'free');
 
     setLoading(false);
   }
 
   async function giveConsent() {
     if (!user) return;
-    
-    // Update user metadata
-    const { error } = await supabase.auth.updateUser({
-      data: {
-        connect_consent: true,
-        age_verified: true,
-        consent_timestamp: new Date().toISOString()
-      }
-    });
+
+    // Update DB-backed flags on profiles.
+    const { error } = await sb
+      .from('profiles')
+      .update({
+        consent_accepted: true,
+        is_18_plus: true,
+      })
+      .eq('id', user.id);
 
     if (error) {
       toast.error('Failed to save consent');
@@ -94,6 +112,32 @@ export function Connect({ onNavigate }: ConnectProps) {
     setHasConsent(true);
     setShowConsentModal(false);
     toast.success('✓ Consent verified. Welcome to Connect!');
+  }
+
+  async function handleTelegramConnect() {
+    if (!user?.id) {
+      toast.error('Please sign in first');
+      return;
+    }
+
+    try {
+      const token = (crypto.randomUUID?.() ?? `${Date.now()}-${Math.random()}`)
+        .replace(/[^a-zA-Z0-9]/g, '');
+
+      const { error } = await sb.from('bot_sessions').insert({
+        user_id: user.id,
+        token,
+      });
+
+      if (error) {
+        toast.error('Failed to create Telegram link');
+        return;
+      }
+
+      window.location.href = `https://t.me/HotmessConnectBot?start=${token}`;
+    } catch {
+      toast.error('Failed to connect Telegram');
+    }
   }
 
   // Loading state
@@ -386,12 +430,21 @@ export function Connect({ onNavigate }: ConnectProps) {
               </div>
             </div>
             
-            {isPremium && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/30 text-yellow-500 text-xs font-bold uppercase">
-                <Sparkles className="w-3.5 h-3.5" />
-                Premium
-              </div>
-            )}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleTelegramConnect}
+                className="h-9 px-3 bg-white/5 hover:bg-white/10 border border-white/20 text-white text-xs uppercase tracking-wide transition-colors"
+              >
+                Link Telegram
+              </button>
+
+              {isPremium && (
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/30 text-yellow-500 text-xs font-bold uppercase">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Premium
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

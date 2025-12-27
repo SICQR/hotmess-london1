@@ -22,19 +22,22 @@ interface Track {
 interface MusicPreSaveModalProps {
   isOpen: boolean;
   onClose: () => void;
-  track: Track;
-  xpEarned: number;
+  track?: Track;
+  xpEarned?: number;
 }
 
 export function MusicPreSaveModal({
   isOpen,
   onClose,
   track,
-  xpEarned,
+  xpEarned = 0,
 }: MusicPreSaveModalProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [preSaved, setPreSaved] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
+
+  if (!isOpen || !track) return null;
+  const currentTrack = track as Track;
 
   const platforms = [
     { id: 'spotify', name: 'Spotify', icon: '🎵' },
@@ -64,13 +67,13 @@ export function MusicPreSaveModal({
       }
 
       // Store pre-save preference in scan_events with metadata
-      const { error: presaveError } = await supabase
+      const { error: presaveError } = await (supabase as any)
         .from('scan_events')
         .insert({
-          beacon_id: track.id,
+          beacon_id: currentTrack.id,
           user_id: session.user.id,
           source: 'music_presave'
-        });
+        } as any);
 
       // PostgreSQL unique constraint violation code
       if (presaveError && presaveError.code !== '23505') {
@@ -78,20 +81,20 @@ export function MusicPreSaveModal({
       }
 
       // Award XP for pre-save
-      const { error: xpError } = await supabase
+      const { error: xpError } = await (supabase as any)
         .from('xp_ledger')
         .insert({
           user_id: session.user.id,
-          beacon_id: track.id,
+          beacon_id: currentTrack.id,
           reason: 'action',
           amount: xpEarned,
-          meta: { 
-            action: 'music_presave', 
+          meta: {
+            action: 'music_presave',
             platforms: selectedPlatforms,
-            track_title: track.title,
-            artist: track.artist
+            track_title: currentTrack.title,
+            artist: currentTrack.artist
           }
-        });
+        } as any);
 
       if (xpError && xpError.code !== '23505') {
         console.error('Failed to award XP:', xpError);

@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 
 interface CareProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (route: any, params?: any) => void;
 }
 
 const resources = [

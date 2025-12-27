@@ -69,7 +69,8 @@ export function SellerListings({ onNavigate }: SellerListingsProps) {
 
   const handleToggleStatus = async (id: string, currentStatus: string) => {
     try {
-      const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+      // API only supports 'active' | 'draft'
+      const newStatus = currentStatus === 'active' ? 'draft' : 'active';
       
       // Update via API
       await updateListing(id, { status: newStatus });
@@ -213,7 +214,7 @@ export function SellerListings({ onNavigate }: SellerListingsProps) {
                     {/* Actions */}
                     <div className="flex flex-wrap gap-2">
                       <button
-                        onClick={() => onNavigate('editListing', { id: listing.id })}
+                        onClick={() => onNavigate('sellerListingEdit', { id: listing.id })}
                         className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-colors flex items-center gap-2 uppercase tracking-wider"
                         style={{ fontWeight: 700, fontSize: '11px' }}
                       >

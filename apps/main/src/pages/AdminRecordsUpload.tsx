@@ -232,7 +232,7 @@ export function AdminRecordsUpload({ onNavigate }: AdminRecordsUploadProps) {
       }
 
       // Upload all tracks
-      const uploadedTracks = [];
+      const uploadedTracks: any[] = [];
       for (const track of tracks) {
         let mp3Url = track.mp3Url;
         if (track.mp3File && !track.mp3Url) {

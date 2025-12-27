@@ -18,7 +18,7 @@ import { HMToggle } from '../components/library/HMToggle';
 import { HMSlider } from '../components/library/HMSlider';
 
 interface ComponentLibraryProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (route: any, params?: any) => void;
 }
 
 export function ComponentLibrary({ onNavigate }: ComponentLibraryProps) {

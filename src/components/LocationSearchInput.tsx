@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Search, X } from 'lucide-react';
 
+declare const google: any;
+
 interface LocationResult {
   placeId: string;
   name: string;
@@ -16,7 +18,7 @@ interface LocationSearchInputProps {
 
 export function LocationSearchInput({ onLocationSelect, placeholder = 'Search for a location...' }: LocationSearchInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+  const [autocomplete, setAutocomplete] = useState<any>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [inputValue, setInputValue] = useState('');
 

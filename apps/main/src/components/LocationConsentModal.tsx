@@ -65,7 +65,7 @@ export function LocationConsentModal({
       }
 
       // Call backend function to update consent
-      const { data, error } = await supabase.rpc('update_location_consent', {
+      const { data, error } = await (supabase as any).rpc('update_location_consent', {
         p_user_id: user.id,
         p_mode: selectedMode,
         p_ip_address: null, // Browser doesn't expose IP

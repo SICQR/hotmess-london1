@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase as supabaseClient } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 export type LocationMode = 'off' | 'approximate' | 'precise';
@@ -14,6 +14,7 @@ interface LocationConsentState {
 }
 
 export function useLocationConsent() {
+  const supabase = supabaseClient as any;
   const [state, setState] = useState<LocationConsentState>({
     mode: 'off',
     loading: true,
@@ -83,7 +84,7 @@ export function useLocationConsent() {
       const action = newMode === 'off' ? 'revoked' : (state.mode === 'off' ? 'granted' : 'updated');
 
       // Update via NEW RPC function with enums
-      const { error } = await supabase.rpc('set_location_consent', {
+      const { error } = await (supabase.rpc as any)('set_location_consent', {
         p_user_id: user.id,
         p_action: action,
         p_metadata: {

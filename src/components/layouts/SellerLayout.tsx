@@ -96,7 +96,7 @@ export function SellerLayout({ children, currentRoute, onNavigate }: SellerLayou
         <div className="p-4 border-t border-hot/30 space-y-2">
           <button
             onClick={() => {
-              onNavigate('market');
+              onNavigate('messmarket');
               setIsSidebarOpen(false);
             }}
             className="w-full px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-colors uppercase tracking-wider"

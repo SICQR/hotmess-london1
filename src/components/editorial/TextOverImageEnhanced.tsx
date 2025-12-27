@@ -22,6 +22,16 @@ type TextTreatmentType =
 type RevealType = 'none' | 'fade' | 'slide-up' | 'slide-down' | 'zoom';
 type OrientationType = 'horizontal' | 'vertical';
 
+type BrandPresetOverrides = Partial<{
+  mode: ModeType;
+  textTreatment: TextTreatmentType;
+  duotone: DuotoneColors | boolean;
+  grain: number;
+  vignette: number;
+  desaturate: number;
+  overlayOpacity: 'none' | 'light' | 'medium' | 'heavy';
+}>;
+
 interface DuotoneColors {
   dark: string;
   light: string;
@@ -179,10 +189,10 @@ export function TextOverImageEnhanced({
   const [words, setWords] = useState<string[]>([]);
   
   // Apply brand preset overrides
-  const getBrandPreset = () => {
+  const getBrandPreset = (): BrandPresetOverrides => {
     if (!brandPreset) return {};
     
-    const presets = {
+    const presets: Record<string, BrandPresetOverrides> = {
       raw: {
         mode: 'dark' as ModeType,
         textTreatment: 'chrome' as TextTreatmentType,
@@ -213,17 +223,17 @@ export function TextOverImageEnhanced({
       },
     };
     
-    return presets[brandPreset];
+    return presets[brandPreset] ?? {};
   };
   
   const preset = getBrandPreset();
-  const finalMode = preset.mode || mode;
-  const finalTextTreatment = preset.textTreatment || textTreatment;
-  const finalDuotone = preset.duotone || duotone;
-  const finalGrain = preset.grain !== undefined ? preset.grain : grain;
-  const finalVignette = preset.vignette !== undefined ? preset.vignette : vignette;
-  const finalDesaturate = preset.desaturate !== undefined ? preset.desaturate : desaturate;
-  const finalOverlayOpacity = preset.overlayOpacity || overlayOpacity;
+  const finalMode = preset.mode ?? mode;
+  const finalTextTreatment = preset.textTreatment ?? textTreatment;
+  const finalDuotone = preset.duotone ?? duotone;
+  const finalGrain = preset.grain ?? grain;
+  const finalVignette = preset.vignette ?? vignette;
+  const finalDesaturate = preset.desaturate ?? desaturate;
+  const finalOverlayOpacity = preset.overlayOpacity ?? overlayOpacity;
   
   // Auto-contrast mode
   const actualMode = finalMode === 'auto' && image ? detectBrightness(image) : finalMode;

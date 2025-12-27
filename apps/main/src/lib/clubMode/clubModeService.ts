@@ -12,7 +12,9 @@
  * This is the P0 B2B feature that drives club partnerships.
  */
 
-import { supabase } from '../supabase';
+import { supabase as supabaseClient } from '../supabase';
+
+const supabase: any = supabaseClient;
 
 // ============================================================================
 // TYPES

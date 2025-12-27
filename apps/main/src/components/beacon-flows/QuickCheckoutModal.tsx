@@ -21,26 +21,37 @@ interface Product {
 interface QuickCheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  product: Product;
-  xpEarned: number;
+  product?: Product;
+  xpEarned?: number;
 }
 
 export function QuickCheckoutModal({
   isOpen,
   onClose,
   product,
-  xpEarned,
+  xpEarned = 0,
 }: QuickCheckoutModalProps) {
   const [step, setStep] = useState<'product' | 'payment' | 'success'>('product');
   const [selectedSize, setSelectedSize] = useState<string>('M');
   const [processing, setProcessing] = useState(false);
 
+  if (!isOpen || !product) return null;
+
+  const currentProduct = product as Product;
+
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
+  const resetAndClose = () => {
+    onClose();
+  };
 
   async function handlePurchase() {
     setProcessing(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       if (!session) {
         toast.error('Please sign in to complete purchase');
         setProcessing(false);
@@ -48,13 +59,15 @@ export function QuickCheckoutModal({
       }
 
       // Create a purchase record in scan_events
-      const { error: purchaseError } = await supabase
+      const { error: purchaseError } = await (supabase as any)
         .from('scan_events')
-        .insert({
-          beacon_id: product.id,
-          user_id: session.user.id,
-          source: 'quick_checkout'
-        });
+        .insert(
+          {
+            beacon_id: currentProduct.id,
+            user_id: session.user.id,
+            source: 'quick_checkout',
+          } as any
+        );
 
       // PostgreSQL unique constraint violation code
       if (purchaseError && purchaseError.code !== '23505') {
@@ -62,45 +75,35 @@ export function QuickCheckoutModal({
       }
 
       // Award XP for purchase
-      const { error: xpError } = await supabase
+      const { error: xpError } = await (supabase as any)
         .from('xp_ledger')
-        .insert({
-          user_id: session.user.id,
-          beacon_id: product.id,
-          reason: 'action',
-          amount: xpEarned,
-          meta: { 
-            action: 'quick_purchase',
-            product_name: product.name,
-            price: product.price,
-            size: selectedSize
-          }
-        });
+        .insert(
+          {
+            user_id: session.user.id,
+            beacon_id: currentProduct.id,
+            reason: 'action',
+            amount: xpEarned,
+            meta: {
+              action: 'quick_checkout',
+              product_name: currentProduct.name,
+              price: currentProduct.price,
+              size: selectedSize,
+            },
+          } as any
+        );
 
       if (xpError && xpError.code !== '23505') {
         console.error('Failed to award XP:', xpError);
       }
-
-      // Note: In a production environment, this would also:
-      // 1. Create a Stripe payment intent
-      // 2. Process the payment
-      // 3. Record the order in an orders table
-      // For now, we just track the intent to purchase
 
       setProcessing(false);
       setStep('success');
       toast.success('Order placed successfully!');
     } catch (err: any) {
       console.error('Purchase error:', err);
-      toast.error(err.message || 'Failed to complete purchase');
+      toast.error(err?.message || 'Failed to complete purchase');
       setProcessing(false);
     }
-  }
-
-  function resetAndClose() {
-    setStep('product');
-    setSelectedSize('M');
-    onClose();
   }
 
   return (

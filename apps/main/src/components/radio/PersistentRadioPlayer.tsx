@@ -1,9 +1,11 @@
 // HOTMESS LONDON - Persistent Radio Player
 // Mini player that stays visible across all navigation
 
+import { useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Radio, Users, X, Maximize2 } from 'lucide-react';
 import { useRadio } from '../../contexts/RadioContext';
 import { cn } from '../ui/utils';
+import { OSBus } from '../../lib/os-bus';
 
 export function PersistentRadioPlayer() {
   const {
@@ -21,6 +23,15 @@ export function PersistentRadioPlayer() {
     expand,
     close
   } = useRadio();
+
+  // Broadcast BPM when track metadata changes.
+  // This is the core "Sonic Pulse" that powers globe emissive + any HUD pulse.
+  useEffect(() => {
+    if (!nowPlaying) return;
+    const bpmRaw = (nowPlaying as any)?.bpm;
+    const bpm = Number.isFinite(Number(bpmRaw)) ? Number(bpmRaw) : 120;
+    OSBus.emit({ type: 'TRACK_BPM_CHANGE', bpm });
+  }, [nowPlaying]);
   
   // Don't render if not playing and minimized
   if (!isPlaying && isMinimized) {

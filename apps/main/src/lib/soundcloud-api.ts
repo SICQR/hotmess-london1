@@ -15,13 +15,16 @@ interface SoundCloudWidgetAPI {
   next(): void;
   prev(): void;
   skip(soundIndex: number): void;
+  getCurrentSound(callback: (sound: unknown) => void): void;
+  bind(event: string, listener: (...args: any[]) => void): void;
+  unbind(event: string): void;
 }
 
-interface SoundCloudWindow extends Window {
+type SoundCloudWindow = Window & {
   SC?: {
     Widget: (iframeElement: HTMLIFrameElement) => SoundCloudWidgetAPI;
   };
-}
+};
 
 export interface SoundCloudTrack {
   id: number;
@@ -336,7 +339,7 @@ export class SoundCloudWidget {
   }
 
   getCurrentSound(callback: (sound: SoundCloudTrack) => void) {
-    this.widget?.getCurrentSound(callback);
+    this.widget?.getCurrentSound((sound: unknown) => callback(sound as SoundCloudTrack));
   }
 
   bind(event: string, listener: (...args: any[]) => void) {

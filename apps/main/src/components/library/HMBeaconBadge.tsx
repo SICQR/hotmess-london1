@@ -14,24 +14,30 @@ interface HMBeaconBadgeProps {
 }
 
 export function HMBeaconBadge({ heat, scans, live = true, size = 'md' }: HMBeaconBadgeProps) {
-  const heatConfig = {
+  const heatConfig: Record<
+    HeatState,
+    { color: string; bg: string; border: string; label: string; pulse?: boolean }
+  > = {
     cold: {
       color: 'text-gray-500',
       bg: 'bg-gray-950/50',
       border: 'border-gray-700',
       label: 'Cold zone',
+      pulse: false,
     },
     warm: {
       color: 'text-cyan-static',
       bg: 'bg-blue-950/50',
       border: 'border-cyan-static/50',
       label: 'Warming up',
+      pulse: false,
     },
     hot: {
       color: 'text-heat',
       bg: 'bg-orange-950/50',
       border: 'border-heat',
       label: 'Getting hot',
+      pulse: false,
     },
     scorching: {
       color: 'text-hot',

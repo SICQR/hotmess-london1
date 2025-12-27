@@ -6,7 +6,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import type { NightPulseCity } from '../../types/night-pulse';
 
 // ============================================================================
@@ -278,7 +278,7 @@ export function UnifiedGlobe({
 
     // Stars
     const starGeometry = new THREE.BufferGeometry();
-    const starVertices = [];
+    const starVertices: number[] = [];
     for (let i = 0; i < 15000; i++) {
       const x = (Math.random() - 0.5) * 2000;
       const y = (Math.random() - 0.5) * 2000;

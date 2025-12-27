@@ -139,8 +139,14 @@ export default function PurchaseTicket() {
 
   async function loadEventAndCreateIntent() {
     try {
+      if (!eventId) {
+        setError('No event selected');
+        setLoading(false);
+        return;
+      }
+
       // Get event details
-      const { data: eventData, error: eventError } = await supabase
+      const { data: eventData, error: eventError } = await (supabase as any)
         .from('club_events')
         .select('*')
         .eq('id', eventId)
@@ -163,7 +169,7 @@ export default function PurchaseTicket() {
       }
 
       // Get price for selected tier
-      const price = tier === 'ga' ? eventData.price_ga : eventData.price_vip;
+      const price = tier === 'ga' ? (eventData as any).price_ga : (eventData as any).price_vip;
       if (!price) {
         setError('Ticket tier not available');
         setLoading(false);

@@ -8,7 +8,7 @@ import { Eye, EyeOff } from 'lucide-react';
 
 type InputVariant = 'text' | 'password' | 'email' | 'code';
 
-interface HMInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
+interface HMInputProps extends InputHTMLAttributes<HTMLInputElement> {
   variant?: InputVariant;
   label?: string;
   error?: string;
@@ -33,7 +33,13 @@ export function HMInput({
     ? 'border-neon-lime'
     : 'border-gray-800 hover:border-gray-700';
 
-  const inputType = variant === 'password' && !showPassword ? 'password' : variant === 'password' ? 'text' : variant;
+  const inputType =
+    props.type ??
+    (variant === 'password' && !showPassword
+      ? 'password'
+      : variant === 'password'
+        ? 'text'
+        : variant);
 
   return (
     <div className="w-full">

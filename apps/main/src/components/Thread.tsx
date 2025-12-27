@@ -217,7 +217,7 @@ export default function Thread({ mode, threadId, sendEndpoint, onNavigate }: Pro
           
           {/* Safety Menu */}
           <ThreadSafetyMenu
-            threadType={mode}
+            threadType={mode === "tickets" ? "ticket" : (mode as any)}
             threadId={threadId}
             otherUserId={otherUserId || undefined}
           />
@@ -280,7 +280,7 @@ export default function Thread({ mode, threadId, sendEndpoint, onNavigate }: Pro
       {ticketListing && mode === "tickets" && (
         <ProofUploadQuickflow
           threadId={threadId}
-          threadType={mode}
+          threadType={mode === "tickets" ? "ticket" : mode}
           listingId={listingId}
           disabled={!me || sending || locked}
           onDone={() => {

@@ -12,9 +12,10 @@ import { RadioStats } from '../components/RadioStats';
 import { RadioNowPlayingBar } from '../components/RadioNowPlayingBar';
 import { useRadioStatus } from '../hooks/useRadioStatus';
 import { useRadioXP } from '../hooks/useRadioXP';
+import type { NavFunction } from '../lib/routes';
 
 interface RadioNewProps {
-  onNavigate: (page: string) => void;
+  onNavigate: NavFunction;
 }
 
 export function RadioNew({ onNavigate }: RadioNewProps) {

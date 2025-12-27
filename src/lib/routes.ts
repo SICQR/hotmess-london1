@@ -75,6 +75,9 @@ export type RouteId =
   | "communityNew"
   | "communityWhyRooms" // NEW: Why Rooms educational page
   | "rooms" // NEW: Rooms Directory (Telegram bridge)
+  | "events" // NEW: Events listing
+  | "safePlaces" // NEW: Safe places directory
+  | "careHub" // NEW: Care hub
   | "hnhMess"
   // Map & Beacons
   | "map"
@@ -341,6 +344,27 @@ export const ROUTES: Record<RouteId, RouteDef> = {
     href: "/rooms",
     group: "hidden",
     description: "Rooms Directory - Web to Telegram bridge",
+  },
+  events: {
+    id: "events",
+    label: "Events",
+    href: "/events",
+    group: "hidden",
+    description: "Events listing and RSVP hub",
+  },
+  safePlaces: {
+    id: "safePlaces",
+    label: "Safe Places",
+    href: "/safe-places",
+    group: "hidden",
+    description: "Safe places directory",
+  },
+  careHub: {
+    id: "careHub",
+    label: "Care Hub",
+    href: "/care-hub",
+    group: "hidden",
+    description: "Care hub",
   },
   hnhMess: {
     id: "hnhMess",

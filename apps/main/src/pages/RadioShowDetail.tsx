@@ -8,10 +8,11 @@ import { RadioPlayer } from '../components/radio/RadioPlayer';
 import { LiveChat } from '../components/radio/LiveChat';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 import { SaveButton } from '../components/SaveButton';
+import type { NavFunction } from '../lib/routes';
 
 interface RadioShowDetailProps {
   slug: string;
-  onNavigate: (page: string) => void;
+  onNavigate: NavFunction;
 }
 
 // Mock show data - in production this would come from the API

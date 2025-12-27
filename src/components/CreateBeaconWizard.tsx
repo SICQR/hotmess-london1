@@ -134,7 +134,7 @@ export function CreateBeaconWizard({ onNavigate }: CreateBeaconWizardProps) {
 
       // Call collision-safe beacon creation service
       const res = await createBeacon({
-        type,
+        type: type as any,
         title: title.trim(),
         description: description.trim() || null,
         lat: geoLat,

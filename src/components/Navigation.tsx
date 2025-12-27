@@ -82,7 +82,7 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
       isAdmin: user?.role === 'admin',
     });
 
-    return [
+    const sections: NavSection[] = [
       {
         title: 'Nightlife',
         items: [
@@ -203,7 +203,7 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
             label: route.label,
             icon: ROUTE_ICONS[route.id] || Settings,
             badge: ROUTE_BADGES[route.id],
-          })),
+          } as NavItem)),
         ],
       },
       {
@@ -218,6 +218,12 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
           })),
       },
     ].filter(section => section.items.length > 0); // Remove empty sections
+
+    // Normalize items so `badge` stays optional (prevents union-widening where `badge` becomes required).
+    return sections.map((section) => ({
+      ...section,
+      items: section.items.map((item) => ({ ...item, badge: item.badge })) as NavItem[],
+    }));
   }, [user, itemCount]);
 
   return (

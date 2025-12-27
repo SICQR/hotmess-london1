@@ -902,7 +902,7 @@ export function HomeNew({ onNavigate }: HomeNewProps) {
               <div className="space-y-2">
                 <FooterLink label="Terms" onClick={() => onNavigate('legalTerms')} />
                 <FooterLink label="Privacy" onClick={() => onNavigate('legalPrivacy')} />
-                <FooterLink label="18+" onClick={() => onNavigate('legal18')} />
+                <FooterLink label="18+" onClick={() => onNavigate('legal18Plus')} />
               </div>
             </div>
           </div>

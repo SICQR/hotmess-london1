@@ -3,6 +3,14 @@ import { supabase } from '../lib/supabase';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { CheckCircle, XCircle, Loader2, AlertTriangle } from 'lucide-react';
 
+type DiagnosticListing = {
+  id: string;
+  slug: string;
+  title: string;
+  status?: string | null;
+  quantity_available?: number | null;
+};
+
 export function DiagnosticsPage() {
   const [testing, setTesting] = useState(false);
   const [results, setResults] = useState<any[]>([]);
@@ -125,11 +133,16 @@ export function DiagnosticsPage() {
 
       if (error) throw error;
 
-      if (data) {
-        if (data.status === 'active' && data.quantity_available > 0) {
-          addResult('Test Product', 'pass', `Found: "${data.title}" (active, ${data.quantity_available} in stock)`, data);
+      const listing = data as unknown as DiagnosticListing | null;
+
+      if (listing) {
+        const status = listing.status ?? 'unknown';
+        const quantity = listing.quantity_available ?? 0;
+
+        if (status === 'active' && quantity > 0) {
+          addResult('Test Product', 'pass', `Found: "${listing.title}" (active, ${quantity} in stock)`, listing);
         } else {
-          addResult('Test Product', 'warning', `Found but not available (status: ${data.status}, stock: ${data.quantity_available})`, data);
+          addResult('Test Product', 'warning', `Found but not available (status: ${status}, stock: ${quantity})`, listing);
         }
       } else {
         addResult('Test Product', 'warning', 'Test product "neon-harness" not found', null);

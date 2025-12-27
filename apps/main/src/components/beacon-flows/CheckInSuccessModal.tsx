@@ -10,9 +10,9 @@ import { useState, useEffect } from 'react';
 interface CheckInSuccessModalProps {
   isOpen: boolean;
   onClose: () => void;
-  venueName: string;
+  venueName?: string;
   venueAddress?: string;
-  xpEarned: number;
+  xpEarned?: number;
   streak?: number;
   firstTime?: boolean;
   totalCheckIns?: number;
@@ -24,7 +24,7 @@ export function CheckInSuccessModal({
   onClose,
   venueName,
   venueAddress,
-  xpEarned,
+  xpEarned = 0,
   streak = 0,
   firstTime = false,
   totalCheckIns = 1,
@@ -38,6 +38,8 @@ export function CheckInSuccessModal({
       setTimeout(() => setShowConfetti(false), 3000);
     }
   }, [isOpen]);
+
+  if (!isOpen || !venueName) return null;
 
   return (
     <AnimatePresence>

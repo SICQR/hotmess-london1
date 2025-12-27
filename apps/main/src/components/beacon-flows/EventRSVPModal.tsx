@@ -26,18 +26,21 @@ interface Event {
 interface EventRSVPModalProps {
   isOpen: boolean;
   onClose: () => void;
-  event: Event;
-  xpEarned: number;
+  event?: Event;
+  xpEarned?: number;
 }
 
 export function EventRSVPModal({
   isOpen,
   onClose,
   event,
-  xpEarned,
+  xpEarned = 0,
 }: EventRSVPModalProps) {
   const [step, setStep] = useState<'details' | 'confirm' | 'success'>('details');
   const [plusOnes, setPlusOnes] = useState(0);
+
+  if (!isOpen || !event) return null;
+  const currentEvent = event as Event;
 
   async function handleRSVP() {
     try {
@@ -49,13 +52,13 @@ export function EventRSVPModal({
 
       // Create a scan event for the RSVP
       // This records the user's intent to attend
-      const { error: rsvpError } = await supabase
+      const { error: rsvpError } = await (supabase as any)
         .from('scan_events')
         .insert({
-          beacon_id: event.id,
+          beacon_id: currentEvent.id,
           user_id: session.user.id,
           source: 'rsvp'
-        });
+        } as any);
 
       if (rsvpError) {
         // PostgreSQL unique constraint violation code
@@ -66,15 +69,15 @@ export function EventRSVPModal({
       }
 
       // Award XP for RSVP
-      const { error: xpError } = await supabase
+      const { error: xpError } = await (supabase as any)
         .from('xp_ledger')
         .insert({
           user_id: session.user.id,
-          beacon_id: event.id,
+          beacon_id: currentEvent.id,
           reason: 'action',
           amount: xpEarned,
           meta: { action: 'event_rsvp', plus_ones: plusOnes }
-        });
+        } as any);
 
       if (xpError && xpError.code !== '23505') {
         console.error('Failed to award XP:', xpError);
@@ -88,8 +91,8 @@ export function EventRSVPModal({
     }
   }
 
-  const spotsLeft = event.capacity - event.attending;
-  const percentFull = (event.attending / event.capacity) * 100;
+  const spotsLeft = currentEvent.capacity - currentEvent.attending;
+  const percentFull = (currentEvent.attending / currentEvent.capacity) * 100;
 
   return (
     <AnimatePresence>

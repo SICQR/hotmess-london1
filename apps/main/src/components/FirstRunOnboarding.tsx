@@ -44,11 +44,11 @@ export function FirstRunOnboarding() {
       if (!user) return;
 
       // Check if user has completed onboarding
-      const { data: profile } = await supabase
+      const { data: profile } = (await (supabase as any)
         .from('profiles')
         .select('onboarding_completed, created_at')
         .eq('id', user.id)
-        .single();
+        .single()) as any;
 
       // Show onboarding if:
       // 1. Never completed before
@@ -70,7 +70,7 @@ export function FirstRunOnboarding() {
       if (!user) return;
 
       // Use NEW RPC for cookie consent (atomically updates profile + logs)
-      await supabase.rpc('set_cookie_consent', {
+      await (supabase as any).rpc('set_cookie_consent', {
         p_user_id: user.id,
         p_action: 'granted',
         p_preferences: {
@@ -84,7 +84,7 @@ export function FirstRunOnboarding() {
       });
 
       // Update remaining profile fields separately
-      const { error: updateError } = await supabase
+      const { error: updateError } = await (supabase as any)
         .from('profiles')
         .update({
           onboarding_completed: true,

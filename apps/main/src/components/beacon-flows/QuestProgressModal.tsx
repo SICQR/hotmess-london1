@@ -34,7 +34,7 @@ interface Quest {
 interface QuestProgressModalProps {
   isOpen: boolean;
   onClose: () => void;
-  quest: Quest;
+  quest?: Quest;
   stepXPEarned?: number;
 }
 
@@ -44,8 +44,12 @@ export function QuestProgressModal({
   quest,
   stepXPEarned = 0,
 }: QuestProgressModalProps) {
-  const progress = (quest.currentStep / quest.totalSteps) * 100;
-  const isComplete = quest.currentStep === quest.totalSteps;
+  if (!isOpen || !quest) return null;
+
+  const currentQuest = quest as Quest;
+
+  const progress = (currentQuest.currentStep / currentQuest.totalSteps) * 100;
+  const isComplete = currentQuest.currentStep === currentQuest.totalSteps;
 
   return (
     <AnimatePresence>

@@ -129,7 +129,7 @@ export function useThreadMessages(opts: {
                 id: row.id,
                 uiId: row.id,
                 created_at: row.created_at,
-                state: "sent",
+                state: "sent" as any,
               };
               return next;
             }
@@ -143,7 +143,7 @@ export function useThreadMessages(opts: {
                 sender_user_id: row.sender_user_id,
                 body: row.body,
                 created_at: row.created_at,
-                state: "sent",
+                state: "sent" as any,
               },
             ].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
           });

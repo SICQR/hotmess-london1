@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useRouter } from '../Router';
 import { Button } from '../../components/design-system/Button';
 import { Input } from '../../components/design-system/Input';
 import { Card } from '../../components/design-system/Card';
@@ -50,7 +49,14 @@ const CONDITIONS = [
 ];
 
 export default function EditListing() {
-  const router = useRouter();
+  const router = {
+    push: (path: string) => {
+      if (typeof window !== 'undefined') window.location.href = path;
+    },
+    back: () => {
+      if (typeof window !== 'undefined') window.history.back();
+    },
+  };
   const [listingId, setListingId] = useState<string>('');
   const [formData, setFormData] = useState<ListingFormData>({
     title: 'Calvin Klein Briefs',

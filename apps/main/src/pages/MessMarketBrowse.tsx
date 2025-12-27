@@ -113,8 +113,8 @@ export function MessMarketBrowse({ onNavigate }: MessMarketBrowseProps) {
       filtered = filtered.filter(
         (l) =>
           l.title.toLowerCase().includes(query) ||
-          l.description.toLowerCase().includes(query) ||
-          l.tags.some((tag) => tag.toLowerCase().includes(query))
+          l.description?.toLowerCase().includes(query) ||
+          l.tags?.some((tag) => tag.toLowerCase().includes(query))
       );
     }
 

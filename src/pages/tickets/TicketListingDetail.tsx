@@ -167,7 +167,7 @@ export function TicketListingDetail({ listingId, onNavigate }: TicketListingDeta
                     )}
                   </div>
                 </div>
-                <SaveButton contentType="ticket" contentId={listing.id} size="lg" />
+                <SaveButton contentType={"ticket" as any} contentId={listing.id} size="lg" />
               </div>
 
               <div className="space-y-3 text-hotmess-gray-300">
