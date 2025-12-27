@@ -5,10 +5,10 @@
 
 import type { User } from '@supabase/supabase-js';
 import { createClient } from './supabase';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { getFunctionsBaseUrl } from './supabase-functions-base';
 import type { UserProfileMetadata } from '@/types/api';
 
-const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/api`;
+const API_BASE = `${getFunctionsBaseUrl()}/api`;
 
 export interface UserProfile {
   id: string; // Supabase auth user ID

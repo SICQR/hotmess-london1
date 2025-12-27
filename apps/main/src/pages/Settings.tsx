@@ -7,7 +7,8 @@ import { useState, useEffect } from 'react';
 import { RouteId } from '../lib/routes';
 import { useAuth } from '../contexts/AuthContext';
 import { getAccessTokenAsync } from '../lib/auth';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { publicAnonKey } from '../utils/supabase/info';
+import { getFunctionsBaseUrl } from '../lib/supabase-functions-base';
 import { toast } from 'sonner';
 import {
   ArrowLeft,
@@ -113,7 +114,7 @@ export function Settings({ onNavigate }: SettingsProps) {
       }
 
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/api/users/${user.id}/settings`,
+        `${getFunctionsBaseUrl()}/api/users/${user.id}/settings`,
         {
           headers: { Authorization: `Bearer ${accessToken}` },
         }
@@ -147,7 +148,7 @@ export function Settings({ onNavigate }: SettingsProps) {
         accessToken = publicAnonKey;
       }
 
-      const url = `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/api/users/${user?.id}/settings`;
+      const url = `${getFunctionsBaseUrl()}/api/users/${user?.id}/settings`;
       console.log('💾 Request URL:', url);
       
       const response = await fetch(
@@ -230,7 +231,7 @@ export function Settings({ onNavigate }: SettingsProps) {
       
       // Upload to server
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-a670c824/api/users/${user?.id}/avatar`,
+        `${getFunctionsBaseUrl()}/api/users/${user?.id}/avatar`,
         {
           method: 'POST',
           headers: {
