@@ -62,8 +62,8 @@ A real-time platform connecting queer nightlife through a 3D globe, XP economy, 
 See `.env.example` for all required and optional environment variables.
 
 **Required:**
-- `VITE_SHOPIFY_DOMAIN` - Your Shopify store domain
-- `VITE_SHOPIFY_STOREFRONT_TOKEN` - Shopify Storefront API token
+- `VITE_SHOPIFY_DOMAIN` - Your Shopify store domain (e.g., your-store.myshopify.com)
+- `VITE_SHOPIFY_STOREFRONT_TOKEN` - Shopify Storefront API token ([Setup Guide](./SHOPIFY_SETUP_GUIDE.md))
 - `VITE_SUPABASE_URL` - Your Supabase project URL
 - `VITE_SUPABASE_ANON_KEY` - Supabase anonymous key
 - `VITE_STRIPE_PUBLISHABLE_KEY` - Stripe publishable key
@@ -71,6 +71,19 @@ See `.env.example` for all required and optional environment variables.
 **Optional:**
 - `VITE_MAPBOX_TOKEN` - For map features
 - `HOTMESS_NEW_BOT_TOKEN` - For Telegram bot integration
+
+### Shopify Setup
+
+The shop requires Shopify Storefront API credentials to function. Without these configured, the shop pages will display a setup guide.
+
+**Quick setup:**
+1. Create a Shopify store (free trial available)
+2. Create a custom app with Storefront API access
+3. Add environment variables to `.env.local` or your deployment platform
+4. Create collections: `raw`, `hung`, `high`, `super`
+5. Add products to collections
+
+For detailed instructions, see **[SHOPIFY_SETUP_GUIDE.md](./SHOPIFY_SETUP_GUIDE.md)**
 
 ## Development
 
