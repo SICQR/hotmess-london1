@@ -3,6 +3,9 @@
 
 import { SHOPIFY_DOMAIN, SHOPIFY_STOREFRONT_TOKEN } from './env';
 import type { ShopifyVariables } from '@/types/api';
+import { ShopifyNotConfiguredError } from './shopify-utils';
+
+export { ShopifyNotConfiguredError };
 
 // GraphQL query and mutation strings
 const CART_FRAGMENT = `
@@ -165,9 +168,7 @@ interface ShopifyResponse<T> {
 // Helper function to make Shopify API requests
 async function shopifyFetch<T>(query: string, variables: ShopifyVariables = {}): Promise<T> {
   if (!SHOPIFY_DOMAIN || !SHOPIFY_STOREFRONT_TOKEN) {
-    throw new Error(
-      'Shopify is not configured. Set VITE_SHOPIFY_DOMAIN and VITE_SHOPIFY_STOREFRONT_TOKEN in your environment (Vercel Project Settings → Environment Variables, or local .env.local).'
-    );
+    throw new ShopifyNotConfiguredError();
   }
   const endpoint = `https://${SHOPIFY_DOMAIN}/api/2024-01/graphql.json`;
 

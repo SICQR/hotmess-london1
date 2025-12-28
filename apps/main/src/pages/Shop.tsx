@@ -5,8 +5,9 @@ import { SHOP } from '../design-system/tokens';
 import { EmptyState } from '../components/EmptyState';
 import { Badge } from '../components/Badge';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
-import { getProductsByCollection } from '../lib/shopify-api';
+import { getProductsByCollection, ShopifyNotConfiguredError } from '../lib/shopify-api';
 import { ShopifyConnectionTest } from '../components/ShopifyConnectionTest';
+import { ShopifySetupGuide } from '../components/ShopifySetupGuide';
 
 interface ShopProps {
   onNavigate: (page: string, params?: Record<string, string>) => void;
@@ -32,6 +33,7 @@ export function Shop({ onNavigate }: ShopProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [shopifyNotConfigured, setShopifyNotConfigured] = useState(false);
 
   const collections = [
     { id: 'all', label: 'All Products' },
@@ -70,8 +72,12 @@ export function Shop({ onNavigate }: ShopProps) {
         }
       } catch (err) {
         console.error('Error loading products:', err);
-        const message = err instanceof Error ? err.message : 'Failed to load products. Please try again.';
-        setError(message);
+        if (err instanceof ShopifyNotConfiguredError) {
+          setShopifyNotConfigured(true);
+        } else {
+          const message = err instanceof Error ? err.message : 'Failed to load products. Please try again.';
+          setError(message);
+        }
       } finally {
         setLoading(false);
       }
@@ -172,8 +178,13 @@ export function Shop({ onNavigate }: ShopProps) {
           </div>
         )}
 
+        {/* Shopify Not Configured State */}
+        {shopifyNotConfigured && !loading && (
+          <ShopifySetupGuide />
+        )}
+
         {/* Error State */}
-        {error && !loading && (
+        {error && !loading && !shopifyNotConfigured && (
           <div className="p-8 border border-hot/50 bg-red-950/20 text-center">
             <p className="text-white mb-4">{error}</p>
             <button
@@ -186,7 +197,7 @@ export function Shop({ onNavigate }: ShopProps) {
         )}
 
         {/* Products Grid */}
-        {!loading && !error && (
+        {!loading && !error && !shopifyNotConfigured && (
           <>
             {products.length === 0 ? (
               <EmptyState
