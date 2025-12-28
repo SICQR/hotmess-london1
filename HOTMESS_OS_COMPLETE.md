@@ -26,7 +26,7 @@ This is the first full-stack version of the HOTMESS OS, implementing a real-time
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 22+
 - npm or yarn
 - Supabase account
 - Stripe account (for payments)
