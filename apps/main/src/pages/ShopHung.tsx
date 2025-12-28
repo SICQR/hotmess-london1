@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ExternalLink, Zap, Info, AlertCircle, Loader } from 'lucide-react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
-import { getProductsByCollection } from '../lib/shopify-api';
+import { getProductsByCollection, ShopifyNotConfiguredError } from '../lib/shopify-api';
 import { Badge } from '../components/Badge';
+import { ShopifySetupGuide } from '../components/ShopifySetupGuide';
 
 interface ShopHungProps {
   onNavigate: (route: string, params?: Record<string, string>) => void;
@@ -14,6 +15,7 @@ export function ShopHung({ onNavigate }: ShopHungProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
+  const [shopifyNotConfigured, setShopifyNotConfigured] = useState(false);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -24,7 +26,11 @@ export function ShopHung({ onNavigate }: ShopHungProps) {
         setError(null);
       } catch (err) {
         console.error('Error loading HUNG products:', err);
-        setError('Failed to load products. Please try again.');
+        if (err instanceof ShopifyNotConfiguredError) {
+          setShopifyNotConfigured(true);
+        } else {
+          setError('Failed to load products. Please try again.');
+        }
       } finally {
         setLoading(false);
       }
@@ -134,7 +140,11 @@ export function ShopHung({ onNavigate }: ShopHungProps) {
             </div>
           )}
 
-          {error && (
+          {shopifyNotConfigured && !loading && (
+            <ShopifySetupGuide className="my-12" />
+          )}
+
+          {error && !shopifyNotConfigured && (
             <div className="p-8 bg-red-950/30 border-2 border-red-500 text-center">
               <p className="text-white mb-4">{error}</p>
               <button 
@@ -146,7 +156,7 @@ export function ShopHung({ onNavigate }: ShopHungProps) {
             </div>
           )}
 
-          {!loading && !error && products.length === 0 && (
+          {!loading && !error && !shopifyNotConfigured && products.length === 0 && (
             <div className="p-8 bg-zinc-900 border border-white/10 text-center">
               <p className="text-zinc-400 mb-4">No products found in HUNG collection.</p>
               <p className="text-sm text-zinc-500">Create products in your Shopify admin and tag them with "hung"</p>
