@@ -3,13 +3,9 @@
 
 import { SHOPIFY_DOMAIN, SHOPIFY_STOREFRONT_TOKEN } from './env';
 import type { ShopifyVariables } from '@/types/api';
+import { ShopifyNotConfiguredError } from './shopify-utils';
 
-export class ShopifyNotConfiguredError extends Error {
-  constructor() {
-    super('SHOPIFY_NOT_CONFIGURED');
-    this.name = 'ShopifyNotConfiguredError';
-  }
-}
+export { ShopifyNotConfiguredError };
 
 // GraphQL query and mutation strings
 const CART_FRAGMENT = `
