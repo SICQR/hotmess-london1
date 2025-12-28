@@ -4,6 +4,8 @@
 
 This document analyzes the CI/test/build failures for all currently open PRs in the `SICQR/hotmess-london1` repository and provides actionable recommendations for fixes.
 
+**IMPORTANT NOTE**: This analysis was conducted by an automated agent that cannot directly create new PRs. The recommendations below should be implemented manually by the repository maintainer or through direct branch modifications.
+
 ## PR #76: `copilot/add-component-route-hierarchy`
 
 ### Status
