@@ -41,8 +41,8 @@ A real-time platform connecting queer nightlife through a 3D globe, XP economy, 
 
 2. **Install dependencies**
    ```bash
-   # Install pnpm globally (if not already installed)
-   npm install -g pnpm
+   # Enable corepack (built into Node.js) for automatic pnpm management
+   corepack enable
 
    # Install project dependencies
    pnpm install
