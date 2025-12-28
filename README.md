@@ -24,7 +24,7 @@ A real-time platform connecting queer nightlife through a 3D globe, XP economy, 
 
 ### Prerequisites
 
-- Node.js 18+ and npm
+- Node.js 22+ and npm
 - Git
 
 ### Installation
