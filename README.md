@@ -24,7 +24,11 @@ A real-time platform connecting queer nightlife through a 3D globe, XP economy, 
 
 ### Prerequisites
 
-- Node.js 22+ and npm
+- Node.js 22.12.0 or higher (required by `engines.node` in package.json)
+  - Use [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm) to manage Node versions
+  - The repository includes `.nvmrc` and `.node-version` files for automatic version selection
+  - Run `nvm use` or `fnm use` in the project directory to use the correct version
+- pnpm (included via `packageManager` field in package.json)
 - Git
 
 ### Installation
@@ -37,7 +41,11 @@ A real-time platform connecting queer nightlife through a 3D globe, XP economy, 
 
 2. **Install dependencies**
    ```bash
-   npm install
+   # Install pnpm globally (if not already installed)
+   npm install -g pnpm
+
+   # Install project dependencies
+   pnpm install
    ```
 
 3. **Configure environment variables**
@@ -51,7 +59,7 @@ A real-time platform connecting queer nightlife through a 3D globe, XP economy, 
 
 4. **Start development server**
    ```bash
-   npm run dev
+   pnpm run dev
    ```
 
 5. **Open in browser**
@@ -76,27 +84,27 @@ See `.env.example` for all required and optional environment variables.
 
 ### Available Scripts
 
-- `npm run dev` - Start development server with hot reload
-- `npm run build` - Create production build (includes type checking)
-- `npm run preview` - Preview production build locally
-- `npm run lint` - Check for code quality issues
-- `npm run lint:fix` - Automatically fix linting issues
-- `npm run format` - Format code with Prettier
-- `npm run format:check` - Check code formatting
-- `npm run type-check` - Validate TypeScript types
-- `npm run test` - Run tests in watch mode
-- `npm run test:run` - Run tests once
-- `npm run test:coverage` - Run tests with coverage report
+- `pnpm run dev` - Start development server with hot reload
+- `pnpm run build` - Create production build (includes type checking)
+- `pnpm run preview` - Preview production build locally
+- `pnpm run lint` - Check for code quality issues
+- `pnpm run lint:fix` - Automatically fix linting issues
+- `pnpm run format` - Format code with Prettier
+- `pnpm run format:check` - Check code formatting
+- `pnpm run type-check` - Validate TypeScript types
+- `pnpm run test` - Run tests in watch mode
+- `pnpm run test:run` - Run tests once
+- `pnpm run test:coverage` - Run tests with coverage report
 
 ### Before Committing
 
 Always run these commands before committing:
 
 ```bash
-npm run type-check  # Ensure no TypeScript errors
-npm run lint:fix    # Fix linting issues
-npm run format      # Format code
-npm run test:run    # Run tests
+pnpm run type-check  # Ensure no TypeScript errors
+pnpm run lint:fix    # Fix linting issues
+pnpm run format      # Format code
+pnpm run test:run    # Run tests
 ```
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed contribution guidelines.
@@ -115,12 +123,18 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed contribution guidelines.
 - **Preview:** Automatic on PR (Vercel preview environment)
 - **Production:** Automatic on merge to `main` (Vercel + Supabase Edge Functions)
 
+**Vercel Node.js Configuration:**
+To ensure consistency between local development and production, configure your Vercel project settings to use Node.js 22.12.0 or higher:
+1. Go to your Vercel project settings → General → Node.js Version
+2. Select `22.x` or specify `22.12.0` if available
+3. The repository's `.nvmrc` and `.node-version` files will also be automatically detected by Vercel
+
 ### Running Checks Locally:
 ```bash
-npm run lint          # Check code style
-npm run type-check    # Check types
-npm run test:run      # Run tests
-npm run build         # Test build
+pnpm run lint          # Check code style
+pnpm run type-check    # Check types
+pnpm run test:run      # Run tests
+pnpm run build         # Test build
 ```
 
 ### Branch Protection:
