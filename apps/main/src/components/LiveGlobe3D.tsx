@@ -5,7 +5,7 @@
 // latest callback refs, safe raycast mapping, optional satellite consent gate.
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import * as THREE from 'three';
+import * as THREE from '../lib/three-singleton';
 import { CSS2DObject, CSS2DRenderer } from '../lib/three-singleton';
 
 console.log('🌍 ✅ LiveGlobe3D v2.1 LOADED |', new Date().toISOString());

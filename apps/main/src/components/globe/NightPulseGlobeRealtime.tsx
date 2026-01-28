@@ -5,7 +5,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
+import * as THREE from '../../lib/three-singleton';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { useNightPulseRealtime } from '../../hooks/useNightPulseRealtime';
 import { GLOBAL_MICROCOPY } from '../../constants/copy';
